@@ -3,20 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Payroll Pro</title>
+    <title>Paynomnet 2026</title>
+
+    <!-- GOOGLE ADSENSE / ADMOB - SUSTITUIR ca-pub-XXXXXXXXXXXXXXXX con tu ID real -->
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-XXXXXXXXXXXXXXXX" crossorigin="anonymous"></script>
+
     <link rel="stylesheet" href="style.css">
     <link rel="manifest" href="manifest.json">
-    </head>
+    <style>
+        .help-icon {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            background: #e2e8f0;
+            color: #475569;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 12px;
+            line-height: 18px;
+            cursor: pointer;
+            margin-left: 8px;
+            font-weight: bold;
+            vertical-align: middle;
+            transition: all 0.2s;
+        }
+        .help-icon:hover { background: #007bff; color: white; }
+
+        .help-note {
+            display: none;
+            background: #f8fafc;
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            margin-top: 8px;
+            color: #334155;
+            line-height: 1.5;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .help-note.visible { display: block; animation: fadeIn 0.3s ease; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .theme-dark .help-note { background: #1e293b; color: #f1f5f9; border-color: #334155; }
+        .theme-dark .help-icon { background: #334155; color: #94a3b8; }
+
+        .frequency-toggle { display: flex; gap: 10px; margin-bottom: 15px; }
+        .btn-freq, .btn-toggle-sp, .btn-toggle-uk, .btn-periods-uk {
+            flex: 1; padding: 10px; border: 1px solid #ccc; background: white;
+            border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s;
+        }
+        .btn-freq.active, .btn-toggle-sp.active, .btn-toggle-uk.active, .btn-periods-uk.active { background: #007bff; color: white; border-color: #0056b3; }
+        .theme-dark .btn-freq, .theme-dark .btn-toggle-sp, .theme-dark .btn-toggle-uk, .theme-dark .btn-periods-uk { background: #333; color: #eee; border-color: #555; }
+        .theme-dark .btn-freq.active, .theme-dark .btn-toggle-sp.active, .theme-dark .btn-toggle-uk.active, .theme-dark .btn-periods-uk.active { background: #007bff; }
+
+        .basic-config-section {
+            background: rgba(0, 123, 255, 0.05); padding: 15px; border-radius: 10px;
+            margin-bottom: 20px; border: 1px solid rgba(0, 123, 255, 0.1);
+        }
+        .sub-label { font-size: 11px; color: #64748b; margin-bottom: 5px; display: block; font-weight: bold; text-transform: uppercase; }
+        .disability-group { display: flex; gap: 5px; margin-top: 5px; }
+        .btn-dis { flex: 1; padding: 6px; font-size: 11px; border: 1px solid #cbd5e1; background: white; border-radius: 6px; cursor: pointer; }
+        .btn-dis.active { background: #007bff; color: white; border-color: #0056b3; }
+        .theme-dark .btn-dis { background: #333; color: #eee; border-color: #555; }
+        .theme-dark .btn-dis.active { background: #007bff; }
+
+        .policy-links {
+            margin-top: 20px;
+            padding: 15px;
+            text-align: center;
+            font-size: 12px;
+            border-top: 1px solid var(--border-color);
+        }
+        .policy-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            margin: 0 10px;
+        }
+
+        /* Modal / Welcome Screen */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8); z-index: 2000;
+            display: flex; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: var(--bg-card); width: 90%; max-width: 500px;
+            padding: 30px; border-radius: 20px; box-shadow: var(--shadow-md);
+            text-align: center; color: var(--text-main);
+        }
+        .modal-body { margin: 20px 0; font-size: 14px; line-height: 1.6; max-height: 300px; overflow-y: auto; text-align: left; }
+        .legal-disclaimer { font-size: 10px; color: #888; margin-top: 15px; text-align: center; line-height: 1.3; }
+    </style>
+</head>
 <body class="theme-light">
 
-    <div id="ad-banner-top" class="ads-container"></div>
+    <!-- Modal de Bienvenida y T&C -->
+    <div id="welcome-modal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <h2 id="tc-title">Términos y Condiciones</h2>
+            <div class="modal-body">
+                <p id="tc-text">Bienvenido a <strong>Paynomnet 2026</strong>. Al utilizar esta aplicación, aceptas que los cálculos proporcionados son estimaciones orientativas basadas en las normativas fiscales previstas para el año 2026 en España y Reino Unido. <br><br>Esta herramienta no sustituye el asesoramiento de un profesional fiscal ni tiene validez legal vinculante. Los resultados reales pueden variar según circunstancias personales específicas, cambios legislativos de última hora o interpretaciones de la agencia tributaria correspondiente (AEAT / HMRC).</p>
+            </div>
+            <button id="btn-accept-tc" class="btn-primary-action">Aceptar y Entrar</button>
+        </div>
+    </div>
 
     <header id="main-header" class="header-container">
         <div id="app-titles" class="titles-wrapper">
-            <h1 id="title-en" class="app-title active">Payroll Pro</h1>
-            <h1 id="title-es" class="app-title hidden">Nóminas</h1>
-            <h1 id="title-pt" class="app-title hidden">Nómina</h1>
-            <h1 id="title-it" class="app-title hidden">Nómina</h1>
+            <h1 id="title-en" class="app-title">Paynomnet</h1>
+            <h1 id="title-es" class="app-title">Paynomnet</h1>
         </div>
         <button id="btn-settings" class="gear-icon" aria-label="Ajustes">
             <svg viewBox="0 0 24 24" width="28" height="28"><path fill="currentColor" d="M19.14,12.94c0.04-0.3,0.06-0.61,0.06-0.94c0-0.32-0.02-0.64-0.06-0.94l2.03-1.58c0.18-0.14,0.23-0.41,0.12-0.61 l-1.92-3.32c-0.12-0.22-0.37-0.29-0.59-0.22l-2.39,0.96c-0.5-0.38-1.03-0.7-1.62-0.94L14.4,2.81c-0.04-0.24-0.24-0.41-0.48-0.41 h-3.84c-0.24,0-0.43,0.17-0.47,0.41L9.25,5.35C8.66,5.59,8.12,5.92,7.63,6.29L5.24,5.33c-0.22-0.08-0.47,0-0.59,0.22L2.73,8.87 C2.62,9.08,2.66,9.34,2.86,9.48l2.03,1.58C4.84,11.36,4.8,11.69,4.8,12s0.02,0.64,0.06,0.94l-2.03,1.58 c-0.18,0.14-0.23,0.41-0.12,0.61l1.92,3.32c0.12,0.22,0.37,0.29,0.59,0.22l2.39-0.96c0.5,0.38,1.03,0.7,1.62,0.94l0.36,2.54 c0.05,0.24,0.24,0.41,0.48,0.41h3.84c0.24,0,0.43-0.17,0.47-0.41l0.36-2.54c0.59-0.24,1.13-0.56,1.62-0.94l2.39,0.96 c0.22,0.08,0.47,0,0.59-0.22l1.92-3.32c0.12-0.22,0.07-0.49-0.12-0.61L19.14,12.94z M12,15.6c-1.98,0-3.6-1.62-3.6-3.6 s1.62-3.6,3.6-3.6s3.6,1.62,3.6,3.6S13.98,15.6,12,15.6z"/></svg>
@@ -25,231 +122,485 @@
 
     <aside id="settings-menu" class="settings-panel hidden">
         <div class="settings-header">
-            <h2 id="settings-title">Ajustes</h2>
-            <button id="btn-close-settings" class="close-btn">✖</button>
+            <h2 id="menu-settings-label">Ajustes</h2>
+            <button id="btn-close-settings">✖</button>
         </div>
-        
         <div class="settings-content">
-            <div class="setting-group">
-                <div class="setting-item">
-                    <label for="theme-toggle">Modo Oscuro</label>
-                    <input type="checkbox" id="theme-toggle" class="toggle-switch">
-                </div>
-                <div class="setting-item">
-                    <label for="lang-select">Idioma / Language</label>
-                    <select id="lang-select" class="dropdown-select">
-                        <option value="es">Español</option>
-                        <option value="en">English</option>
-                        <option value="it">Italiano</option>
-                        <option value="pt">Português</option>
-                    </select>
-                </div>
+            <div class="setting-item">
+                <label id="dark-mode-label">Modo Oscuro</label>
+                <input type="checkbox" id="theme-toggle" class="toggle-switch">
             </div>
-
-            <hr class="settings-divider">
-
+            <div class="setting-item">
+                <label id="lang-label">Idioma</label>
+                <select id="lang-select" class="dropdown-select">
+                    <option value="es">Español</option>
+                    <option value="en">English</option>
+                </select>
+            </div>
+            <hr>
             <div id="pro-upgrade-container" class="setting-group">
-                <button id="btn-become-pro" class="btn-primary-action">Hacerse PRO</button>
+                <button id="btn-become-pro" class="btn-primary-action">Activar Modo PRO</button>
             </div>
-
             <div id="pro-settings-container" class="setting-group hidden">
-                <h3 class="pro-title">Ajustes PRO</h3>
-                <button id="btn-change-currency" class="btn-secondary">Cambiar Moneda</button>
-                <button id="btn-change-email" class="btn-secondary">Cambiar Email</button>
-                <button id="btn-restore-settings" class="btn-secondary">Restaurar Ajustes</button>
-                <button id="btn-undo-pro" class="btn-danger">Deshacer PRO</button>
+                <h3 class="pro-title" id="pro-active-title">Suscripción PRO Activa</h3>
+                <button id="btn-undo-pro" class="btn-danger">Cerrar Sesión PRO</button>
             </div>
-
-            <hr class="settings-divider">
-
             <div id="auth-container" class="setting-group">
-                <h3>Inicio Sesión PRO</h3>
-                <input type="email" id="auth-email" class="input-field" placeholder="Correo electrónico">
-                <input type="password" id="auth-password" class="input-field" placeholder="Contraseña">
+                <h3 id="auth-title">Acceso PRO</h3>
+                <input type="email" id="auth-email" class="input-field" placeholder="Email (Admin)">
                 <button id="btn-login" class="btn-primary-action">Iniciar Sesión</button>
-                <button id="btn-register" class="btn-secondary">Registrarse</button>
             </div>
 
-            <hr class="settings-divider">
-
-            <div id="legal-container" class="setting-group legal-links">
-                <a href="privacy.html" target="_blank">Política de Privacidad</a>
-                <a href="terms.html" target="_blank">Términos de Servicio</a>
+            <div class="policy-links">
+                <a href="privacy.html" target="_blank" id="link-privacy">Privacidad</a>
+                <a href="terms.html" target="_blank" id="link-terms">Términos</a>
             </div>
         </div>
     </aside>
 
     <main id="app-main-content">
-<section id="country-selection" class="selection-section">
-            <h2 id="label-country" class="section-title">País / Country</h2>
+        <section class="selection-section">
+            <h2 id="country-label" class="section-title">País / Country</h2>
             <div class="button-group country-buttons">
                 <button id="btn-spain" class="btn-country active">España</button>
                 <button id="btn-uk" class="btn-country">UK</button>
-                <button id="btn-italy" class="btn-country disabled" disabled>
-                    Italia <span class="badge-soon">Próximamente</span>
-                </button>
-                <button id="btn-portugal" class="btn-country disabled" disabled>
-                    Portugal <span class="badge-soon">Próximamente</span>
-                </button>
             </div>
             
-            <h2 id="label-mode" class="section-title">Modo / Mode</h2>
+            <h2 id="mode-label" class="section-title">Modo / Mode</h2>
             <div class="button-group mode-buttons">
-                <button id="btn-mode-annual" class="btn-mode active">Anual</button>
-                <button id="btn-mode-monthly" class="btn-mode">Mensual</button>
-                <button id="btn-mode-hourly" class="btn-mode">Por Horas</button>
-                <button id="btn-mode-dismissal" class="btn-mode pro-feature hidden">Despido <span class="pro-badge">PRO</span></button>
-                <button id="btn-mode-inverse" class="btn-mode pro-feature hidden">Inverso <span class="pro-badge">PRO</span></button>
+                <button id="btn-mode-annual" class="btn-mode active"><span id="mode-ann-text">Anual</span> <span class="help-icon" onclick="toggleHelp('h-mode-annual')">?</span></button>
+                <button id="btn-mode-monthly" class="btn-mode"><span id="mode-mon-text">Mensual</span> <span class="help-icon" onclick="toggleHelp('h-mode-monthly')">?</span></button>
+                <button id="btn-mode-hourly" class="btn-mode"><span id="mode-hou-text">Horas</span> <span class="help-icon" onclick="toggleHelp('h-mode-hourly')">?</span></button>
+                <button id="btn-mode-inverse" class="btn-mode pro-feature"><span id="mode-inv-text">Inverso</span> <span class="help-icon" onclick="toggleHelp('h-mode-inverse')">?</span> <span class="pro-badge">PRO</span></button>
+                <button id="btn-mode-dismissal" class="btn-mode pro-feature"><span id="mode-dis-text">Despido</span> <span class="help-icon" onclick="toggleHelp('h-mode-dismissal')">?</span> <span class="pro-badge">PRO</span></button>
             </div>
+            <div id="h-mode-annual" class="help-note"></div>
+            <div id="h-mode-monthly" class="help-note"></div>
+            <div id="h-mode-hourly" class="help-note"></div>
+            <div id="h-mode-inverse" class="help-note"></div>
+            <div id="h-mode-dismissal" class="help-note"></div>
         </section>
 
+        <!-- ESPAÑA -->
         <section id="module-spain" class="country-module active">
-            
+            <div class="basic-config-section">
+                <div class="input-group">
+                    <span class="sub-label" id="sp-tu-dis-label">Tu Discapacidad <span class="help-icon" onclick="toggleHelp('h-disability')">?</span></span>
+                    <div class="disability-group">
+                        <button class="btn-dis active" onclick="setSpainToggle('disability', 'none')" id="btn-dis-none">No</button>
+                        <button class="btn-dis" onclick="setSpainToggle('disability', '33')">>33%</button>
+                        <button class="btn-dis" onclick="setSpainToggle('disability', '65')">>65%</button>
+                    </div>
+                    <div id="h-disability" class="help-note"></div>
+                </div>
+
+                <div class="input-group">
+                    <span class="sub-label" id="sp-civil-label">Estado Civil</span>
+                    <div class="frequency-toggle">
+                        <button class="btn-toggle-sp active" onclick="setSpainToggle('civil', 'single')" id="btn-civil-single">Soltero/a</button>
+                        <button class="btn-toggle-sp" onclick="setSpainToggle('civil', 'married')" id="btn-civil-married">Casado/a</button>
+                    </div>
+                </div>
+
+                <div class="input-group toggle-group">
+                    <label id="sp-holiday-label" style="font-weight: bold; color: var(--primary-color);">Vacaciones Prorrateadas</label>
+                    <input type="checkbox" id="sp-holiday-prorated" class="toggle-switch">
+                </div>
+            </div>
+
             <div id="spain-annual" class="calc-form active">
                 <div class="input-group">
-                    <label for="sp-annual-gross">Importe Bruto Anual (€)</label>
+                    <label id="sp-anual-bruto-label">Bruto Anual (€)</label>
                     <input type="number" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000">
                 </div>
                 <div class="input-group">
-                    <label for="sp-annual-months">Pagas</label>
-                    <select id="sp-annual-months" class="dropdown-select">
-                        <option value="12">12 Pagas</option>
-                        <option value="14">14 Pagas</option>
-                    </select>
+                    <span class="sub-label" id="sp-n-pagas-label">Número de Pagas <span class="help-icon" onclick="toggleHelp('h-pagas')">?</span></span>
+                    <div class="frequency-toggle">
+                        <button class="btn-toggle-sp active" onclick="setSpainToggle('pagas', '12')" id="btn-pagas-12">12 Pagas</button>
+                        <button class="btn-toggle-sp" onclick="setSpainToggle('pagas', '14')" id="btn-pagas-14">14 Pagas</button>
+                    </div>
+                    <div id="h-pagas" class="help-note"></div>
                 </div>
             </div>
 
             <div id="spain-monthly" class="calc-form hidden">
                 <div class="input-group">
-                    <label for="sp-monthly-gross">Importe Bruto Mensual (€)</label>
+                    <label id="sp-mensual-bruto-label">Bruto Mensual (€)</label>
                     <input type="number" id="sp-monthly-gross" class="input-field" placeholder="Ej: 2000">
                 </div>
-                <div class="input-group toggle-group">
-                    <label for="sp-monthly-prorated">Paga Extra Prorrateada</label>
-                    <input type="checkbox" id="sp-monthly-prorated" class="toggle-switch">
+                <div class="input-group">
+                    <span class="sub-label" id="sp-pagas-ex-label">Pagas Extras</span>
+                    <div class="frequency-toggle">
+                        <button class="btn-toggle-sp active" onclick="setSpainToggle('monthly-prorated', 'yes')" id="btn-prorated-yes">Prorrateadas</button>
+                        <button class="btn-toggle-sp" onclick="setSpainToggle('monthly-prorated', 'no')" id="btn-prorated-no">Sin Prorratear</button>
+                    </div>
                 </div>
             </div>
 
             <div id="spain-hourly" class="calc-form hidden">
                 <div class="input-group">
-                    <label for="sp-hourly-price">Precio por Hora (€)</label>
-                    <input type="number" id="sp-hourly-price" class="input-field" placeholder="Ej: 10.50">
+                    <label id="sp-hora-precio-label">Precio por Hora (€)</label>
+                    <input type="number" id="sp-hourly-price" class="input-field" placeholder="Ej: 12">
                 </div>
                 <div class="input-group">
-                    <label for="sp-hourly-hours">Número de Horas</label>
-                    <input type="number" id="sp-hourly-hours" class="input-field" placeholder="Ej: 8">
-                </div>
-                <div class="input-group">
-                    <label for="sp-hourly-days">Número de Días</label>
-                    <input type="number" id="sp-hourly-days" class="input-field" placeholder="Ej: 20">
+                    <label id="sp-hora-horas-label">Horas al Mes</label>
+                    <input type="number" id="sp-hourly-hours" class="input-field" placeholder="Ej: 160">
                 </div>
             </div>
 
-            <div id="spain-dismissal" class="calc-form pro-feature hidden">
+            <div id="spain-inverse" class="calc-form hidden pro-feature">
                 <div class="input-group">
-                    <label for="sp-dismissal-years">Años Trabajados</label>
-                    <input type="number" id="sp-dismissal-years" class="input-field" placeholder="Ej: 5">
+                    <label id="sp-inverso-neto-label">Neto Mensual Objetivo (€)</label>
+                    <input type="number" id="sp-inverse-net" class="input-field" placeholder="Ej: 1800">
                 </div>
                 <div class="input-group">
-                    <label for="sp-dismissal-type">Tipo de Despido</label>
+                    <span class="sub-label" id="sp-inv-pagas-label">Número de Pagas</span>
+                    <div class="frequency-toggle">
+                        <button class="btn-toggle-sp active" onclick="setSpainToggle('inv-pagas', '12')" id="btn-inv-pagas-12">12 Pagas</button>
+                        <button class="btn-toggle-sp" onclick="setSpainToggle('inv-pagas', '14')" id="btn-inv-pagas-14">14 Pagas</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="spain-dismissal" class="calc-form hidden pro-feature">
+                <div class="input-group">
+                    <label id="sp-despido-salario-label">Salario (Mensual o Anual)</label>
+                    <input type="number" id="sp-dismissal-salary" class="input-field" placeholder="Ej: 2000 o 24000">
+                </div>
+                <div class="input-group">
+                    <label id="sp-despido-anos-label">Años trabajados</label>
+                    <input type="number" id="sp-dismissal-years" class="input-field" placeholder="Ej: 3.5">
+                </div>
+                <div class="input-group">
+                    <label id="sp-despido-tipo-label">Tipo de Despido</label>
                     <select id="sp-dismissal-type" class="dropdown-select">
-                        <option value="objective">Objetivo (20 días/año)</option>
-                        <option value="unfair">Improcedente (33 días/año)</option>
+                        <option value="unfair" id="opt-unfair">Improcedente (33 días)</option>
+                        <option value="objective" id="opt-objective">Procedente/Objetivo (20 días)</option>
                     </select>
                 </div>
             </div>
-<details id="spain-advanced" class="advanced-settings">
-                <summary>Configuración Avanzada</summary>
-                <div class="advanced-content">
-                    <div class="input-group">
-                        <label for="sp-irpf-manual">Ajustar IRPF Manual (%)</label>
-                        <input type="number" id="sp-irpf-manual" class="input-field" placeholder="Ej: 15">
+
+            <div class="basic-config-section">
+                <div class="input-group">
+                    <span class="sub-label" id="sp-tipo-cont-label">Tipo de Contrato <span class="help-icon" onclick="toggleHelp('h-contract')">?</span></span>
+                    <div class="frequency-toggle">
+                        <button class="btn-toggle-sp active" onclick="setSpainToggle('contrato', 'indef')" id="btn-cont-indef">Indefinido</button>
+                        <button class="btn-toggle-sp" onclick="setSpainToggle('contrato', 'temp')" id="btn-cont-temp">Temporal</button>
                     </div>
-                    <div class="pro-fields-wrapper">
-                        <div class="input-group pro-item">
-                            <label for="sp-pro-ss">Añadir Seg. Social Extra (€)</label>
-                            <input type="number" id="sp-pro-ss" class="input-field pro-input" placeholder="0.00">
-                        </div>
-                        <div class="input-group pro-item">
-                            <label for="sp-pro-extras">Extras / Bonus (€)</label>
-                            <div class="multi-input">
-                                <input type="number" id="sp-pro-extras-val" class="input-field pro-input" placeholder="Cantidad">
-                                <input type="number" id="sp-pro-extras-mul" class="input-field pro-input" placeholder="x1">
+                    <div id="h-contract" class="help-note"></div>
+                </div>
+            </div>
+
+            <details class="advanced-settings">
+                <summary id="sp-advanced-label">Configuración Avanzada (PRO)</summary>
+                <div class="advanced-content">
+                    <!-- PRO EXCLUSIVE FIELDS SPAIN -->
+                    <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <label id="sp-hijos-label">Nº Hijos <span class="help-icon" onclick="toggleHelp('h-children')">?</span></label>
+                            <input type="number" id="sp-pro-children" class="input-field" value="0" min="0">
+                            <div id="h-children" class="help-note"></div>
+                            <div class="input-group toggle-group" style="margin-top:5px">
+                                <label style="font-size:10px" id="sp-hijo-dis-label">Hijo con Discapacidad</label>
+                                <input type="checkbox" id="sp-pro-child-dis" class="toggle-switch">
                             </div>
                         </div>
-                        <div class="input-group pro-item">
-                            <label for="sp-pro-km">Kilometraje (€)</label>
-                            <div class="multi-input">
-                                <input type="number" id="sp-pro-km-val" class="input-field pro-input" placeholder="Precio/km">
-                                <input type="number" id="sp-pro-km-total" class="input-field pro-input" placeholder="Total km">
+                        <div class="input-group">
+                            <label id="sp-otros-label">Otros a Cargo <span class="help-icon" onclick="toggleHelp('h-others')">?</span></label>
+                            <input type="number" id="sp-pro-others" class="input-field" value="0" min="0">
+                            <div id="h-others" class="help-note"></div>
+                            <div class="input-group toggle-group" style="margin-top:5px">
+                                <label style="font-size:10px" id="sp-otro-dis-label">Persona con Discapacidad</label>
+                                <input type="checkbox" id="sp-pro-other-dis" class="toggle-switch">
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item" style="margin-top: 10px;">
+                        <div class="input-group">
+                            <label id="sp-comunidad-label">Comunidad</label>
+                            <select id="sp-pro-region" class="dropdown-select">
+                                <option value="comun" id="opt-sp-comun">Común</option>
+                                <option value="madrid">Madrid</option>
+                                <option value="catalunya">Cataluña</option>
+                                <option value="andalucia">Andalucía</option>
+                                <option value="valencia">Com. Valenciana</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <span class="sub-label" id="sp-pagadores-label">Pagadores <span class="help-icon" onclick="toggleHelp('h-multipayer')">?</span></span>
+                            <div class="frequency-toggle">
+                                <button class="btn-toggle-sp active" onclick="setSpainToggle('multipayer', 'no')">1</button>
+                                <button class="btn-toggle-sp" onclick="setSpainToggle('multipayer', 'yes')">+1</button>
+                            </div>
+                            <div id="h-multipayer" class="help-note"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group toggle-group pro-item hidden" id="wrapper-sp-conjunta">
+                        <label id="sp-conjunta-label">Declaración Conjunta <span class="help-icon" onclick="toggleHelp('h-joint')">?</span></label>
+                        <input type="checkbox" id="sp-pro-conjunta" class="toggle-switch">
+                        <div id="h-joint" class="help-note"></div>
+                    </div>
+
+                    <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+
+                    <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <label id="sp-irpf-manual-label">IRPF Manual (%) <span class="help-icon" onclick="toggleHelp('h-manual-irpf')">?</span></label>
+                            <input type="number" id="sp-irpf-manual" class="input-field pro-input" placeholder="Ej: 15">
+                            <div id="h-manual-irpf" class="help-note"></div>
+                        </div>
+                        <div class="input-group">
+                            <label id="sp-base-manual-label">Base Manual (€/mes) <span class="help-icon" onclick="toggleHelp('h-custom-base')">?</span></label>
+                            <input type="number" id="sp-pro-custom-base" class="input-field pro-input" placeholder="Opcional">
+                            <div id="h-custom-base" class="help-note"></div>
+                        </div>
+                    </div>
+
+                    <div class="input-group pro-item">
+                        <label id="sp-otros-imp-label">Otros Impuestos (€/mes) <span class="help-icon" onclick="toggleHelp('h-extra-tax')">?</span></label>
+                        <input type="number" id="sp-pro-extra-tax" class="input-field pro-input" placeholder="0">
+                        <div id="h-extra-tax" class="help-note"></div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                        <div class="input-group">
+                            <label id="sp-bonus-a-label">Bonus A (€/mes) <span class="help-icon" onclick="toggleHelp('h-bonus')">?</span></label>
+                            <input type="number" id="sp-pro-extras" class="input-field pro-input" placeholder="0">
+                        </div>
+                        <div class="input-group toggle-group">
+                            <label id="sp-cotiza-a-label">Cotiza</label>
+                            <input type="checkbox" id="sp-pro-extras-taxed" class="toggle-switch" checked>
+                        </div>
+                    </div>
+                    <div id="h-bonus" class="help-note"></div>
+
+                    <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <label id="sp-bonus-b-label">Bonus B (€/mes)</label>
+                            <input type="number" id="sp-pro-extras-2" class="input-field pro-input" placeholder="0">
+                        </div>
+                        <div class="input-group toggle-group">
+                            <label id="sp-cotiza-b-label">Cotiza</label>
+                            <input type="checkbox" id="sp-pro-extras-taxed-2" class="toggle-switch" checked>
                         </div>
                     </div>
                 </div>
             </details>
         </section>
 
+        <!-- UK -->
         <section id="module-uk" class="country-module hidden">
-            
+            <!-- BASIC CONFIG UK -->
+            <div class="basic-config-section">
+                <div class="input-group toggle-group">
+                    <label id="uk-holiday-label" style="font-weight: bold; color: var(--primary-color);">Prorated Holiday Pay</label>
+                    <input type="checkbox" id="uk-holiday-prorated" class="toggle-switch">
+                </div>
+            </div>
+
+            <!-- ANNUAL -->
             <div id="uk-annual" class="calc-form active">
                 <div class="input-group">
-                    <label for="uk-annual-gross">Gross Annual Salary (£)</label>
-                    <input type="number" id="uk-annual-gross" class="input-field" placeholder="Ej: 30000">
+                    <label id="uk-anual-bruto-label">Gross Annual Salary (£)</label>
+                    <input type="number" id="uk-annual-gross" class="input-field" placeholder="Ej: 35000">
                 </div>
                 <div class="input-group">
-                    <label for="uk-region-select">Tax Region</label>
-                    <select id="uk-region-select" class="dropdown-select">
-                        <option value="rUK">England / Wales / NI</option>
-                        <option value="SCO">Scotland (Scottish Tax)</option>
-                    </select>
+                    <label id="uk-pay-periods-label">Pay Periods <span class="help-icon" onclick="toggleHelp('h-uk-periods')">?</span></label>
+                    <div class="frequency-toggle">
+                        <button class="btn-periods-uk active" onclick="setUKPeriods('annual', 12)">12</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods('annual', 13)">13</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods('annual', 14)">14</button>
+                    </div>
+                    <div id="h-uk-periods" class="help-note"></div>
                 </div>
             </div>
 
+            <!-- MONTHLY -->
             <div id="uk-monthly" class="calc-form hidden">
                 <div class="input-group">
-                    <label for="uk-monthly-gross">Monthly Gross Pay (£)</label>
-                    <input type="number" id="uk-monthly-gross" class="input-field" placeholder="Ej: 2500">
+                    <label id="uk-mensual-bruto-label">Monthly Gross Pay (£)</label>
+                    <input type="number" id="uk-monthly-gross" class="input-field" placeholder="Ej: 2800">
                 </div>
                 <div class="input-group">
-                    <label for="uk-pay-period">Pay Period (1-12)</label>
-                    <input type="number" id="uk-pay-period" min="1" max="12" class="input-field" placeholder="Month number">
+                    <label id="uk-pay-periods-mon-label">Pay Periods <span class="help-icon" onclick="toggleHelp('h-uk-periods-monthly')">?</span></label>
+                    <div class="frequency-toggle">
+                        <button class="btn-periods-uk active" onclick="setUKPeriods('monthly', 12)">12</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods('monthly', 13)">13</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods('monthly', 14)">14</button>
+                    </div>
+                    <div id="h-uk-periods-monthly" class="help-note"></div>
                 </div>
             </div>
 
+            <!-- HOURLY -->
             <div id="uk-hourly" class="calc-form hidden">
-                <div class="input-group">
-                    <label for="uk-hourly-rate">Hourly Rate (£)</label>
-                    <input type="number" id="uk-hourly-rate" class="input-field" placeholder="Ej: 12">
+                <div class="frequency-toggle">
+                    <button class="btn-freq active" onclick="setHourlyType('uk', 'weekly')" id="btn-uk-weekly">Weekly</button>
+                    <button class="btn-freq" onclick="setHourlyType('uk', 'monthly')" id="btn-uk-monthly">Monthly</button>
                 </div>
                 <div class="input-group">
-                    <label for="uk-hourly-hours">Hours</label>
-                    <input type="number" id="uk-hourly-hours" class="input-field" placeholder="Hours per week">
+                    <label id="uk-hora-precio-label">Hourly Rate (£)</label>
+                    <input type="number" id="uk-hourly-rate" class="input-field" placeholder="Ej: 15">
                 </div>
                 <div class="input-group">
-                    <label for="uk-hourly-days">Days (Optional)</label>
-                    <input type="number" id="uk-hourly-days" class="input-field" placeholder="Days per week">
+                    <label id="lbl-uk-hourly-hours">Hours per WEEK</label>
+                    <input type="number" id="uk-hourly-hours" class="input-field" placeholder="Ej: 37.5">
+                </div>
+                <!-- Hourly Monthly Base Toggle -->
+                <div class="input-group" id="uk-hourly-monthly-config" style="display:none">
+                    <span class="sub-label" id="uk-mon-calc-label">Monthly Hours Calculation <span class="help-icon" onclick="toggleHelp('h-uk-hourly-base')">?</span></span>
+                    <div class="frequency-toggle">
+                        <button class="btn-toggle-uk active" onclick="setUKToggle('hourly-monthly-base', 'full')" id="btn-uk-cal-month">Calendar Month</button>
+                        <button class="btn-toggle-uk" onclick="setUKToggle('hourly-monthly-base', '4weeks')" id="btn-uk-4weeks">4 Weeks</button>
+                    </div>
+                    <div id="h-uk-hourly-base" class="help-note"></div>
                 </div>
             </div>
 
-            <details id="uk-advanced" class="advanced-settings">
-                <summary>Advanced Settings / Configuración</summary>
+            <!-- INVERSE -->
+            <div id="uk-inverse" class="calc-form hidden pro-feature">
+                <div class="input-group">
+                    <label id="uk-inverso-neto-label">Target Monthly Take-Home (£) <span class="help-icon" onclick="toggleHelp('h-uk-inverse')">?</span></label>
+                    <input type="number" id="uk-inverse-net" class="input-field" placeholder="Ej: 2200">
+                    <div id="h-uk-inverse" class="help-note"></div>
+                </div>
+            </div>
+
+            <!-- DISMISSAL (REDUNDANCY) -->
+            <div id="uk-dismissal" class="calc-form hidden pro-feature">
+                <div class="input-group">
+                    <label id="uk-despido-edad-label">Current Age <span class="help-icon" onclick="toggleHelp('h-uk-redundancy')">?</span></label>
+                    <input type="number" id="uk-redundancy-age" class="input-field">
+                    <div id="h-uk-redundancy" class="help-note"></div>
+                </div>
+                <div class="input-group">
+                    <label id="uk-despido-anos-label">Years of Service</label>
+                    <input type="number" id="uk-redundancy-years" class="input-field">
+                </div>
+                <div class="input-group">
+                    <label id="uk-despido-semana-label">Weekly Pay (£)</label>
+                    <input type="number" id="uk-redundancy-weekly" class="input-field">
+                </div>
+            </div>
+
+            <details class="advanced-settings">
+                <summary id="uk-advanced-label">Advanced / PRO</summary>
                 <div class="advanced-content">
-                    <div class="input-group toggle-group">
-                        <label for="uk-dual-job">Double Employment / Doble Empleo</label>
-                        <input type="checkbox" id="uk-dual-job" class="toggle-switch">
-                    </div>
-                    <div class="input-group toggle-group">
-                        <label for="uk-holiday-pay">Include Holiday Pay (12.07%)</label>
-                        <input type="checkbox" id="uk-holiday-pay" class="toggle-switch">
-                    </div>
-                    <div class="pro-fields-wrapper">
-                        <div class="input-group pro-item">
-                            <label for="uk-pro-taxcode">Tax Code</label>
-                            <input type="text" id="uk-pro-taxcode" class="input-field pro-input" placeholder="Ej: 1257L">
+                    <!-- PRO EXCLUSIVE FIELDS UK -->
+                    <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <label id="uk-region-label">Tax Region</label>
+                            <select id="uk-region-select" class="dropdown-select">
+                                <option value="rUK" id="opt-uk-ewni">England / Wales / NI</option>
+                                <option value="SCO" id="opt-uk-sco">Scotland</option>
+                            </select>
                         </div>
-                        <div class="input-group pro-item">
-                            <label for="uk-pro-pension">Pension Contribution (%)</label>
-                            <input type="number" id="uk-pro-pension" class="input-field pro-input" placeholder="Ej: 5">
+                        <div class="input-group">
+                            <label id="uk-ni-cat-label">NI Category <span class="help-icon" onclick="toggleHelp('h-uk-ni-letter')">?</span></label>
+                            <select id="uk-pro-ni-letter" class="dropdown-select">
+                                <option value="A" id="opt-ni-a">Standard (A)</option>
+                                <option value="B" id="opt-ni-b">Reduced Rate (B)</option>
+                                <option value="C" id="opt-ni-c">Over State Pension (C)</option>
+                                <option value="H" id="opt-ni-h">Apprentice < 25 (H)</option>
+                                <option value="J" id="opt-ni-j">Deferred (J)</option>
+                                <option value="M" id="opt-ni-m">Under 21 (M)</option>
+                                <option value="V" id="opt-ni-v">Veterans (V)</option>
+                                <option value="Z" id="opt-ni-z">Under 21 Deferred (Z)</option>
+                            </select>
+                            <div id="h-uk-ni-letter" class="help-note"></div>
+                        </div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <span class="sub-label" id="uk-jobs-label">Jobs / Empleos <span class="help-icon" onclick="toggleHelp('h-uk-jobs')">?</span></span>
+                            <div class="frequency-toggle">
+                                <button class="btn-toggle-uk active" onclick="setUKToggle('jobs', '1')" id="btn-uk-1job">1 Job</button>
+                                <button class="btn-toggle-uk" onclick="setUKToggle('jobs', '2')" id="btn-uk-2jobs">2+ Jobs</button>
+                            </div>
+                            <div id="h-uk-jobs" class="help-note"></div>
+                        </div>
+                        <div class="input-group">
+                            <label id="uk-tax-code-label">Tax Code <span class="help-icon" onclick="toggleHelp('h-uk-taxcode')">?</span></label>
+                            <div style="display:flex; flex-direction: column; gap:5px;">
+                                <select id="uk-pro-taxcode-select" class="dropdown-select">
+                                    <option value="1257L">1257L (Standard)</option>
+                                    <option value="BR">BR (Flat 20%)</option>
+                                    <option value="D0">D0 (Flat 40%)</option>
+                                    <option value="D1">D1 (Flat 45%)</option>
+                                    <option value="NT">NT (No Tax)</option>
+                                    <option value="custom" id="opt-uk-custom-code">Other / Manual...</option>
+                                </select>
+                                <input type="text" id="uk-pro-taxcode-manual" class="input-field pro-input hidden" placeholder="e.g. S1257L">
+                            </div>
+                            <div id="h-uk-taxcode" class="help-note"></div>
+                        </div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <label id="lbl-uk-hourly-overtime">Weekly Overtime Hours</label>
+                            <input type="number" id="uk-hourly-overtime" class="input-field pro-input" value="0">
+                        </div>
+                        <div class="input-group">
+                            <label id="uk-hora-extra-precio-label">Overtime Rate (£)</label>
+                            <input type="number" id="uk-hourly-overtime-rate" class="input-field pro-input" value="0">
+                        </div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <label id="uk-pension-label">Pension (%) <span class="help-icon" onclick="toggleHelp('h-uk-pension')">?</span></label>
+                            <input type="number" id="uk-pro-pension" class="input-field pro-input" value="5">
+                            <div class="frequency-toggle" style="margin-top:5px">
+                                <button class="btn-toggle-uk active" onclick="setUKToggle('pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Before Tax</button>
+                                <button class="btn-toggle-uk" onclick="setUKToggle('pension-type', 'after')" style="font-size:10px" id="btn-uk-pension-after">After Tax</button>
+                            </div>
+                            <div id="h-uk-pension" class="help-note"></div>
+                        </div>
+                        <div class="input-group">
+                            <label id="uk-bik-label">Benefits (BIK) <span class="help-icon" onclick="toggleHelp('h-uk-bik')">?</span></label>
+                            <input type="number" id="uk-pro-bik" class="input-field pro-input" value="0">
+                            <div id="h-uk-bik" class="help-note"></div>
+                        </div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item" style="border-top: 1px solid #eee; padding-top: 10px; margin-top: 10px;">
+                        <div class="input-group">
+                            <label id="uk-bonus-a-label">Extra / Bonus A (£/mo) <span class="help-icon" onclick="toggleHelp('h-uk-bonus')">?</span></label>
+                            <input type="number" id="uk-pro-bonus-a" class="input-field pro-input" value="0">
+                            <div class="frequency-toggle" style="margin-top:5px">
+                                <button class="btn-toggle-uk active" onclick="setUKToggle('bonus-a-tax', 'yes')" style="font-size:10px" id="btn-uk-bonus-a-taxed">Taxed</button>
+                                <button class="btn-toggle-uk" onclick="setUKToggle('bonus-a-tax', 'no')" style="font-size:10px" id="btn-uk-bonus-a-net">Net Paid</button>
+                            </div>
+                        </div>
+                        <div class="input-group">
+                            <label id="uk-bonus-b-label">Extra / Bonus B (£/mo)</label>
+                            <input type="number" id="uk-pro-bonus-b" class="input-field pro-input" value="0">
+                            <div class="frequency-toggle" style="margin-top:5px">
+                                <button class="btn-toggle-uk active" onclick="setUKToggle('bonus-b-tax', 'yes')" style="font-size:10px" id="btn-uk-bonus-b-taxed">Taxed</button>
+                                <button class="btn-toggle-uk" onclick="setUKToggle('bonus-b-tax', 'no')" style="font-size:10px" id="btn-uk-bonus-b-net">Net Paid</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="h-uk-bonus" class="help-note"></div>
+
+                    <div class="pro-fields-wrapper pro-item" style="margin-top: 10px;">
+                        <div class="input-group">
+                            <label id="uk-stud-loan-label">Student Loan</label>
+                            <select id="uk-pro-student-loan" class="dropdown-select">
+                                <option value="none" id="opt-uk-sl-none">None</option>
+                                <option value="plan1">Plan 1</option>
+                                <option value="plan2">Plan 2</option>
+                                <option value="plan4">Plan 4 (Scottish)</option>
+                                <option value="plan5">Plan 5</option>
+                            </select>
+                        </div>
+                        <div class="input-group toggle-group" style="padding: 10px 0;">
+                            <label id="uk-postgrad-label">Postgraduate Loan</label>
+                            <input type="checkbox" id="uk-pro-postgrad" class="toggle-switch">
                         </div>
                     </div>
                 </div>
@@ -259,40 +610,28 @@
         <div class="action-container">
             <button id="btn-calculate" class="btn-calculate-main">CALCULAR</button>
         </div>
-<section id="results-section" class="results-container hidden">
-            <div id="results-loader" class="loader hidden"></div>
-            
-            <div id="results-content">
-                <h2 id="label-summary" class="section-title">Resumen / Summary</h2>
-                
-                <div id="results-list" class="results-grid">
-                    </div>
 
+        <section id="results-section" class="results-container hidden">
+            <div id="results-loader" class="loader hidden"></div>
+            <div id="results-content">
+                <h2 id="results-title-label" class="section-title">Resultados</h2>
+                <div id="results-list" class="results-grid"></div>
                 <div class="net-total-wrapper">
                     <span id="label-net-total">IMPORTE NETO</span>
                     <div id="net-result-value" class="net-amount">0.00</div>
                 </div>
+                <div class="legal-disclaimer">
+                    "El cálculo es orientativo y el resultado real puede variar según la agencia tributaria de cada país"
+                </div>
             </div>
         </section>
 
-        <div id="ad-interstitial-placeholder" class="ads-container"></div>
-
-        <section id="module-coming-soon" class="country-module hidden">
-            <div class="coming-soon-content">
-                <img src="assets/under-construction.png" alt="Obras" class="img-construction">
-                <h2 id="text-coming-soon">Próximamente / Coming Soon</h2>
-                <p>Estamos trabajando para incluir la legislación de este país.</p>
-            </div>
-        </section>
-
+        <div id="ad-banner-bottom" class="ad-banner-footer">
+            <ins class="adsbygoogle" style="display:block" data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" data-ad-slot="1234567890" data-ad-format="auto" data-full-width-responsive="true"></ins>
+            <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+        </div>
     </main>
 
-    <footer class="main-footer">
-        <p>&copy; 2026 Payroll Pro - Smart Calculations</p>
-    </footer>
-
-    <script type="module" src="firebase-config.js"></script>
-    <script src="ads/ads-engine.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>

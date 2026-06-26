@@ -1,28 +1,29 @@
 /* ==========================================================================
-   FIREBASE-CONFIG.JS - El puente de conexión (CORREGIDO)
+   FIREBASE-CONFIG.JS - Conexión vía CDN (Sin NPM)
    ========================================================================== */
 
-import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
-import { getAuth } from "firebase/auth";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-analytics.js";
+import { getFirestore } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
 
-// ⚠️ ATENCIÓN: Debes copiar estos valores reales de tu consola de Firebase
-// Configuración del proyecto > Tus apps > Configuración del SDK
 const firebaseConfig = {
-  apiKey: "Sustituye_esto_por_tu_clave_larga_de_letras_y_numeros", 
-  authDomain: "payroll-pro-pwa.firebaseapp.com",
-  projectId: "payroll-pro-pwa",
-  storageBucket: "payroll-pro-pwa.appspot.com",
-  messagingSenderId: "Sustituye_esto_por_tu_numero_de_9_digitos",
-  appId: "Sustituye_esto_por_tu_ID_de_app_que_empieza_por_1:..."
+  apiKey: "AIzaSyBM74wW3MUa-eMku0yrZehEv1J6DfqoUOw",
+  authDomain: "paynomnet-d8db9.firebaseapp.com",
+  projectId: "paynomnet-d8db9",
+  storageBucket: "paynomnet-d8db9.firebasestorage.app",
+  messagingSenderId: "440386531158",
+  appId: "1:440386531158:web:bf629ad98453bfa6a870f7",
+  measurementId: "G-031G1V1F9J"
 };
 
 // Inicializamos Firebase
 const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
 
-// Exportamos las herramientas para que app.js pueda usarlas
+// Exportamos las herramientas para usarlas en app.js
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
-console.log("Firebase: Conexión configurada correctamente.");
+console.log("Firebase: Conectado a paynomnet-d8db9 con éxito.");
 export default app;

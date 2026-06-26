@@ -1,6 +1,6 @@
 {
-  "name": "Payroll Pro - Nóminas Inteligentes",
-  "short_name": "Payroll Pro",
+  "name": "Paynomnet - Nóminas Inteligentes",
+  "short_name": "Paynomnet",
   "description": "Calculadora profesional de nóminas para España y Reino Unido.",
   "start_url": "index.html",
   "display": "standalone",

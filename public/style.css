@@ -305,6 +305,7 @@ body.menu-open {
     margin-top: 15px;
     padding: 10px;
     transition: all var(--transition-speed);
+    display: block !important;
 }
 
 .advanced-settings summary {
@@ -446,34 +447,35 @@ body.menu-open {
     margin-top: 10px;
 }
 
-.pro-item {
+body:not(.is-pro) .pro-item,
+body:not(.is-pro) .pro-feature {
     opacity: 0.6;
-    filter: grayscale(0.5);
-    pointer-events: none;
-    position: relative;
+    filter: grayscale(0.6);
 }
 
-.pro-item::after {
-    content: '🔒 PRO';
-    position: absolute;
-    right: 0;
-    top: 0;
-    font-size: 0.7rem;
-    color: var(--accent-pro-dark);
-    font-weight: bold;
+/* Bloqueo de escritura en modo básico */
+body:not(.is-pro) .pro-item input,
+body:not(.is-pro) .pro-item select,
+body:not(.is-pro) .pro-item .toggle-switch,
+body:not(.is-pro) .pro-item button,
+body:not(.is-pro) .pro-feature input,
+body:not(.is-pro) .pro-feature select,
+body:not(.is-pro) .pro-feature .toggle-switch,
+body:not(.is-pro) .pro-feature button:not(.btn-mode) {
+    pointer-events: none !important;
+    cursor: not-allowed !important;
 }
 
-body.is-pro .pro-item {
-    opacity: 1;
-    filter: none;
-    pointer-events: auto;
+/* Permitir que los botones de modo se puedan clicar para visualizar pero mantengan el estilo PRO */
+body:not(.is-pro) .btn-mode.pro-feature {
+    pointer-events: auto !important;
 }
 
 /* ==========================================================================
     DESGLOSE DE RESULTADOS
    ========================================================================== */
 .results-container {
-    margin: 20px 10px;
+    margin: 5px 10px 20px 10px;
     padding: 25px;
     background-color: var(--bg-card);
     border-radius: 15px;
@@ -547,15 +549,13 @@ body.is-pro .pro-item {
 /* ==========================================================================
     CONTENEDORES DE PUBLICIDAD
    ========================================================================== */
-.ads-container {
+.ad-banner-footer {
     width: 100%;
-    min-height: 50px;
-    background-color: rgba(0,0,0,0.03);
-    display: flex;
-    justify-content: center;
-    align-items: center;
     margin: 10px 0;
+    text-align: center;
+    min-height: 50px;
     overflow: hidden;
+    display: none;
 }
 
 /* ==========================================================================
