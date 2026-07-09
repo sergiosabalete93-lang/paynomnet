@@ -9,6 +9,7 @@ const appState = {
     mode: 'annual', // 'annual', 'monthly', 'hourly', 'inverse', 'dismissal'
     isPro: false,
     adClickCount: 0,
+    interstitialId: 'ca-app-pub-3940256099942544/1033173712', // ID de Prueba (Test)
     spToggles: {
         disability: 'none',
         multipayer: 'no',
@@ -78,6 +79,9 @@ const i18n = {
         disclaimer: "El cálculo es orientativo y el resultado real puede variar según la agencia tributaria de cada país",
         holiday_label: "Vacaciones Prorrateadas",
         holiday_res: "Vacaciones Pagadas",
+        consent_text: "Al utilizar Paynomnet, aceptas nuestros <a href='terms.html' target='_blank'>Términos</a> y <a href='privacy.html' target='_blank'>Privacidad</a>. Usamos cookies de terceros (Google) para mejorar la app y mostrar anuncios. Los cálculos son <strong>estimaciones orientativas</strong>.",
+        consent_btn_all: "Aceptar Todo",
+        consent_btn_min: "Solo Necesarias",
         options: {
             common: "Común",
             single: "Soltero/a",
@@ -245,6 +249,9 @@ const i18n = {
         disclaimer: "The calculation is indicative and the real result may vary according to each country's tax agency",
         holiday_label: "Prorated Holiday Pay",
         holiday_res: "Holiday Pay",
+        consent_text: "By using Paynomnet, you agree to our <a href='terms.html' target='_blank'>Terms</a> and <a href='privacy.html' target='_blank'>Privacy Policy</a>. We use third-party cookies (Google) for analytics and ads. Calculations are <strong>guidance estimates</strong>.",
+        consent_btn_all: "Accept All",
+        consent_btn_min: "Only Necessary",
         options: {
             common: "Common",
             single: "Single",
@@ -376,10 +383,37 @@ const i18n = {
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
     checkTC();
+    checkConsent();
     initApp();
     setupEventListeners();
     updateUITranslations();
+
+    // Comprobar si ya era PRO de una sesión anterior
+    if (localStorage.getItem('user_is_pro') === 'true') {
+        activatePro("Suscripción PRO Restaurada");
+    }
 });
+
+function checkConsent() {
+    const consented = localStorage.getItem('user_consent_accepted');
+    if (!consented) {
+        setTimeout(() => {
+            getEl('consent-banner').classList.add('visible');
+        }, 1000);
+    }
+}
+
+// Función "Puente" para integración nativa (Google Play / Android)
+window.setProStatus = function(isPremium) {
+    if (isPremium) {
+        activatePro("Suscripción de Google Play activada");
+        localStorage.setItem('user_is_pro', 'true');
+    } else {
+        appState.isPro = false;
+        localStorage.removeItem('user_is_pro');
+        location.reload(); // Recargar para limpiar funciones PRO
+    }
+};
 
 function getEl(id) { return document.getElementById(id); }
 
@@ -451,6 +485,19 @@ function setupEventListeners() {
         appState.ukToggles['holiday-prorated'] = e.target.checked;
     });
 
+    // Eventos Consentimiento
+    getEl('btn-accept-consent')?.addEventListener('click', () => {
+        localStorage.setItem('user_consent_accepted', 'all');
+        getEl('consent-banner').classList.remove('visible');
+    });
+
+    getEl('btn-reject-consent')?.addEventListener('click', () => {
+        localStorage.setItem('user_consent_accepted', 'essential');
+        getEl('consent-banner').classList.remove('visible');
+        // Opcional: Desactivar Analytics si es posible
+        window['ga-disable-G-031G1V1F9J'] = true;
+    });
+
     // Botón Calcular
     getEl('btn-calculate')?.addEventListener('click', () => {
         if ((appState.mode === 'inverse' || appState.mode === 'dismissal') && !appState.isPro) {
@@ -469,9 +516,19 @@ function setupEventListeners() {
             adBanner.style.display = 'block';
         }
 
-        const shouldShowAd = (appState.adClickCount % 2 === 0) && !appState.isPro;
-        if (shouldShowAd) {
-            setTimeout(() => processCalculation(), 1500);
+        const shouldShowInterstitial = (appState.adClickCount % 2 === 0) && !appState.isPro && appState.adClickCount > 0;
+
+        if (shouldShowInterstitial) {
+            // Intentar mostrar anuncio intersticial si está disponible (vía AdMob/AdSense)
+            if (window.adsbygoogle && typeof window.adsbygoogle.push === 'function') {
+                try {
+                    // Nota: En web/TWA el intersticial se gestiona por AdSense/AdMob Auto-ads o manual
+                    // Para disparar uno manual en web se suele usar la API de H5 Games o similares,
+                    // pero aquí usaremos el retraso simulado para dar tiempo a la carga.
+                    console.log("Mostrando anuncio Intersticial...");
+                } catch(e) { console.error("Error al cargar anuncio:", e); }
+            }
+            setTimeout(() => processCalculation(), 2000);
         } else {
             setTimeout(processCalculation, 600);
         }
@@ -693,6 +750,11 @@ function updateUITranslations() {
     if (getEl('opt-uk-sl-none')) getEl('opt-uk-sl-none').textContent = appState.language === 'es' ? 'Ninguno' : 'None';
     if (getEl('uk-postgrad-label')) getEl('uk-postgrad-label').textContent = lang.labels.postgrad_loan;
     if (getEl('uk-holiday-label')) getEl('uk-holiday-label').textContent = lang.holiday_label;
+
+    // Consent Banner
+    if (getEl('consent-text-content')) getEl('consent-text-content').innerHTML = lang.consent_text;
+    if (getEl('btn-accept-consent')) getEl('btn-accept-consent').textContent = lang.consent_btn_all;
+    if (getEl('btn-reject-consent')) getEl('btn-reject-consent').textContent = lang.consent_btn_min;
 
     // UK placeholders
     if (getEl('uk-annual-gross')) getEl('uk-annual-gross').placeholder = lang.placeholders.uk_annual;

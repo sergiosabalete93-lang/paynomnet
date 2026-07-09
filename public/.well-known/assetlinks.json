@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.paynomnet.app",
+      "sha256_cert_fingerprints": [
+        "20:0B:A3:9D:FE:7D:B2:B1:34:72:D2:EF:34:03:8A:BA:6E:5B:9E:23:76:34:DC:19:C0:E1:F2:5F:DD:35:17:E6"
+      ]
+    }
+  }
+]
