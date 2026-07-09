@@ -15,10 +15,19 @@
         .separator { margin: 50px 0; border: 0; border-top: 3px double #eee; }
     </style>
 </head>
-<body>
+<body style="margin: 0; padding: 0;">
 
-    <!-- PRIVACY POLICY -->
-    <h1>Privacy Policy</h1>
+    <!-- Barra de navegación con botón de retroceso -->
+    <div style="background: #f8fafc; border-bottom: 1px solid #cbd5e1; padding: 15px; position: sticky; top: 0; display: flex; align-items: center; gap: 10px; z-index: 1000;">
+        <button onclick="history.back()" style="background: #007bff; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; font-size: 14px; display: flex; align-items: center; gap: 5px;">
+            ← Volver
+        </button>
+        <span style="font-size: 14px; font-weight: bold; color: #475569;">Paynomnet 2026</span>
+    </div>
+
+    <div style="padding: 20px; max-width: 800px; margin: 0 auto;">
+        <!-- PRIVACY POLICY -->
+        <h1>Privacy Policy</h1>
     <p>Last updated: July 05, 2026</p>
     <p>This Privacy Policy describes Our policies and procedures on the collection, use and disclosure of Your information when You use the Service and tells You about Your privacy rights and how the law protects You.</p>
     <p>We use Your Personal Data to provide and improve the Service. By using the Service, You agree to the collection and use of information in accordance with this Privacy Policy.</p>
@@ -172,5 +181,6 @@
         <li>By email: soporte@paynomnet.com</li>
     </ul>
 
+    </div>
 </body>
 </html>

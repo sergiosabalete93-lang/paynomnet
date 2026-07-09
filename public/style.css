@@ -70,6 +70,7 @@ body.menu-open {
     background-color: var(--primary-color);
     color: #ffffff;
     padding: 15px 20px;
+    padding-top: calc(15px + env(safe-area-inset-top));
     box-shadow: var(--shadow-sm);
     position: sticky;
     top: 0;
