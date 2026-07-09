@@ -100,7 +100,9 @@
         .consent-banner {
             position: fixed; bottom: 0; left: 0; width: 100%;
             background: var(--bg-card); border-top: 1px solid var(--border-color);
-            padding: 20px; z-index: 3000; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+            padding: 20px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+            z-index: 3000; box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
             display: flex; flex-direction: column; align-items: center; gap: 15px;
             transform: translateY(100%); transition: transform 0.4s ease;
         }
