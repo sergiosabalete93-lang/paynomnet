@@ -66,6 +66,7 @@ const i18n = {
         irpf: "IRPF",
         neto: "Neto",
         extras: "Extras/Bonus",
+        ot_res: "Horas Extra",
         other_deductions: "Otras Deducciones",
         pension: "Pensión",
         student_loan_res: "Student Loan",
@@ -153,6 +154,8 @@ const i18n = {
             otros_imp: "Otros Impuestos (€/mes)",
             bonus_a: "Bonus A (€/mes)",
             bonus_b: "Bonus B (€/mes)",
+            ot_hours: "Horas Extra (Mensual)",
+            ot_price: "Precio Hora Extra",
             cotiza: "Cotiza",
             tax_region: "Tax Region",
             ni_cat: "NI Category",
@@ -236,6 +239,7 @@ const i18n = {
         irpf: "Income Tax",
         neto: "Net",
         extras: "Extras/Bonus",
+        ot_res: "Overtime",
         other_deductions: "Other Deductions",
         pension: "Pension",
         student_loan_res: "Student Loan",
@@ -323,6 +327,8 @@ const i18n = {
             otros_imp: "Other Taxes (€/mo)",
             bonus_a: "Bonus A (€/mo)",
             bonus_b: "Bonus B (€/mo)",
+            ot_hours: "Overtime Hours (Monthly)",
+            ot_price: "Overtime Rate",
             cotiza: "Taxable",
             tax_region: "Tax Region",
             ni_cat: "NI Category",
@@ -464,6 +470,13 @@ function setupEventListeners() {
     getEl('btn-spain')?.addEventListener('click', () => setCountry('spain'));
     getEl('btn-uk')?.addEventListener('click', () => setCountry('uk'));
 
+    // Calculadora Flotante
+    getEl('btn-calc-helper')?.addEventListener('click', () => {
+        const calc = getEl('floating-calc');
+        calc.classList.toggle('hidden');
+    });
+    getEl('btn-close-calc')?.addEventListener('click', () => getEl('floating-calc').classList.add('hidden'));
+
     // Cambio de Modo
     document.querySelectorAll('.btn-mode').forEach(btn => {
         btn.addEventListener('click', () => {
@@ -507,6 +520,7 @@ function setupEventListeners() {
 
         appState.adClickCount++;
         getEl('results-section')?.classList.remove('hidden');
+        getEl('results-section')?.scrollIntoView({ behavior: 'smooth' });
         getEl('results-content')?.classList.add('hidden');
         getEl('results-loader')?.classList.remove('hidden');
 
@@ -686,6 +700,8 @@ function updateUITranslations() {
     if (getEl('sp-otros-imp-label')) getEl('sp-otros-imp-label').firstChild.textContent = lang.labels.otros_imp + " ";
     if (getEl('sp-bonus-a-label')) getEl('sp-bonus-a-label').firstChild.textContent = lang.labels.bonus_a + " ";
     if (getEl('sp-bonus-b-label')) getEl('sp-bonus-b-label').textContent = lang.labels.bonus_b;
+    if (getEl('sp-horas-extra-label')) getEl('sp-horas-extra-label').textContent = lang.labels.ot_hours;
+    if (getEl('sp-precio-extra-label')) getEl('sp-precio-extra-label').textContent = lang.labels.ot_price;
     if (getEl('sp-cotiza-a-label')) getEl('sp-cotiza-a-label').textContent = lang.labels.cotiza;
     if (getEl('sp-cotiza-b-label')) getEl('sp-cotiza-b-label').textContent = lang.labels.cotiza;
     if (getEl('sp-holiday-label')) getEl('sp-holiday-label').textContent = lang.holiday_label;
@@ -850,6 +866,7 @@ function calculateSpain() {
 
     renderResult(lang.bruto + " " + lang.mensual, (res.taxableAnnual / pagas).toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
+    if (res.otAmountMonthly > 0) renderResult(lang.ot_res, res.otAmountMonthly.toFixed(2) + "€");
     renderResult(lang.ss, "-" + (res.totalSS / pagas).toFixed(2) + "€");
     renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + (res.totalIRPF / pagas).toFixed(2) + "€");
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
@@ -873,6 +890,12 @@ function performSpainCalculations(annualGross, pagas) {
     const extraATaxed = getEl('sp-pro-extras-taxed')?.checked;
     const extraB = parseFloat(getEl('sp-pro-extras-2')?.value) || 0;
     const extraBTaxed = getEl('sp-pro-extras-taxed-2')?.checked;
+
+    const otHours = parseFloat(getEl('sp-pro-overtime-hours')?.value) || 0;
+    const otPrice = parseFloat(getEl('sp-pro-overtime-price')?.value) || 0;
+    const otAmountMonthly = otHours * otPrice;
+    const otAmountAnnual = otAmountMonthly * 12;
+
     const extraTaxMonthly = parseFloat(getEl('sp-pro-extra-tax')?.value) || 0;
 
     const holidayProrated = getEl('sp-holiday-prorated')?.checked;
@@ -882,7 +905,7 @@ function performSpainCalculations(annualGross, pagas) {
         holidayPayAnnual = annualGross * 0.0833;
     }
 
-    const taxableAnnual = annualGross + holidayPayAnnual + (extraATaxed ? extraA * pagas : 0) + (extraBTaxed ? extraB * pagas : 0);
+    const taxableAnnual = annualGross + holidayPayAnnual + otAmountAnnual + (extraATaxed ? extraA * pagas : 0) + (extraBTaxed ? extraB * pagas : 0);
 
     const ssPercCC = 0.047;
     const ssPercDesemp = isTemporal ? 0.0160 : 0.0155;
@@ -897,7 +920,7 @@ function performSpainCalculations(annualGross, pagas) {
         baseSSAnnual = Math.min(taxableAnnual / 12, MAX_SS_BASE_MONTHLY) * 12;
     }
 
-    const totalSS = baseSSAnnual * (ssPercCC + ssPercDesemp + ssPercFP_MEI);
+    const totalSS = (baseSSAnnual * (ssPercCC + ssPercDesemp + ssPercFP_MEI)) + (otAmountAnnual * 0.047);
 
     const manualVal = getEl('sp-irpf-manual')?.value.trim();
     let irpfPerc;
@@ -911,7 +934,7 @@ function performSpainCalculations(annualGross, pagas) {
     const totalIRPF = taxableAnnual * (irpfPerc / 100);
     const netAnnual = taxableAnnual + (extraATaxed ? 0 : extraA * pagas) + (extraBTaxed ? 0 : extraB * pagas) - totalSS - totalIRPF - (extraTaxMonthly * pagas);
 
-    return { taxableAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas };
+    return { taxableAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly };
 }
 
 function estimateSpainIRPF(gross, children, childDis, others, otherDis, region, disability, isMarried, isJoint, multipayer) {
@@ -1210,4 +1233,118 @@ const PRO_MASTER_EMAIL = "paynomnet@gmail.com";
 getEl('btn-become-pro')?.addEventListener('click', () => activatePro("Acceso PRO Activado"));
 getEl('btn-login')?.addEventListener('click', () => {
     if (getEl('auth-email').value === PRO_MASTER_EMAIL) activatePro("Admin Login");
+});
+
+/* ==========================================================================
+   8. LÓGICA CALCULADORA HELPER (FLOTANTE)
+   ========================================================================== */
+let calcDisplay = '0';
+let calcHistory = '';
+let calcPendingOp = null;
+let calcAccumulator = 0;
+let calcNextReset = false;
+
+function setupHelperCalc() {
+    const display = getEl('calc-display');
+    const history = getEl('calc-history');
+
+    document.querySelectorAll('.btn-calc-num').forEach(btn => {
+        btn.addEventListener('click', () => {
+            if (calcNextReset) {
+                calcDisplay = '';
+                calcNextReset = false;
+            }
+            const val = btn.textContent;
+            if (val === '.' && calcDisplay.includes('.')) return;
+            if (calcDisplay === '0' && val !== '.') calcDisplay = val;
+            else calcDisplay += val;
+            display.textContent = calcDisplay;
+        });
+    });
+
+    document.querySelectorAll('.btn-calc-op').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const op = btn.getAttribute('data-val');
+            const current = parseFloat(calcDisplay);
+
+            if (op === 'C') {
+                calcDisplay = '0'; calcHistory = ''; calcAccumulator = 0; calcPendingOp = null;
+            } else if (op === 'back') {
+                calcDisplay = calcDisplay.length > 1 ? calcDisplay.slice(0, -1) : '0';
+            } else if (op === '=') {
+                if (calcPendingOp) {
+                    calcAccumulator = doCalc(calcAccumulator, current, calcPendingOp);
+                    calcDisplay = calcAccumulator.toString();
+                    calcHistory = '';
+                    calcPendingOp = null;
+                    calcNextReset = true;
+                }
+            } else {
+                if (calcPendingOp) {
+                    calcAccumulator = doCalc(calcAccumulator, current, calcPendingOp);
+                } else {
+                    calcAccumulator = current;
+                }
+                calcPendingOp = op;
+                calcHistory = calcAccumulator + ' ' + (op === '*' ? '×' : op === '/' ? '÷' : op);
+                calcNextReset = true;
+            }
+            display.textContent = calcDisplay;
+            history.textContent = calcHistory;
+        });
+    });
+}
+
+function doCalc(a, b, op) {
+    if (op === '+') return a + b;
+    if (op === '-') return a - b;
+    if (op === '*') return a * b;
+    if (op === '/') return b !== 0 ? a / b : 0;
+    return b;
+}
+
+/* --- Dragging Logic --- */
+function setupDraggable(el) {
+    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+    const handle = getEl('calc-handle');
+
+    handle.onmousedown = dragMouseDown;
+    handle.ontouchstart = dragMouseDown;
+
+    function dragMouseDown(e) {
+        e = e || window.event;
+        // e.preventDefault(); // Comentado para permitir scroll si fuera necesario
+        pos3 = e.clientX || e.touches[0].clientX;
+        pos4 = e.clientY || e.touches[0].clientY;
+        document.onmouseup = closeDragElement;
+        document.ontouchend = closeDragElement;
+        document.onmousemove = elementDrag;
+        document.ontouchmove = elementDrag;
+    }
+
+    function elementDrag(e) {
+        e = e || window.event;
+        const x = e.clientX || (e.touches ? e.touches[0].clientX : 0);
+        const y = e.clientY || (e.touches ? e.touches[0].clientY : 0);
+        pos1 = pos3 - x;
+        pos2 = pos4 - y;
+        pos3 = x;
+        pos4 = y;
+        el.style.top = (el.offsetTop - pos2) + "px";
+        el.style.left = (el.offsetLeft - pos1) + "px";
+        el.style.right = 'auto'; // Liberar anclaje original
+    }
+
+    function closeDragElement() {
+        document.onmouseup = null;
+        document.ontouchend = null;
+        document.onmousemove = null;
+        document.ontouchmove = null;
+    }
+}
+
+// Inicializar al cargar
+document.addEventListener('DOMContentLoaded', () => {
+    setupHelperCalc();
+    setupDraggable(getEl('floating-calc'));
 });

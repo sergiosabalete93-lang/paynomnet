@@ -1,10 +1,16 @@
 const CACHE_NAME = 'payroll-pro-v1';
 const ASSETS_TO_CACHE = [
+    '/',
     'index.html',
     'style.css',
     'app.js',
+    'firebase-config.js',
+    'privacy.html',
+    'terms.html',
     'ads/ads-engine.js',
     'manifest.json',
+    'assets/icon-192.png',
+    'assets/icon-512.png',
     'assets/under-construction.png'
 ];
 
