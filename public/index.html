@@ -52,9 +52,9 @@
         .theme-dark .help-note { background: #1e293b; color: #f1f5f9; border-color: #334155; }
         .theme-dark .help-icon { background: #334155; color: #94a3b8; }
 
-        .frequency-toggle { display: flex; gap: 10px; margin-bottom: 15px; }
+        .frequency-toggle { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
         .btn-freq, .btn-toggle-sp, .btn-toggle-uk, .btn-periods-uk {
-            flex: 1; padding: 10px; border: 1px solid #ccc; background: white;
+            flex: 1; min-width: 45px; padding: 10px; border: 1px solid #ccc; background: white;
             border-radius: 8px; cursor: pointer; font-size: 13px; transition: all 0.2s;
         }
         .btn-freq.active, .btn-toggle-sp.active, .btn-toggle-uk.active, .btn-periods-uk.active { background: #007bff; color: white; border-color: #0056b3; }
@@ -252,12 +252,20 @@
                     <input type="number" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000">
                 </div>
                 <div class="input-group">
-                    <span class="sub-label" id="sp-n-pagas-label">Número de Pagas <span class="help-icon" onclick="toggleHelp('h-pagas')">?</span></span>
-                    <div class="frequency-toggle">
-                        <button class="btn-toggle-sp active" onclick="setSpainToggle('pagas', '12')" id="btn-pagas-12">12 Pagas</button>
-                        <button class="btn-toggle-sp" onclick="setSpainToggle('pagas', '14')" id="btn-pagas-14">14 Pagas</button>
+                    <span class="sub-label" id="sp-pagas-tot-label">Pagas Totales (Contrato) <span class="help-icon" onclick="toggleHelp('h-pagas')">?</span></span>
+                    <div class="frequency-toggle" id="sp-pagas-tot-annual">
+                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
                     </div>
                     <div id="h-pagas" class="help-note"></div>
+                </div>
+                <div id="sp-prorrateo-wrapper-annual" class="input-group hidden">
+                    <span class="sub-label" id="sp-pagas-pro-label">Pagas Prorrateadas (Repartidas)</span>
+                    <div class="frequency-toggle" id="sp-pagas-pro-list-annual">
+                        <!-- Botones dinámicos -->
+                    </div>
                 </div>
             </div>
 
@@ -267,10 +275,18 @@
                     <input type="number" id="sp-monthly-gross" class="input-field" placeholder="Ej: 2000">
                 </div>
                 <div class="input-group">
-                    <span class="sub-label" id="sp-pagas-ex-label">Pagas Extras</span>
-                    <div class="frequency-toggle">
-                        <button class="btn-toggle-sp active" onclick="setSpainToggle('monthly-prorated', 'yes')" id="btn-prorated-yes">Prorrateadas</button>
-                        <button class="btn-toggle-sp" onclick="setSpainToggle('monthly-prorated', 'no')" id="btn-prorated-no">Sin Prorratear</button>
+                    <span class="sub-label" id="sp-pagas-tot-label-mon">Pagas Totales (Contrato)</span>
+                    <div class="frequency-toggle" id="sp-pagas-tot-monthly">
+                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
+                    </div>
+                </div>
+                <div id="sp-prorrateo-wrapper-monthly" class="input-group hidden">
+                    <span class="sub-label" id="sp-pagas-pro-label-mon">Pagas Prorrateadas (Repartidas)</span>
+                    <div class="frequency-toggle" id="sp-pagas-pro-list-monthly">
+                        <!-- Botones dinámicos -->
                     </div>
                 </div>
             </div>
@@ -284,6 +300,21 @@
                     <label id="sp-hora-horas-label">Horas al Mes</label>
                     <input type="number" id="sp-hourly-hours" class="input-field" placeholder="Ej: 160">
                 </div>
+                <div class="input-group">
+                    <span class="sub-label" id="sp-pagas-tot-label-hou">Pagas Totales (Contrato)</span>
+                    <div class="frequency-toggle" id="sp-pagas-tot-hourly">
+                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
+                    </div>
+                </div>
+                <div id="sp-prorrateo-wrapper-hourly" class="input-group hidden">
+                    <span class="sub-label" id="sp-pagas-pro-label-hou">Pagas Prorrateadas (Repartidas)</span>
+                    <div class="frequency-toggle" id="sp-pagas-pro-list-hourly">
+                        <!-- Botones dinámicos -->
+                    </div>
+                </div>
             </div>
 
             <div id="spain-inverse" class="calc-form hidden pro-feature">
@@ -292,10 +323,18 @@
                     <input type="number" id="sp-inverse-net" class="input-field" placeholder="Ej: 1800">
                 </div>
                 <div class="input-group">
-                    <span class="sub-label" id="sp-inv-pagas-label">Número de Pagas</span>
-                    <div class="frequency-toggle">
-                        <button class="btn-toggle-sp active" onclick="setSpainToggle('inv-pagas', '12')" id="btn-inv-pagas-12">12 Pagas</button>
-                        <button class="btn-toggle-sp" onclick="setSpainToggle('inv-pagas', '14')" id="btn-inv-pagas-14">14 Pagas</button>
+                    <span class="sub-label" id="sp-pagas-tot-label-inv">Pagas Totales (Contrato)</span>
+                    <div class="frequency-toggle" id="sp-pagas-tot-inverse">
+                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
+                    </div>
+                </div>
+                <div id="sp-prorrateo-wrapper-inverse" class="input-group hidden">
+                    <span class="sub-label" id="sp-pagas-pro-label-inv">Pagas Prorrateadas (Repartidas)</span>
+                    <div class="frequency-toggle" id="sp-pagas-pro-list-inverse">
+                        <!-- Botones dinámicos -->
                     </div>
                 </div>
             </div>

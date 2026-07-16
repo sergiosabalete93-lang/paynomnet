@@ -14,10 +14,9 @@ const appState = {
         disability: 'none',
         multipayer: 'no',
         civil: 'single',
-        pagas: '12',
-        'monthly-prorated': 'yes',
+        pagas: 12,
+        pagas_prorrateadas: 0,
         contrato: 'indef',
-        'inv-pagas': '12',
         'holiday-prorated': false
     },
     ukToggles: {
@@ -139,6 +138,8 @@ const i18n = {
             conjunta: "Declaración Conjunta",
             bruto_anual: "Bruto Anual (€)",
             n_pagas: "Número de Pagas",
+            pagas_totales: "Pagas Totales (Contrato)",
+            pagas_prorrateadas: "Pagas Prorrateadas (Repartidas)",
             bruto_mensual: "Bruto Mensual (€)",
             pagas_extras: "Pagas Extras",
             precio_hora: "Precio por Hora (€)",
@@ -312,6 +313,8 @@ const i18n = {
             conjunta: "Joint Declaration",
             bruto_anual: "Gross Annual (€)",
             n_pagas: "Number of Payments",
+            pagas_totales: "Total Payments (Contract)",
+            pagas_prorrateadas: "Prorated Payments (Monthly)",
             bruto_mensual: "Gross Monthly (€)",
             pagas_extras: "Extra Payments",
             precio_hora: "Hourly Rate (€)",
@@ -393,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initApp();
     setupEventListeners();
     updateUITranslations();
+    updatePagasUI(); // <--- Añadido
 
     // Comprobar si ya era PRO de una sesión anterior
     if (localStorage.getItem('user_is_pro') === 'true') {
@@ -578,6 +582,55 @@ function setMode(m) {
 /* ==========================================================================
    3. LOGICA DE TOGGLES ESPECÍFICOS
    ========================================================================== */
+window.setSpainPagas = function(val) {
+    appState.spToggles.pagas = parseInt(val);
+    // Reset prorrateadas if they exceed new max
+    const maxProrrated = appState.spToggles.pagas - 12;
+    if (appState.spToggles.pagas_prorrateadas > maxProrrated) {
+        appState.spToggles.pagas_prorrateadas = 0;
+    }
+    updatePagasUI();
+};
+
+window.setSpainProrrateadas = function(val) {
+    appState.spToggles.pagas_prorrateadas = parseInt(val);
+    updatePagasUI();
+};
+
+function updatePagasUI() {
+    const modes = ['annual', 'monthly', 'hourly', 'inverse'];
+    const total = appState.spToggles.pagas;
+    const prorated = appState.spToggles.pagas_prorrateadas;
+
+    modes.forEach(m => {
+        // 1. Highlight Total Buttons
+        const totalGroup = getEl(`sp-pagas-tot-${m}`);
+        if (totalGroup) {
+            totalGroup.querySelectorAll('button').forEach(b => {
+                b.classList.toggle('active', parseInt(b.textContent) === total);
+            });
+        }
+
+        // 2. Manage Prorated Section
+        const wrapper = getEl(`sp-prorrateo-wrapper-${m}`);
+        if (wrapper) {
+            wrapper.classList.toggle('hidden', total === 12);
+            const list = getEl(`sp-pagas-pro-list-${m}`);
+            if (list && total > 12) {
+                list.innerHTML = '';
+                const max = total - 12;
+                for (let i = 0; i <= max; i++) {
+                    const btn = document.createElement('button');
+                    btn.className = `btn-toggle-sp ${prorated === i ? 'active' : ''}`;
+                    btn.textContent = i;
+                    btn.onclick = () => setSpainProrrateadas(i);
+                    list.appendChild(btn);
+                }
+            }
+        }
+    });
+}
+
 window.toggleHelp = function(id) {
     // Detener la propagación para evitar activar clics en contenedores padre
     if (window.event) window.event.stopPropagation();
@@ -673,19 +726,19 @@ function updateUITranslations() {
     if (getEl('btn-civil-married')) getEl('btn-civil-married').textContent = lang.options.married;
     if (getEl('sp-conjunta-label')) getEl('sp-conjunta-label').firstChild.textContent = lang.labels.conjunta + " ";
     if (getEl('sp-anual-bruto-label')) getEl('sp-anual-bruto-label').textContent = lang.labels.bruto_anual;
-    if (getEl('sp-n-pagas-label')) getEl('sp-n-pagas-label').firstChild.textContent = lang.labels.n_pagas + " ";
-    if (getEl('btn-pagas-12')) getEl('btn-pagas-12').textContent = "12 " + (appState.language === 'es' ? 'Pagas' : 'Payments');
-    if (getEl('btn-pagas-14')) getEl('btn-pagas-14').textContent = "14 " + (appState.language === 'es' ? 'Pagas' : 'Payments');
+    if (getEl('sp-pagas-tot-label')) getEl('sp-pagas-tot-label').firstChild.textContent = lang.labels.pagas_totales + " ";
+    if (getEl('sp-pagas-pro-label')) getEl('sp-pagas-pro-label').textContent = lang.labels.pagas_prorrateadas;
+    if (getEl('sp-pagas-tot-label-mon')) getEl('sp-pagas-tot-label-mon').textContent = lang.labels.pagas_totales;
+    if (getEl('sp-pagas-pro-label-mon')) getEl('sp-pagas-pro-label-mon').textContent = lang.labels.pagas_prorrateadas;
+    if (getEl('sp-pagas-tot-label-hou')) getEl('sp-pagas-tot-label-hou').textContent = lang.labels.pagas_totales;
+    if (getEl('sp-pagas-pro-label-hou')) getEl('sp-pagas-pro-label-hou').textContent = lang.labels.pagas_prorrateadas;
+    if (getEl('sp-pagas-tot-label-inv')) getEl('sp-pagas-tot-label-inv').textContent = lang.labels.pagas_totales;
+    if (getEl('sp-pagas-pro-label-inv')) getEl('sp-pagas-pro-label-inv').textContent = lang.labels.pagas_prorrateadas;
+
     if (getEl('sp-mensual-bruto-label')) getEl('sp-mensual-bruto-label').textContent = lang.labels.bruto_mensual;
-    if (getEl('sp-pagas-ex-label')) getEl('sp-pagas-ex-label').textContent = lang.labels.pagas_extras;
-    if (getEl('btn-prorated-yes')) getEl('btn-prorated-yes').textContent = lang.options.prorated;
-    if (getEl('btn-prorated-no')) getEl('btn-prorated-no').textContent = lang.options.no_prorated;
     if (getEl('sp-hora-precio-label')) getEl('sp-hora-precio-label').textContent = lang.labels.precio_hora;
     if (getEl('sp-hora-horas-label')) getEl('sp-hora-horas-label').textContent = lang.labels.horas_mes;
     if (getEl('sp-inverso-neto-label')) getEl('sp-inverso-neto-label').textContent = lang.labels.neto_obj;
-    if (getEl('sp-inv-pagas-label')) getEl('sp-inv-pagas-label').textContent = lang.labels.n_pagas;
-    if (getEl('btn-inv-pagas-12')) getEl('btn-inv-pagas-12').textContent = "12 " + (appState.language === 'es' ? 'Pagas' : 'Payments');
-    if (getEl('btn-inv-pagas-14')) getEl('btn-inv-pagas-14').textContent = "14 " + (appState.language === 'es' ? 'Pagas' : 'Payments');
     if (getEl('sp-despido-salario-label')) getEl('sp-despido-salario-label').textContent = lang.labels.despido_sal;
     if (getEl('sp-despido-anos-label')) getEl('sp-despido-anos-label').textContent = lang.labels.despido_anos;
     if (getEl('sp-despido-tipo-label')) getEl('sp-despido-tipo-label').textContent = lang.labels.despido_tipo;
@@ -843,19 +896,18 @@ function processCalculation() {
 function calculateSpain() {
     const lang = i18n[appState.language];
     let annualGross = 0;
-    let pagas = parseInt(appState.spToggles.pagas);
+    const pagas = appState.spToggles.pagas;
+    const prorrated = appState.spToggles.pagas_prorrateadas;
 
     if (appState.mode === 'annual') {
         annualGross = parseFloat(getEl('sp-annual-gross').value) || 0;
     } else if (appState.mode === 'monthly') {
         let mGross = parseFloat(getEl('sp-monthly-gross').value) || 0;
-        pagas = appState.spToggles['monthly-prorated'] === 'yes' ? 12 : 14;
         annualGross = mGross * pagas;
     } else if (appState.mode === 'hourly') {
         let price = parseFloat(getEl('sp-hourly-price').value) || 0;
         let hoursMonth = parseFloat(getEl('sp-hourly-hours').value) || 0;
         annualGross = (price * hoursMonth) * 12;
-        pagas = 12;
     } else if (appState.mode === 'inverse') {
         calculateSpainInverse(); return;
     } else if (appState.mode === 'dismissal') {
@@ -864,14 +916,25 @@ function calculateSpain() {
 
     const res = performSpainCalculations(annualGross, pagas);
 
-    renderResult(lang.bruto + " " + lang.mensual, (res.taxableAnnual / pagas).toFixed(2) + "€");
+    // Results logic based on Prorrated Pagas
+    const unitNet = res.netAnnual / pagas;
+    const monthlyNetVisible = unitNet + ((unitNet * prorrated) / 12);
+    const unitGross = res.taxableAnnual / pagas;
+    const monthlyGrossVisible = unitGross + ((unitGross * prorrated) / 12);
+
+    renderResult(lang.bruto + " " + lang.mensual, monthlyGrossVisible.toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
     if (res.otAmountMonthly > 0) renderResult(lang.ot_res, res.otAmountMonthly.toFixed(2) + "€");
-    renderResult(lang.ss, "-" + (res.totalSS / pagas).toFixed(2) + "€");
-    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + (res.totalIRPF / pagas).toFixed(2) + "€");
+
+    // SS and IRPF are also visible per "check"
+    const ssVisible = (res.totalSS / pagas) * (1 + prorrated / 12);
+    const irpfVisible = (res.totalIRPF / pagas) * (1 + prorrated / 12);
+
+    renderResult(lang.ss, "-" + ssVisible.toFixed(2) + "€");
+    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + irpfVisible.toFixed(2) + "€");
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
 
-    getEl('net-result-value').textContent = (res.netAnnual / pagas).toFixed(2) + "€";
+    getEl('net-result-value').textContent = monthlyNetVisible.toFixed(2) + "€";
 }
 
 function performSpainCalculations(annualGross, pagas) {
@@ -992,15 +1055,24 @@ function calculateSpainDismissal() {
 function calculateSpainInverse() {
     const lang = i18n[appState.language];
     const target = parseFloat(getEl('sp-inverse-net').value) || 0;
-    const pagas = parseInt(appState.spToggles['inv-pagas']);
+    const pagas = appState.spToggles.pagas;
+    const prorrated = appState.spToggles.pagas_prorrateadas;
+
+    // The user target is "Monthly Take Home"
+    // If user wants 2000€ and has 14 pagas, 0 prorrated -> Annual Net is 2000 * 14
+    // If 14 pagas, 2 prorrated -> Monthly check is 2000, so Annual Net is 2000 * 12
+
+    // Calculate required Annual Net based on target and prorrating
+    // Target = (AnnualNet / pagas) * (1 + prorrated/12)
+    // AnnualNet = Target / ( (1/pagas) * (1 + prorrated/12) )
+    const targetAnnualNet = target / ((1 / pagas) * (1 + prorrated / 12));
 
     // Binary Search to find Gross
-    let low = target * pagas, high = target * pagas * 4, gross = low;
+    let low = targetAnnualNet, high = targetAnnualNet * 4, gross = low;
     for(let i=0; i<40; i++) {
         gross = (low + high) / 2;
         let res = performSpainCalculations(gross, pagas);
-        let net = res.netAnnual / pagas;
-        if (net < target) low = gross; else high = gross;
+        if (res.netAnnual < targetAnnualNet) low = gross; else high = gross;
     }
     renderResult(lang.bruto_est + " " + lang.anual, gross.toFixed(2) + "€");
     getEl('net-result-value').textContent = (gross / pagas).toFixed(2) + "€";
