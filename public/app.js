@@ -157,6 +157,7 @@ const i18n = {
             bonus_b: "Bonus B (€/mes)",
             ot_hours: "Horas Extra (Mensual)",
             ot_price: "Precio Hora Extra",
+            hijo_dis_count: "¿Cuántos hijos?",
             cotiza: "Cotiza",
             tax_region: "Tax Region",
             ni_cat: "NI Category",
@@ -166,11 +167,11 @@ const i18n = {
             hourly_rate: "Hourly Rate (£)",
             hours_week: "Hours per WEEK",
             hours_month: "Hours per MONTH",
-            mon_calc: "Monthly Hours Calculation",
-            weekly_ot: "Weekly Overtime Hours",
-            monthly_ot: "Monthly Overtime Hours",
-            ot_rate: "Overtime Rate (£)",
-            target_net: "Target Monthly Take-Home (£)",
+            mon_calc: "Cálculo de Horas Mensuales",
+            weekly_ot: "Horas Extra (Semanal)",
+            monthly_ot: "Horas Extra (Mensual)",
+            ot_rate: "Precio Hora Extra (£)",
+            target_net: "Neto Mensual Objetivo (£)",
             current_age: "Current Age",
             years_service: "Years of Service",
             weekly_pay: "Weekly Pay (£)",
@@ -332,6 +333,7 @@ const i18n = {
             bonus_b: "Bonus B (€/mo)",
             ot_hours: "Overtime Hours (Monthly)",
             ot_price: "Overtime Rate",
+            hijo_dis_count: "How many children?",
             cotiza: "Taxable",
             tax_region: "Tax Region",
             ni_cat: "NI Category",
@@ -341,11 +343,11 @@ const i18n = {
             hourly_rate: "Hourly Rate (£)",
             hours_week: "Hours per WEEK",
             hours_month: "Hours per MONTH",
-            mon_calc: "Monthly Hours Calculation",
-            weekly_ot: "Weekly Overtime Hours",
-            monthly_ot: "Monthly Overtime Hours",
-            ot_rate: "Overtime Rate (£)",
-            target_net: "Target Monthly Take-Home (£)",
+            mon_calc: "Cálculo de Horas Mensuales",
+            weekly_ot: "Horas Extra (Semanal)",
+            monthly_ot: "Horas Extra (Mensual)",
+            ot_rate: "Precio Hora Extra (£)",
+            target_net: "Neto Mensual Objetivo (£)",
             current_age: "Current Age",
             years_service: "Years of Service",
             weekly_pay: "Weekly Pay (£)",
@@ -500,6 +502,11 @@ function setupEventListeners() {
     });
     getEl('uk-holiday-prorated')?.addEventListener('change', (e) => {
         appState.ukToggles['holiday-prorated'] = e.target.checked;
+    });
+
+    getEl('sp-pro-child-dis')?.addEventListener('change', (e) => {
+        getEl('wrapper-sp-child-dis-count').classList.toggle('hidden', !e.target.checked);
+        if (!e.target.checked) getEl('sp-pro-child-dis-count').value = 0;
     });
 
     // Eventos Consentimiento
@@ -755,6 +762,23 @@ function updateUITranslations() {
     if (getEl('sp-bonus-b-label')) getEl('sp-bonus-b-label').textContent = lang.labels.bonus_b;
     if (getEl('sp-horas-extra-label')) getEl('sp-horas-extra-label').textContent = lang.labels.ot_hours;
     if (getEl('sp-precio-extra-label')) getEl('sp-precio-extra-label').textContent = lang.labels.ot_price;
+    if (getEl('sp-horas-extra-label-ann')) getEl('sp-horas-extra-label-ann').textContent = lang.labels.ot_hours;
+    if (getEl('sp-precio-extra-label-ann')) getEl('sp-precio-extra-label-ann').textContent = lang.labels.ot_price;
+    if (getEl('sp-horas-extra-label-mon')) getEl('sp-horas-extra-label-mon').textContent = lang.labels.ot_hours;
+    if (getEl('sp-precio-extra-label-mon')) getEl('sp-precio-extra-label-mon').textContent = lang.labels.ot_price;
+    if (getEl('sp-horas-extra-label-hou')) getEl('sp-horas-extra-label-hou').textContent = lang.labels.ot_hours;
+    if (getEl('sp-precio-extra-label-hou')) getEl('sp-precio-extra-label-hou').textContent = lang.labels.ot_price;
+    if (getEl('sp-horas-extra-label-inv')) getEl('sp-horas-extra-label-inv').textContent = lang.labels.ot_hours;
+    if (getEl('sp-precio-extra-label-inv')) getEl('sp-precio-extra-label-inv').textContent = lang.labels.ot_price;
+    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-ann')) getEl('uk-precio-extra-label-ann').textContent = lang.labels.ot_rate;
+    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-mon')) getEl('uk-precio-extra-label-mon').textContent = lang.labels.ot_rate;
+    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = appState.ukHourlyFreq === 'weekly' ? lang.labels.weekly_ot : lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-hou')) getEl('uk-precio-extra-label-hou').textContent = lang.labels.ot_rate;
+    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-inv')) getEl('uk-precio-extra-label-inv').textContent = lang.labels.ot_rate;
+    if (getEl('sp-hijo-dis-count-label')) getEl('sp-hijo-dis-count-label').textContent = lang.labels.hijo_dis_count;
     if (getEl('sp-cotiza-a-label')) getEl('sp-cotiza-a-label').textContent = lang.labels.cotiza;
     if (getEl('sp-cotiza-b-label')) getEl('sp-cotiza-b-label').textContent = lang.labels.cotiza;
     if (getEl('sp-holiday-label')) getEl('sp-holiday-label').textContent = lang.holiday_label;
@@ -940,6 +964,7 @@ function calculateSpain() {
 function performSpainCalculations(annualGross, pagas) {
     const children = parseInt(getEl('sp-pro-children')?.value) || 0;
     const childDis = getEl('sp-pro-child-dis')?.checked;
+    const childDisCount = childDis ? (parseInt(getEl('sp-pro-child-dis-count')?.value) || 0) : 0;
     const others = parseInt(getEl('sp-pro-others')?.value) || 0;
     const otherDis = getEl('sp-pro-other-dis')?.checked;
     const region = getEl('sp-pro-region')?.value || "comun";
@@ -954,8 +979,10 @@ function performSpainCalculations(annualGross, pagas) {
     const extraB = parseFloat(getEl('sp-pro-extras-2')?.value) || 0;
     const extraBTaxed = getEl('sp-pro-extras-taxed-2')?.checked;
 
-    const otHours = parseFloat(getEl('sp-pro-overtime-hours')?.value) || 0;
-    const otPrice = parseFloat(getEl('sp-pro-overtime-price')?.value) || 0;
+    const mode = appState.mode;
+    const suffix = mode === 'annual' ? 'ann' : mode === 'monthly' ? 'mon' : mode === 'hourly' ? 'hou' : 'inv';
+    const otHours = parseFloat(getEl(`sp-pro-overtime-hours-${suffix}`)?.value) || 0;
+    const otPrice = parseFloat(getEl(`sp-pro-overtime-price-${suffix}`)?.value) || 0;
     const otAmountMonthly = otHours * otPrice;
     const otAmountAnnual = otAmountMonthly * 12;
 
@@ -989,9 +1016,9 @@ function performSpainCalculations(annualGross, pagas) {
     let irpfPerc;
     if (appState.isPro && manualVal !== "") {
         irpfPerc = parseFloat(manualVal);
-        if (isNaN(irpfPerc)) irpfPerc = estimateSpainIRPF(taxableAnnual, children, childDis, others, otherDis, region, disability, isMarried, isJoint, multipayer);
+        if (isNaN(irpfPerc)) irpfPerc = estimateSpainIRPF(taxableAnnual, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer);
     } else {
-        irpfPerc = estimateSpainIRPF(taxableAnnual, children, childDis, others, otherDis, region, disability, isMarried, isJoint, multipayer);
+        irpfPerc = estimateSpainIRPF(taxableAnnual, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer);
     }
 
     const totalIRPF = taxableAnnual * (irpfPerc / 100);
@@ -1000,7 +1027,7 @@ function performSpainCalculations(annualGross, pagas) {
     return { taxableAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly };
 }
 
-function estimateSpainIRPF(gross, children, childDis, others, otherDis, region, disability, isMarried, isJoint, multipayer) {
+function estimateSpainIRPF(gross, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer) {
     let allowance = 5550;
     if (disability === '33') allowance += 3000;
     else if (disability === '65') allowance += 12000;
@@ -1011,7 +1038,7 @@ function estimateSpainIRPF(gross, children, childDis, others, otherDis, region, 
     if (children >= 3) mHijos += 4000;
     if (children >= 4) mHijos += 4500;
     allowance += mHijos;
-    if (childDis) allowance += (children * 3000);
+    if (childDisCount > 0) allowance += (Math.min(children, childDisCount) * 3000);
 
     if (others > 0) {
         allowance += (others * 1150);
@@ -1096,19 +1123,17 @@ function calculateUK() {
     } else if (appState.mode === 'hourly') {
         const rate = parseFloat(getEl('uk-hourly-rate').value) || 0;
         const hours = parseFloat(getEl('uk-hourly-hours').value) || 0;
-        const otHours = parseFloat(getEl('uk-hourly-overtime').value) || 0;
-        const otRate = parseFloat(getEl('uk-hourly-overtime-rate').value) || 0;
 
         if (appState.ukHourlyFreq === 'weekly') {
-            annualGross = ((rate * hours) + (otHours * otRate)) * 52;
+            annualGross = (rate * hours) * 52;
             periods = 52;
         } else {
             const base = appState.ukToggles['hourly-monthly-base'] || 'full';
             if (base === '4weeks') {
-                annualGross = ((rate * hours) + (otHours * otRate)) * 13;
+                annualGross = (rate * hours) * 13;
                 periods = 13;
             } else {
-                annualGross = ((rate * hours) + (otHours * otRate)) * 12;
+                annualGross = (rate * hours) * 12;
                 periods = 12;
             }
         }
@@ -1146,6 +1171,22 @@ function performUKCalculations(annual, periods = 12) {
     const bonusATaxed = appState.ukToggles['bonus-a-tax'] === 'yes';
     const bonusB = parseFloat(getEl('uk-pro-bonus-b')?.value) || 0;
     const bonusBTaxed = appState.ukToggles['bonus-b-tax'] === 'yes';
+
+    // Overtime for UK
+    const mode = appState.mode;
+    const suffix = mode === 'annual' ? 'ann' : mode === 'monthly' ? 'mon' : mode === 'hourly' ? 'hou' : 'inv';
+    const otHours = parseFloat(getEl(`uk-pro-overtime-hours-${suffix}`)?.value) || 0;
+    const otPrice = parseFloat(getEl(`uk-pro-overtime-price-${suffix}`)?.value) || 0;
+
+    let otAmountAnnual = 0;
+    let otAmountMonthly = 0;
+    if (mode === 'hourly' && appState.ukHourlyFreq === 'weekly') {
+        otAmountAnnual = (otHours * otPrice) * 52;
+        otAmountMonthly = otAmountAnnual / 12;
+    } else {
+        otAmountMonthly = otHours * otPrice;
+        otAmountAnnual = otAmountMonthly * 12;
+    }
 
     const holidayProrated = getEl('uk-holiday-prorated')?.checked;
     let holidayPayAnnual = 0;
@@ -1192,9 +1233,9 @@ function performUKCalculations(annual, periods = 12) {
     }
 
     // 3. Bonus logic
-    const taxableBonusAnnual = (bonusATaxed ? bonusA : 0) * 12 + (bonusBTaxed ? bonusB : 0) * 12;
+    const taxableBonusAnnual = (bonusATaxed ? bonusA : 0) * 12 + (bonusBTaxed ? bonusB : 0) * 12 + otAmountAnnual;
     const nonTaxableBonusAnnual = (!bonusATaxed ? bonusA : 0) * 12 + (!bonusBTaxed ? bonusB : 0) * 12;
-    const bonusTotalMonthlyTotal = bonusA + bonusB;
+    const bonusTotalMonthlyTotal = bonusA + bonusB + otAmountMonthly;
 
     // 4. Pension
     const pensionAnnual = (annual + holidayPayAnnual + taxableBonusAnnual) * (pPerc / 100);

@@ -267,6 +267,16 @@
                         <!-- Botones dinámicos -->
                     </div>
                 </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="sp-horas-extra-label-ann">Horas Extra (Mensual)</label>
+                        <input type="number" id="sp-pro-overtime-hours-ann" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="sp-precio-extra-label-ann">Precio Hora Extra</label>
+                        <input type="number" id="sp-pro-overtime-price-ann" class="input-field pro-input" value="0" min="0">
+                    </div>
+                </div>
             </div>
 
             <div id="spain-monthly" class="calc-form hidden">
@@ -287,6 +297,16 @@
                     <span class="sub-label" id="sp-pagas-pro-label-mon">Pagas Prorrateadas (Repartidas)</span>
                     <div class="frequency-toggle" id="sp-pagas-pro-list-monthly">
                         <!-- Botones dinámicos -->
+                    </div>
+                </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="sp-horas-extra-label-mon">Horas Extra (Mensual)</label>
+                        <input type="number" id="sp-pro-overtime-hours-mon" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="sp-precio-extra-label-mon">Precio Hora Extra</label>
+                        <input type="number" id="sp-pro-overtime-price-mon" class="input-field pro-input" value="0" min="0">
                     </div>
                 </div>
             </div>
@@ -315,6 +335,16 @@
                         <!-- Botones dinámicos -->
                     </div>
                 </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="sp-horas-extra-label-hou">Horas Extra (Mensual)</label>
+                        <input type="number" id="sp-pro-overtime-hours-hou" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="sp-precio-extra-label-hou">Precio Hora Extra</label>
+                        <input type="number" id="sp-pro-overtime-price-hou" class="input-field pro-input" value="0" min="0">
+                    </div>
+                </div>
             </div>
 
             <div id="spain-inverse" class="calc-form hidden pro-feature">
@@ -335,6 +365,16 @@
                     <span class="sub-label" id="sp-pagas-pro-label-inv">Pagas Prorrateadas (Repartidas)</span>
                     <div class="frequency-toggle" id="sp-pagas-pro-list-inverse">
                         <!-- Botones dinámicos -->
+                    </div>
+                </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="sp-horas-extra-label-inv">Horas Extra (Mensual)</label>
+                        <input type="number" id="sp-pro-overtime-hours-inv" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="sp-precio-extra-label-inv">Precio Hora Extra</label>
+                        <input type="number" id="sp-pro-overtime-price-inv" class="input-field pro-input" value="0" min="0">
                     </div>
                 </div>
             </div>
@@ -381,6 +421,10 @@
                                 <label style="font-size:10px" id="sp-hijo-dis-label">Hijo con Discapacidad</label>
                                 <input type="checkbox" id="sp-pro-child-dis" class="toggle-switch">
                             </div>
+                            <div id="wrapper-sp-child-dis-count" class="input-group hidden" style="margin-top:5px">
+                                <label style="font-size:10px" id="sp-hijo-dis-count-label">¿Cuántos hijos?</label>
+                                <input type="number" id="sp-pro-child-dis-count" class="input-field" value="0" min="0" style="padding: 5px 10px; font-size: 12px;">
+                            </div>
                         </div>
                         <div class="input-group">
                             <label id="sp-otros-label">Otros a Cargo <span class="help-icon" onclick="toggleHelp('h-others')">?</span></label>
@@ -390,17 +434,6 @@
                                 <label style="font-size:10px" id="sp-otro-dis-label">Persona con Discapacidad</label>
                                 <input type="checkbox" id="sp-pro-other-dis" class="toggle-switch">
                             </div>
-                        </div>
-                    </div>
-
-                    <div class="pro-fields-wrapper pro-item" style="margin-top: 10px;">
-                        <div class="input-group">
-                            <label id="sp-horas-extra-label">Horas Extra (Mensual)</label>
-                            <input type="number" id="sp-pro-overtime-hours" class="input-field pro-input" value="0" min="0">
-                        </div>
-                        <div class="input-group">
-                            <label id="sp-precio-extra-label">Precio Hora Extra</label>
-                            <input type="number" id="sp-pro-overtime-price" class="input-field pro-input" value="0" min="0">
                         </div>
                     </div>
 
@@ -503,6 +536,16 @@
                     </div>
                     <div id="h-uk-periods" class="help-note"></div>
                 </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="uk-horas-extra-label-ann">Overtime Hours (Monthly)</label>
+                        <input type="number" id="uk-pro-overtime-hours-ann" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="uk-precio-extra-label-ann">Overtime Rate (£)</label>
+                        <input type="number" id="uk-pro-overtime-price-ann" class="input-field pro-input" value="0" min="0">
+                    </div>
+                </div>
             </div>
 
             <!-- MONTHLY -->
@@ -519,6 +562,16 @@
                         <button class="btn-periods-uk" onclick="setUKPeriods('monthly', 14)">14</button>
                     </div>
                     <div id="h-uk-periods-monthly" class="help-note"></div>
+                </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="uk-horas-extra-label-mon">Overtime Hours (Monthly)</label>
+                        <input type="number" id="uk-pro-overtime-hours-mon" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="uk-precio-extra-label-mon">Overtime Rate (£)</label>
+                        <input type="number" id="uk-pro-overtime-price-mon" class="input-field pro-input" value="0" min="0">
+                    </div>
                 </div>
             </div>
 
@@ -545,6 +598,16 @@
                     </div>
                     <div id="h-uk-hourly-base" class="help-note"></div>
                 </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="uk-horas-extra-label-hou">Weekly Overtime Hours</label>
+                        <input type="number" id="uk-pro-overtime-hours-hou" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="uk-precio-extra-label-hou">Overtime Rate (£)</label>
+                        <input type="number" id="uk-pro-overtime-price-hou" class="input-field pro-input" value="0" min="0">
+                    </div>
+                </div>
             </div>
 
             <!-- INVERSE -->
@@ -553,6 +616,16 @@
                     <label id="uk-inverso-neto-label">Target Monthly Take-Home (£) <span class="help-icon" onclick="toggleHelp('h-uk-inverse')">?</span></label>
                     <input type="number" id="uk-inverse-net" class="input-field" placeholder="Ej: 2200">
                     <div id="h-uk-inverse" class="help-note"></div>
+                </div>
+                <div class="pro-fields-wrapper pro-item">
+                    <div class="input-group">
+                        <label id="uk-horas-extra-label-inv">Overtime Hours (Monthly)</label>
+                        <input type="number" id="uk-pro-overtime-hours-inv" class="input-field pro-input" value="0" min="0">
+                    </div>
+                    <div class="input-group">
+                        <label id="uk-precio-extra-label-inv">Overtime Rate (£)</label>
+                        <input type="number" id="uk-pro-overtime-price-inv" class="input-field pro-input" value="0" min="0">
+                    </div>
                 </div>
             </div>
 
@@ -624,17 +697,6 @@
                                 <input type="text" id="uk-pro-taxcode-manual" class="input-field pro-input hidden" placeholder="e.g. S1257L">
                             </div>
                             <div id="h-uk-taxcode" class="help-note"></div>
-                        </div>
-                    </div>
-
-                    <div class="pro-fields-wrapper pro-item">
-                        <div class="input-group">
-                            <label id="lbl-uk-hourly-overtime">Weekly Overtime Hours</label>
-                            <input type="number" id="uk-hourly-overtime" class="input-field pro-input" value="0">
-                        </div>
-                        <div class="input-group">
-                            <label id="uk-hora-extra-precio-label">Overtime Rate (£)</label>
-                            <input type="number" id="uk-hourly-overtime-rate" class="input-field pro-input" value="0">
                         </div>
                     </div>
 
