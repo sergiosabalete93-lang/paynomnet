@@ -17,7 +17,9 @@ const appState = {
         pagas: 12,
         pagas_prorrateadas: 0,
         contrato: 'indef',
-        'holiday-prorated': false
+        'holiday-prorated': false,
+        dynamicBonus: [], // List of { id, amount, cotizaIRPF, cotizaSS, cotizaUnemployment }
+        dynamicOT: []     // List of { id, amount, modeSuffix }
     },
     ukToggles: {
         'hourly-monthly-base': 'full',
@@ -152,6 +154,7 @@ const i18n = {
             adv_config: "Configuración Avanzada (PRO)",
             irpf_manual: "IRPF Manual (%)",
             base_manual: "Base Manual (€/mes)",
+            antiguedad: "Antigüedad / Trienios (€/mes)",
             otros_imp: "Otros Impuestos (€/mes)",
             bonus_a: "Bonus A (€/mes)",
             bonus_b: "Bonus B (€/mes)",
@@ -328,6 +331,7 @@ const i18n = {
             adv_config: "Advanced Config (PRO)",
             irpf_manual: "Manual IRPF (%)",
             base_manual: "Manual Base (€/mo)",
+            antiguedad: "Longevity / Trienios (€/mo)",
             otros_imp: "Other Taxes (€/mo)",
             bonus_a: "Bonus A (€/mo)",
             bonus_b: "Bonus B (€/mo)",
@@ -638,6 +642,84 @@ function updatePagasUI() {
     });
 }
 
+window.toggleRatesConfig = function() {
+    getEl('sp-rates-config').classList.toggle('hidden');
+};
+
+window.addExtraItem = function(country, type, suffix) {
+    if (country === 'sp') {
+        if (type === 'bonus') {
+            const id = Date.now();
+            appState.spToggles.dynamicBonus.push({ id, amount: 0, irpf: true, ss: true, unemployment: true });
+        } else if (type === 'ot') {
+            const id = Date.now();
+            appState.spToggles.dynamicOT.push({ id, amount: 0, suffix });
+        }
+        renderDynamicLists();
+    }
+};
+
+window.removeExtraItem = function(type, id) {
+    if (type === 'bonus') {
+        appState.spToggles.dynamicBonus = appState.spToggles.dynamicBonus.filter(b => b.id !== id);
+    } else {
+        appState.spToggles.dynamicOT = appState.spToggles.dynamicOT.filter(o => o.id !== id);
+    }
+    renderDynamicLists();
+};
+
+function renderDynamicLists() {
+    // 1. Bonus List
+    const bonusList = getEl('sp-bonus-dynamic-list');
+    if (bonusList) {
+        bonusList.innerHTML = '';
+        appState.spToggles.dynamicBonus.forEach(b => {
+            const div = document.createElement('div');
+            div.style = "background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;";
+            div.innerHTML = `
+                <div style="display:flex; gap:10px; margin-bottom:5px;">
+                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Importe" value="${b.amount}" onchange="updateBonusVal(${b.id}, 'amount', this.value)">
+                    <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id})">×</button>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:5px; font-size:10px;">
+                    <label><input type="checkbox" ${b.irpf ? 'checked' : ''} onchange="updateBonusVal(${b.id}, 'irpf', this.checked)"> IRPF</label>
+                    <label><input type="checkbox" ${b.ss ? 'checked' : ''} onchange="updateBonusVal(${b.id}, 'ss', this.checked)"> SS</label>
+                    <label><input type="checkbox" ${b.unemployment ? 'checked' : ''} onchange="updateBonusVal(${b.id}, 'unemployment', this.checked)"> Paro</label>
+                </div>
+            `;
+            bonusList.appendChild(div);
+        });
+    }
+
+    // 2. OT List
+    const suffixes = ['ann', 'mon', 'hou', 'inv'];
+    suffixes.forEach(s => {
+        const otList = getEl(`sp-extra-ot-list-${s}`);
+        if (otList) {
+            otList.innerHTML = '';
+            appState.spToggles.dynamicOT.filter(o => o.suffix === s).forEach(o => {
+                const div = document.createElement('div');
+                div.style = "display:flex; gap:10px; margin-top:5px;";
+                div.innerHTML = `
+                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Plus extra" value="${o.amount}" onchange="updateOTVal(${o.id}, this.value)">
+                    <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('ot', ${o.id})">×</button>
+                `;
+                otList.appendChild(div);
+            });
+        }
+    });
+}
+
+window.updateBonusVal = function(id, key, val) {
+    const b = appState.spToggles.dynamicBonus.find(x => x.id === id);
+    if (b) b[key] = key === 'amount' ? parseFloat(val) : val;
+};
+
+window.updateOTVal = function(id, val) {
+    const o = appState.spToggles.dynamicOT.find(x => x.id === id);
+    if (o) o.amount = parseFloat(val);
+};
+
 window.toggleHelp = function(id) {
     // Detener la propagación para evitar activar clics en contenedores padre
     if (window.event) window.event.stopPropagation();
@@ -757,6 +839,7 @@ function updateUITranslations() {
     if (getEl('sp-advanced-label')) getEl('sp-advanced-label').textContent = lang.labels.adv_config;
     if (getEl('sp-irpf-manual-label')) getEl('sp-irpf-manual-label').firstChild.textContent = lang.labels.irpf_manual + " ";
     if (getEl('sp-base-manual-label')) getEl('sp-base-manual-label').firstChild.textContent = lang.labels.base_manual + " ";
+    if (getEl('sp-antiguedad-label')) getEl('sp-antiguedad-label').textContent = lang.labels.antiguedad;
     if (getEl('sp-otros-imp-label')) getEl('sp-otros-imp-label').firstChild.textContent = lang.labels.otros_imp + " ";
     if (getEl('sp-bonus-a-label')) getEl('sp-bonus-a-label').firstChild.textContent = lang.labels.bonus_a + " ";
     if (getEl('sp-bonus-b-label')) getEl('sp-bonus-b-label').textContent = lang.labels.bonus_b;
@@ -941,24 +1024,27 @@ function calculateSpain() {
     const res = performSpainCalculations(annualGross, pagas);
 
     // Results logic based on Prorrated Pagas
-    const unitNet = res.netAnnual / pagas;
-    const monthlyNetVisible = unitNet + ((unitNet * prorrated) / 12);
-    const unitGross = res.taxableAnnual / pagas;
-    const monthlyGrossVisible = unitGross + ((unitGross * prorrated) / 12);
+    const monthlyNetBase = (res.netAnnual + (res.totalSS / 12) * (pagas - 12)) / pagas; // Re-ajuste para visualizar neto mensual
+    const monthlySS = res.totalSS / 12;
+    const monthlyIRPF = res.totalIRPF / pagas;
+
+    // Lo que el usuario ve en su nómina de un mes normal (Enero, por ejemplo)
+    const netNormalMonth = (res.netAnnual / pagas) + ((res.netAnnual / pagas) * (prorrated / 12));
+    // Pero legalmente, si prorratea, el neto sube porque la SS se divide entre 12.
+    // La forma más precisa de mostrarlo:
+    const unitNetNormal = (res.netAnnual / pagas);
+    const visibleNet = unitNetNormal + (unitNetNormal * (prorrated / 12));
 
     renderResult(lang.bruto + " " + lang.mensual, monthlyGrossVisible.toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
     if (res.otAmountMonthly > 0) renderResult(lang.ot_res, res.otAmountMonthly.toFixed(2) + "€");
 
-    // SS and IRPF are also visible per "check"
-    const ssVisible = (res.totalSS / pagas) * (1 + prorrated / 12);
-    const irpfVisible = (res.totalIRPF / pagas) * (1 + prorrated / 12);
-
-    renderResult(lang.ss, "-" + ssVisible.toFixed(2) + "€");
-    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + irpfVisible.toFixed(2) + "€");
+    // Mostrar SS real (siempre base 12)
+    renderResult(lang.ss, "-" + monthlySS.toFixed(2) + "€");
+    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + monthlyIRPF.toFixed(2) + "€");
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
 
-    getEl('net-result-value').textContent = monthlyNetVisible.toFixed(2) + "€";
+    getEl('net-result-value').textContent = visibleNet.toFixed(2) + "€";
 }
 
 function performSpainCalculations(annualGross, pagas) {
@@ -974,60 +1060,90 @@ function performSpainCalculations(annualGross, pagas) {
     const isJoint = isMarried && getEl('sp-pro-conjunta')?.checked;
     const isTemporal = appState.spToggles.contrato === 'temp';
 
-    const extraA = parseFloat(getEl('sp-pro-extras')?.value) || 0;
-    const extraATaxed = getEl('sp-pro-extras-taxed')?.checked;
-    const extraB = parseFloat(getEl('sp-pro-extras-2')?.value) || 0;
-    const extraBTaxed = getEl('sp-pro-extras-taxed-2')?.checked;
+    // Base Salarial (Salario + Antigüedad) - Multiplica por PAGAS
+    const antiguedad = parseFloat(getEl('sp-pro-antiguedad')?.value) || 0;
+    const contractBaseAnnual = annualGross + (antiguedad * pagas);
 
+    // Sistema de "Cucharas" (Buckets)
+    let bucketIRPF = contractBaseAnnual;
+    let bucketSS = contractBaseAnnual;
+    let bucketUnemployment = contractBaseAnnual;
+    let netMonthlyAdditions = 0; // Conceptos que no cotizan pero suman al neto
+
+    // Procesar Bonus Dinámicos - Multiplican siempre por 12
+    appState.spToggles.dynamicBonus.forEach(b => {
+        const annualAmt = b.amount * 12;
+        if (b.irpf) bucketIRPF += annualAmt;
+        if (b.ss) bucketSS += annualAmt;
+        if (b.unemployment) bucketUnemployment += annualAmt;
+        if (!b.irpf && !b.ss && !b.unemployment) netMonthlyAdditions += b.amount;
+    });
+
+    // Procesar Horas Extras y Pluses de Horas
     const mode = appState.mode;
     const suffix = mode === 'annual' ? 'ann' : mode === 'monthly' ? 'mon' : mode === 'hourly' ? 'hou' : 'inv';
     const otHours = parseFloat(getEl(`sp-pro-overtime-hours-${suffix}`)?.value) || 0;
     const otPrice = parseFloat(getEl(`sp-pro-overtime-price-${suffix}`)?.value) || 0;
-    const otAmountMonthly = otHours * otPrice;
+    let otAmountMonthly = otHours * otPrice;
+
+    // Sumar pluses extra de OT
+    appState.spToggles.dynamicOT.filter(o => o.suffix === suffix).forEach(o => {
+        otAmountMonthly += o.amount;
+    });
+
     const otAmountAnnual = otAmountMonthly * 12;
+    bucketIRPF += otAmountAnnual; // Las horas extra tributan IRPF
 
     const extraTaxMonthly = parseFloat(getEl('sp-pro-extra-tax')?.value) || 0;
 
     const holidayProrated = getEl('sp-holiday-prorated')?.checked;
     let holidayPayAnnual = 0;
     if (holidayProrated) {
-        // Spain approx: 8.33% (1/12) if 30 days are paid extra
-        holidayPayAnnual = annualGross * 0.0833;
+        holidayPayAnnual = contractBaseAnnual * 0.0833;
+        bucketIRPF += holidayPayAnnual;
+        bucketSS += holidayPayAnnual;
+        bucketUnemployment += holidayPayAnnual;
     }
 
-    const taxableAnnual = annualGross + holidayPayAnnual + otAmountAnnual + (extraATaxed ? extraA * pagas : 0) + (extraBTaxed ? extraB * pagas : 0);
-
-    const ssPercCC = 0.047;
-    const ssPercDesemp = isTemporal ? 0.0160 : 0.0155;
-    const ssPercFP_MEI = 0.0025;
+    // Seguridad Social con tipos configurables
+    const rateCommon = (parseFloat(getEl('sp-rate-common')?.value) || 4.7) / 100;
+    const rateUnemployment = (parseFloat(getEl('sp-rate-unemployment')?.value) || (isTemporal ? 1.60 : 1.55)) / 100;
+    const rateFpMei = (parseFloat(getEl('sp-rate-fp-mei')?.value) || 0.25) / 100;
 
     const customBaseMonthly = parseFloat(getEl('sp-pro-custom-base')?.value);
-    let baseSSAnnual;
+    let baseSSAnnual, baseUnemploymentAnnual;
+
+    const MAX_SS_BASE_MONTHLY = 4950.00;
+
     if (!isNaN(customBaseMonthly) && customBaseMonthly > 0) {
         baseSSAnnual = customBaseMonthly * 12;
+        baseUnemploymentAnnual = customBaseMonthly * 12;
     } else {
-        const MAX_SS_BASE_MONTHLY = 4950.00;
-        baseSSAnnual = Math.min(taxableAnnual / 12, MAX_SS_BASE_MONTHLY) * 12;
+        baseSSAnnual = Math.min(bucketSS / 12, MAX_SS_BASE_MONTHLY) * 12;
+        baseUnemploymentAnnual = Math.min(bucketUnemployment / 12, MAX_SS_BASE_MONTHLY) * 12;
     }
 
-    const totalSS = (baseSSAnnual * (ssPercCC + ssPercDesemp + ssPercFP_MEI)) + (otAmountAnnual * 0.047);
+    const totalSS = (baseSSAnnual * rateCommon) +
+                    (baseUnemploymentAnnual * rateUnemployment) +
+                    (baseSSAnnual * rateFpMei) +
+                    (otAmountAnnual * 0.047); // OT siempre cotiza al 4.7% fijo por ley
 
     const manualVal = getEl('sp-irpf-manual')?.value.trim();
     let irpfPerc;
     if (appState.isPro && manualVal !== "") {
         irpfPerc = parseFloat(manualVal);
-        if (isNaN(irpfPerc)) irpfPerc = estimateSpainIRPF(taxableAnnual, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer);
+        if (isNaN(irpfPerc)) irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer, totalSS);
     } else {
-        irpfPerc = estimateSpainIRPF(taxableAnnual, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer);
+        irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer, totalSS);
     }
 
-    const totalIRPF = taxableAnnual * (irpfPerc / 100);
-    const netAnnual = taxableAnnual + (extraATaxed ? 0 : extraA * pagas) + (extraBTaxed ? 0 : extraB * pagas) - totalSS - totalIRPF - (extraTaxMonthly * pagas);
+    const totalIRPF = bucketIRPF * (irpfPerc / 100);
+    const netAnnual = bucketIRPF - totalSS - totalIRPF - (extraTaxMonthly * 12) + (netMonthlyAdditions * 12);
 
-    return { taxableAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly };
+    return { taxableAnnual: bucketIRPF, totalSS, totalIRPF, irpfPerc, extraTaxMonthly, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions };
 }
 
-function estimateSpainIRPF(gross, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer) {
+function estimateSpainIRPF(gross, children, childDisCount, others, otherDis, region, disability, isMarried, isJoint, multipayer, totalSSAnnual) {
     let allowance = 5550;
     if (disability === '33') allowance += 3000;
     else if (disability === '65') allowance += 12000;
@@ -1046,10 +1162,20 @@ function estimateSpainIRPF(gross, children, childDisCount, others, otherDis, reg
     }
     if (isJoint) allowance += 3400;
 
+    // Reducción Rendimientos del Trabajo (DATOS REALES HACIENDA 2024-2026)
+    let reduction = 0;
+    if (gross < 14852) {
+        reduction = 7302;
+    } else if (gross <= 19747) {
+        reduction = 7302 - (1.15 * (gross - 14852));
+    }
+
     let minExempt = multipayer ? 12000 : 15876;
     if (gross < minExempt) return 0;
 
-    let taxable = Math.max(0, gross - allowance - 2000 - (gross * 0.065));
+    // Base liquidable: Bruto - SS - Gastos fijos (2000) - Reduccion - Minimos
+    let taxable = Math.max(0, gross - totalSSAnnual - 2000 - reduction - allowance);
+
     let tax = 0;
     if (taxable <= 12450) tax = taxable * 0.19;
     else if (taxable <= 20200) tax = 2365.5 + (taxable - 12450) * 0.24;

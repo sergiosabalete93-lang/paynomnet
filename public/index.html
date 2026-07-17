@@ -252,6 +252,10 @@
                     <input type="number" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000">
                 </div>
                 <div class="input-group">
+                    <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes)</label>
+                    <input type="number" id="sp-pro-antiguedad" class="input-field" value="0" min="0">
+                </div>
+                <div class="input-group">
                     <span class="sub-label" id="sp-pagas-tot-label">Pagas Totales (Contrato) <span class="help-icon" onclick="toggleHelp('h-pagas')">?</span></span>
                     <div class="frequency-toggle" id="sp-pagas-tot-annual">
                         <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
@@ -274,8 +278,12 @@
                     </div>
                     <div class="input-group">
                         <label id="sp-precio-extra-label-ann">Precio Hora Extra</label>
-                        <input type="number" id="sp-pro-overtime-price-ann" class="input-field pro-input" value="0" min="0">
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="number" id="sp-pro-overtime-price-ann" class="input-field pro-input" value="0" min="0" style="flex:1">
+                            <button id="btn-add-ot-item-ann" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'ann')">+</button>
+                        </div>
                     </div>
+                    <div id="sp-extra-ot-list-ann" style="margin-top:10px;"></div>
                 </div>
             </div>
 
@@ -306,8 +314,12 @@
                     </div>
                     <div class="input-group">
                         <label id="sp-precio-extra-label-mon">Precio Hora Extra</label>
-                        <input type="number" id="sp-pro-overtime-price-mon" class="input-field pro-input" value="0" min="0">
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="number" id="sp-pro-overtime-price-mon" class="input-field pro-input" value="0" min="0" style="flex:1">
+                            <button id="btn-add-ot-item-mon" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'mon')">+</button>
+                        </div>
                     </div>
+                    <div id="sp-extra-ot-list-mon" style="margin-top:10px;"></div>
                 </div>
             </div>
 
@@ -342,8 +354,12 @@
                     </div>
                     <div class="input-group">
                         <label id="sp-precio-extra-label-hou">Precio Hora Extra</label>
-                        <input type="number" id="sp-pro-overtime-price-hou" class="input-field pro-input" value="0" min="0">
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="number" id="sp-pro-overtime-price-hou" class="input-field pro-input" value="0" min="0" style="flex:1">
+                            <button id="btn-add-ot-item-hou" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'hou')">+</button>
+                        </div>
                     </div>
+                    <div id="sp-extra-ot-list-hou" style="margin-top:10px;"></div>
                 </div>
             </div>
 
@@ -374,8 +390,12 @@
                     </div>
                     <div class="input-group">
                         <label id="sp-precio-extra-label-inv">Precio Hora Extra</label>
-                        <input type="number" id="sp-pro-overtime-price-inv" class="input-field pro-input" value="0" min="0">
+                        <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="number" id="sp-pro-overtime-price-inv" class="input-field pro-input" value="0" min="0" style="flex:1">
+                            <button id="btn-add-ot-item-inv" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'inv')">+</button>
+                        </div>
                     </div>
+                    <div id="sp-extra-ot-list-inv" style="margin-top:10px;"></div>
                 </div>
             </div>
 
@@ -437,6 +457,35 @@
                         </div>
                     </div>
 
+                    <div class="pro-fields-wrapper pro-item">
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label id="sp-bonus-list-label" style="font-weight: bold;">Pluses y Bonus (€/mes)</label>
+                            <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="addExtraItem('sp', 'bonus')">+</button>
+                        </div>
+                        <div id="sp-bonus-dynamic-list"></div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item" style="margin-top: 10px;">
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label style="font-weight: bold;">Tipos de Cotización (%)</label>
+                            <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="toggleRatesConfig()">+</button>
+                        </div>
+                        <div id="sp-rates-config" class="hidden" style="margin-top:10px; padding-top:10px; border-top:1px dashed #ccc;">
+                            <div class="input-group">
+                                <label style="font-size:11px;">Contingencias Generales</label>
+                                <input type="number" id="sp-rate-common" class="input-field pro-input" value="4.7" step="0.01">
+                            </div>
+                            <div class="input-group">
+                                <label style="font-size:11px;">Desempleo</label>
+                                <input type="number" id="sp-rate-unemployment" class="input-field pro-input" value="1.55" step="0.01">
+                            </div>
+                            <div class="input-group">
+                                <label style="font-size:11px;">FP / MEI</label>
+                                <input type="number" id="sp-rate-fp-mei" class="input-field pro-input" value="0.25" step="0.01">
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="pro-fields-wrapper pro-item" style="margin-top: 10px;">
                         <div class="input-group">
                             <label id="sp-comunidad-label">Comunidad</label>
@@ -485,28 +534,7 @@
                         <div id="h-extra-tax" class="help-note"></div>
                     </div>
 
-                    <div class="pro-fields-wrapper pro-item" style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
-                        <div class="input-group">
-                            <label id="sp-bonus-a-label">Bonus A (€/mes) <span class="help-icon" onclick="toggleHelp('h-bonus')">?</span></label>
-                            <input type="number" id="sp-pro-extras" class="input-field pro-input" placeholder="0">
-                        </div>
-                        <div class="input-group toggle-group">
-                            <label id="sp-cotiza-a-label">Cotiza</label>
-                            <input type="checkbox" id="sp-pro-extras-taxed" class="toggle-switch" checked>
-                        </div>
-                    </div>
                     <div id="h-bonus" class="help-note"></div>
-
-                    <div class="pro-fields-wrapper pro-item">
-                        <div class="input-group">
-                            <label id="sp-bonus-b-label">Bonus B (€/mes)</label>
-                            <input type="number" id="sp-pro-extras-2" class="input-field pro-input" placeholder="0">
-                        </div>
-                        <div class="input-group toggle-group">
-                            <label id="sp-cotiza-b-label">Cotiza</label>
-                            <input type="checkbox" id="sp-pro-extras-taxed-2" class="toggle-switch" checked>
-                        </div>
-                    </div>
                 </div>
             </details>
         </section>
