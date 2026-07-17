@@ -107,7 +107,13 @@ const i18n = {
             before_tax: "Antes de Imp.",
             after_tax: "Después de Imp.",
             taxed: "Con Impuestos",
-            net_paid: "Neto Pagado"
+            net_paid: "Neto Pagado",
+            other_manual: "Otro / Manual...",
+            none: "Ninguno",
+            ewni: "Inglaterra / Gales / NI",
+            scotland: "Escocia",
+            job1: "1 Empleo",
+            jobs2plus: "2+ Empleos"
         },
         placeholders: {
             email: "Email (Admin)",
@@ -288,7 +294,13 @@ const i18n = {
             before_tax: "Before Tax",
             after_tax: "After Tax",
             taxed: "Taxed",
-            net_paid: "Net Paid"
+            net_paid: "Net Paid",
+            other_manual: "Other / Manual...",
+            none: "None",
+            ewni: "England / Wales / NI",
+            scotland: "Scotland",
+            job1: "1 Job",
+            jobs2plus: "2+ Jobs"
         },
         placeholders: {
             email: "Email (Admin)",
@@ -371,26 +383,26 @@ const i18n = {
             postgrad_loan: "Postgraduate Loan"
         },
         help: {
-            mode_annual: "Indica tu salario base anual según tu contrato de 12 meses (sin incluir las pagas extras si las cobras aparte). La aplicación calculará automáticamente tu sueldo mensual bruto sumando la parte proporcional de tus pagas extras si decides prorratearlas.",
-            mode_monthly: "Indica tu salario base bruto de un mes normal. Configura a continuación cuántas pagas extras tienes al año (14, 15 o 16) y cuántas de ellas recibes repartidas mensualmente.",
-            mode_hourly: "Cálculo ideal si cobras por hora trabajada. Multiplicamos tu precio/hora por las horas mensuales para proyectar tu salario base.",
-            mode_inverse: "Escribe la cantidad exacta que quieres recibir en tu cuenta bancaria y te diremos qué salario base debes negociar con la empresa.",
-            mode_dismissal: "Cálculo de la indemnización neta legal según el tipo de despido y los años de antigüedad en la empresa.",
-            children: "Número de hijos convivientes. Si tienen discapacidad, activa el interruptor para aplicar los beneficios fiscales adicionales de 3.000€ por cada hijo afectado.",
-            others: "Padres o abuelos convivientes. Es fundamental indicar si son mayores de 75 años o tienen discapacidad para aplicar correctamente las reducciones de IRPF.",
-            disability: "Tu grado oficial de discapacidad. Influye directamente aumentando el mínimo personal libre de impuestos.",
-            multipayer: "Activa esta opción si has tenido dos o más empleadores diferentes durante el año natural, ya que Hacienda reduce el límite para no estar obligado a declarar.",
-            joint: "Opción para matrimonios. En muchos casos reduce la carga fiscal al aplicar una reducción conjunta de 3.400€.",
-            pagas: "Define tu contrato real: elige el número total de pagas anuales y cuántas de ellas se te abonan de forma prorrateada (repartidas en los 12 meses).",
-            contract: "El tipo de contrato varía ligeramente la retención de Seguridad Social por desempleo.",
-            manual_irpf: "Usa esta casilla solo si quieres anular el cálculo automático y aplicar un % de retención fijo que ya conozcas.",
-            custom_base: "Define aquí tus bases de cotización si no coinciden con tu sueldo bruto (por ejemplo, si superas la base máxima o tienes conceptos exentos).",
-            extra_tax: "Añade aquí descuentos específicos de tu neto: cuota sindical, seguro médico privado, embargos o aportaciones voluntarias.",
-            antiguedad: "Importe mensual por trienios o antigüedad. Se considera salario base y se multiplica por el total de pagas de tu contrato.",
-            ot_hours: "Horas extras realizadas en el periodo. Tributan IRPF normal pero tienen una cotización reducida a la Seguridad Social.",
-            ot_price: "El precio bruto que recibes por cada hora extra según tu convenio o contrato.",
-            bonus: "Añade pluses mensuales (transporte, bonus, objetivos). Para cada uno puedes decidir si cotiza a la Seguridad Social, al Paro o si tributa IRPF.",
-            rates: "Ajuste técnico de los porcentajes de cotización. No los modifiques a menos que tu sector tenga tipos especiales.",
+            mode_annual: "Enter your annual base salary. The app will calculate your monthly take-home pay based on your contract's payment structure and taxes.",
+            mode_monthly: "Enter your gross monthly base salary. You can configure how many extra payments you have per year and how many are prorated monthly.",
+            mode_hourly: "Ideal for hourly work. Calculates projected annual gross and extracts monthly taxes.",
+            mode_inverse: "Tell us how much you want to earn 'clean' per month and we'll tell you the base gross salary you should negotiate.",
+            mode_dismissal: "Calculates legal redundancy pay based on days per year and time worked.",
+            children: "Number of children living with you. If any have a disability, enable the toggle to apply additional tax relief.",
+            others: "Parents or grandparents living with you. Specifying if they are over 75 or have a disability can significantly increase your net pay.",
+            disability: "Your personal degree of disability affects the tax-free personal allowance. Select 'None' if you don't have an official resolution.",
+            multipayer: "Enable if you've had more than one employer during the year. This lowers the tax-free limit and usually increases income tax withholding.",
+            joint: "For married couples, a joint declaration can sometimes provide an additional reduction in taxable income.",
+            pagas: "Configure your contract: choose total payments (12-16) and how many extra payments are spread across your monthly paychecks.",
+            contract: "Temporary contracts have slightly different social security contributions for unemployment.",
+            manual_irpf: "Use this field only if you want to override the automatic tax calculation with a fixed percentage you already know from your payslip.",
+            custom_base: "Define specific contribution bases. Useful if your social security base doesn't match your gross salary due to caps or exempt items.",
+            extra_tax: "Add specific deductions from your net pay: union fees, private health insurance, or voluntary contributions.",
+            antiguedad: "Monthly amount for longevity or seniority. It's added to your base salary and projected across all contract payments.",
+            ot_hours: "Number of overtime hours worked. Normal overtime is subject to reduced social security and regular income tax.",
+            ot_price: "The gross price you receive for each overtime hour according to your contract or collective agreement.",
+            bonus: "Monthly bonuses (transport, bonus, goals). For each one, you can decide if it's subject to social security, unemployment, or income tax.",
+            rates: "Technical adjustment of contribution percentages. Don't change them unless your sector has special rates.",
             uk_periods: "Usually 12 months, but some contracts use 4-week (13/yr) or weekly (52) cycles.",
             uk_bik: "Non-cash benefits like company car, medical insurance, etc. (P11D).",
             uk_pension: "Your pension contribution. Can be before tax (Salary Sacrifice) or after.",
@@ -990,6 +1002,8 @@ function updateUITranslations() {
 
     // UK labels
     if (getEl('uk-region-label')) getEl('uk-region-label').textContent = lang.labels.tax_region;
+    if (getEl('opt-uk-ewni')) getEl('opt-uk-ewni').textContent = lang.options.ewni;
+    if (getEl('opt-uk-sco')) getEl('opt-uk-sco').textContent = lang.options.scotland;
     if (getEl('opt-ni-a')) getEl('opt-ni-a').textContent = lang.options.standard + " (A)";
     if (getEl('opt-ni-b')) getEl('opt-ni-b').textContent = lang.options.reduced + " (B)";
     if (getEl('opt-ni-c')) getEl('opt-ni-c').textContent = lang.options.over_pension + " (C)";
@@ -1011,18 +1025,24 @@ function updateUITranslations() {
     if (getEl('uk-mon-calc-label')) getEl('uk-mon-calc-label').firstChild.textContent = lang.labels.mon_calc + " ";
     if (getEl('btn-uk-cal-month')) getEl('btn-uk-cal-month').textContent = lang.options.cal_month;
     if (getEl('btn-uk-4weeks')) getEl('btn-uk-4weeks').textContent = lang.options.four_weeks;
-    if (getEl('lbl-uk-hourly-overtime')) getEl('lbl-uk-hourly-overtime').textContent = appState.ukHourlyFreq === 'weekly' ? lang.labels.weekly_ot : lang.labels.monthly_ot;
-    if (getEl('uk-hora-extra-precio-label')) getEl('uk-hora-extra-precio-label').textContent = lang.labels.ot_rate;
+    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-ann')) getEl('uk-precio-extra-label-ann').textContent = lang.labels.ot_rate;
+    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-mon')) getEl('uk-precio-extra-label-mon').textContent = lang.labels.ot_rate;
+    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = appState.ukHourlyFreq === 'weekly' ? lang.labels.weekly_ot : lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-hou')) getEl('uk-precio-extra-label-hou').textContent = lang.labels.ot_rate;
+    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-precio-extra-label-inv')) getEl('uk-precio-extra-label-inv').textContent = lang.labels.ot_rate;
     if (getEl('uk-inverso-neto-label')) getEl('uk-inverso-neto-label').firstChild.textContent = lang.labels.target_net + " ";
     if (getEl('uk-despido-edad-label')) getEl('uk-despido-edad-label').firstChild.textContent = lang.labels.current_age + " ";
     if (getEl('uk-despido-anos-label')) getEl('uk-despido-anos-label').textContent = lang.labels.years_service;
     if (getEl('uk-despido-semana-label')) getEl('uk-despido-semana-label').textContent = lang.labels.weekly_pay;
-    if (getEl('uk-advanced-label')) getEl('uk-advanced-label').textContent = appState.language === 'es' ? "Configuración Avanzada (PRO)" : "Advanced / PRO";
+    if (getEl('uk-advanced-label')) getEl('uk-advanced-label').textContent = lang.labels.adv_config;
     if (getEl('uk-jobs-label')) getEl('uk-jobs-label').firstChild.textContent = lang.labels.jobs + " ";
-    if (getEl('btn-uk-1job')) getEl('btn-uk-1job').textContent = appState.language === 'es' ? "1 Empleo" : "1 Job";
-    if (getEl('btn-uk-2jobs')) getEl('btn-uk-2jobs').textContent = appState.language === 'es' ? "2+ Empleos" : "2+ Jobs";
+    if (getEl('btn-uk-1job')) getEl('btn-uk-1job').textContent = lang.options.job1;
+    if (getEl('btn-uk-2jobs')) getEl('btn-uk-2jobs').textContent = lang.options.jobs2plus;
     if (getEl('uk-tax-code-label')) getEl('uk-tax-code-label').firstChild.textContent = lang.labels.tax_code + " ";
-    if (getEl('opt-uk-custom-code')) getEl('opt-uk-custom-code').textContent = appState.language === 'es' ? "Otro / Manual..." : "Other / Manual...";
+    if (getEl('opt-uk-custom-code')) getEl('opt-uk-custom-code').textContent = lang.options.other_manual;
     if (getEl('uk-pension-label')) getEl('uk-pension-label').firstChild.textContent = lang.labels.pension_perc + " ";
     if (getEl('btn-uk-pension-before')) getEl('btn-uk-pension-before').textContent = lang.options.before_tax;
     if (getEl('btn-uk-pension-after')) getEl('btn-uk-pension-after').textContent = lang.options.after_tax;
@@ -1034,7 +1054,7 @@ function updateUITranslations() {
     if (getEl('btn-uk-bonus-b-taxed')) getEl('btn-uk-bonus-b-taxed').textContent = lang.options.taxed;
     if (getEl('btn-uk-bonus-b-net')) getEl('btn-uk-bonus-b-net').textContent = lang.options.net_paid;
     if (getEl('uk-stud-loan-label')) getEl('uk-stud-loan-label').textContent = lang.labels.student_loan;
-    if (getEl('opt-uk-sl-none')) getEl('opt-uk-sl-none').textContent = appState.language === 'es' ? 'Ninguno' : 'None';
+    if (getEl('opt-uk-sl-none')) getEl('opt-uk-sl-none').textContent = lang.options.none;
     if (getEl('uk-postgrad-label')) getEl('uk-postgrad-label').textContent = lang.labels.postgrad_loan;
     if (getEl('uk-holiday-label')) getEl('uk-holiday-label').textContent = lang.holiday_label;
 
@@ -1054,6 +1074,8 @@ function updateUITranslations() {
     // Calcular botón
     getEl('btn-calculate').textContent = lang.calc;
     getEl('results-title-label').textContent = lang.results_label;
+    if (getEl('label-net-total')) getEl('label-net-total').textContent = lang.net_result_label;
+    document.querySelectorAll('.legal-disclaimer').forEach(el => el.textContent = lang.disclaimer);
 
     const helpNotes = {
         'h-children': lang.help.children,
@@ -1068,6 +1090,7 @@ function updateUITranslations() {
         'h-extra-tax': lang.help.extra_tax,
         'h-bonus': lang.help.bonus,
         'h-uk-periods': lang.help.uk_periods,
+        'h-uk-periods-monthly': lang.help.uk_periods,
         'h-uk-bik': lang.help.uk_bik,
         'h-uk-pension': lang.help.uk_pension,
         'h-uk-taxcode': lang.help.uk_taxcode,
