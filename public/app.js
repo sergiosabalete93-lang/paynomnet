@@ -1002,48 +1002,49 @@ function processCalculation() {
    ========================================================================== */
 function calculateSpain() {
     const lang = i18n[appState.language];
-    let annualGross = 0;
+    let annualContractBase = 0; // Sueldo base puro sin extras
     const pagas = appState.spToggles.pagas;
     const prorrated = appState.spToggles.pagas_prorrateadas;
 
     if (appState.mode === 'annual') {
-        annualGross = parseFloat(getEl('sp-annual-gross').value) || 0;
+        annualContractBase = parseFloat(getEl('sp-annual-gross').value) || 0;
     } else if (appState.mode === 'monthly') {
         let mGross = parseFloat(getEl('sp-monthly-gross').value) || 0;
-        annualGross = mGross * pagas;
+        annualContractBase = mGross * pagas;
     } else if (appState.mode === 'hourly') {
         let price = parseFloat(getEl('sp-hourly-price').value) || 0;
         let hoursMonth = parseFloat(getEl('sp-hourly-hours').value) || 0;
-        annualGross = (price * hoursMonth) * 12;
+        annualContractBase = (price * hoursMonth) * 12;
     } else if (appState.mode === 'inverse') {
         calculateSpainInverse(); return;
     } else if (appState.mode === 'dismissal') {
         calculateSpainDismissal(); return;
     }
 
-    const res = performSpainCalculations(annualGross, pagas);
+    const res = performSpainCalculations(annualContractBase, pagas);
 
-    // Results logic based on Prorrated Pagas
-    const monthlyNetBase = (res.netAnnual + (res.totalSS / 12) * (pagas - 12)) / pagas; // Re-ajuste para visualizar neto mensual
+    // --- Lógica de Visualización de Mes Normal (Precisión Contable) ---
+    const basePagaBruta = annualContractBase / pagas;
+    const visibleMonthlyGross = basePagaBruta + (basePagaBruta * prorrated / 12) + res.otAmountMonthly + res.netMonthlyAdditions;
+
     const monthlySS = res.totalSS / 12;
     const monthlyIRPF = res.totalIRPF / pagas;
+    const visibleMonthlyIRPF = monthlyIRPF * (1 + prorrated / 12);
 
-    // Lo que el usuario ve en su nómina de un mes normal (Enero, por ejemplo)
-    const netNormalMonth = (res.netAnnual / pagas) + ((res.netAnnual / pagas) * (prorrated / 12));
-    // Pero legalmente, si prorratea, el neto sube porque la SS se divide entre 12.
-    // La forma más precisa de mostrarlo:
-    const unitNetNormal = (res.netAnnual / pagas);
-    const visibleNet = unitNetNormal + (unitNetNormal * (prorrated / 12));
-
-    renderResult(lang.bruto + " " + lang.mensual, monthlyGrossVisible.toFixed(2) + "€");
+    renderResult(lang.bruto + " " + lang.mensual, visibleMonthlyGross.toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
     if (res.otAmountMonthly > 0) renderResult(lang.ot_res, res.otAmountMonthly.toFixed(2) + "€");
 
-    // Mostrar SS real (siempre base 12)
+    // Seguridad Social: Siempre se muestra el descuento de 1/12
     renderResult(lang.ss, "-" + monthlySS.toFixed(2) + "€");
-    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + monthlyIRPF.toFixed(2) + "€");
+
+    // IRPF: Se ajusta según el prorrateo para que el Neto cuadre
+    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + visibleMonthlyIRPF.toFixed(2) + "€");
+
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
 
+    // Neto Visible final
+    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - res.extraTaxMonthly;
     getEl('net-result-value').textContent = visibleNet.toFixed(2) + "€";
 }
 
