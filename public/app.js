@@ -7,7 +7,7 @@ const appState = {
     language: 'es', // 'es' o 'en'
     country: 'spain', // 'spain' o 'uk'
     mode: 'annual', // 'annual', 'monthly', 'hourly', 'inverse', 'dismissal'
-    isPro: false,
+    isPro: true, // <--- Activo por defecto para pruebas
     adClickCount: 0,
     interstitialId: 'ca-app-pub-3940256099942544/1033173712', // ID de Prueba (Test)
     spToggles: {
@@ -408,12 +408,10 @@ document.addEventListener('DOMContentLoaded', () => {
     initApp();
     setupEventListeners();
     updateUITranslations();
-    updatePagasUI(); // <--- Añadido
+    updatePagasUI();
 
-    // Comprobar si ya era PRO de una sesión anterior
-    if (localStorage.getItem('user_is_pro') === 'true') {
-        activatePro("Suscripción PRO Restaurada");
-    }
+    // Activar modo PRO automáticamente para fase de pruebas
+    activatePro();
 });
 
 function checkConsent() {
@@ -1487,10 +1485,10 @@ function activatePro(msg) {
     document.querySelectorAll('.pro-feature').forEach(e => {
         // e.classList.remove('hidden'); // No eliminar hidden, solo permitir clic si el estilo lo habilita
     });
-    getEl('pro-settings-container').classList.remove('hidden');
-    getEl('pro-upgrade-container').classList.add('hidden');
+    getEl('pro-settings-container')?.classList.remove('hidden');
+    getEl('pro-upgrade-container')?.classList.add('hidden');
     getEl('ad-banner-bottom')?.classList.add('hidden');
-    alert(msg);
+    if (msg) alert(msg);
 }
 
 const PRO_MASTER_EMAIL = "paynomnet@gmail.com";
