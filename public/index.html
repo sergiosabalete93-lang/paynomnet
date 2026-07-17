@@ -454,6 +454,18 @@
                                 <label style="font-size:10px" id="sp-otro-dis-label">Persona con Discapacidad</label>
                                 <input type="checkbox" id="sp-pro-other-dis" class="toggle-switch">
                             </div>
+                            <div id="wrapper-sp-other-dis-count" class="input-group hidden" style="margin-top:5px">
+                                <label style="font-size:10px" id="sp-otro-dis-count-label">¿Cuántos con discapacidad?</label>
+                                <input type="number" id="sp-pro-other-dis-count" class="input-field" value="0" min="0" style="padding: 5px 10px; font-size: 12px;">
+                            </div>
+                            <div class="input-group toggle-group" style="margin-top:5px">
+                                <label style="font-size:10px" id="sp-otro-75-label">Mayor de 75 años</label>
+                                <input type="checkbox" id="sp-pro-other-75" class="toggle-switch">
+                            </div>
+                            <div id="wrapper-sp-other-75-count" class="input-group hidden" style="margin-top:5px">
+                                <label style="font-size:10px" id="sp-otro-75-count-label">¿Cuántos con +75 años?</label>
+                                <input type="number" id="sp-pro-other-75-count" class="input-field" value="0" min="0" style="padding: 5px 10px; font-size: 12px;">
+                            </div>
                         </div>
                     </div>
 
@@ -529,7 +541,7 @@
                     </div>
 
                     <div class="input-group pro-item">
-                        <label id="sp-otros-imp-label">Otros Impuestos (€/mes) <span class="help-icon" onclick="toggleHelp('h-extra-tax')">?</span></label>
+                        <label id="sp-otros-imp-label">Otras Deducciones (€/mes) <span class="help-icon" onclick="toggleHelp('h-extra-tax')">?</span></label>
                         <input type="number" id="sp-pro-extra-tax" class="input-field pro-input" placeholder="0">
                         <div id="h-extra-tax" class="help-note"></div>
                     </div>
