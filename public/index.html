@@ -252,8 +252,9 @@
                     <input type="number" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000">
                 </div>
                 <div class="input-group">
-                    <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes)</label>
+                    <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes) <span class="help-icon" onclick="toggleHelp('h-antiguedad')">?</span></label>
                     <input type="number" id="sp-pro-antiguedad" class="input-field" value="0" min="0">
+                    <div id="h-antiguedad" class="help-note"></div>
                 </div>
                 <div class="input-group">
                     <span class="sub-label" id="sp-pagas-tot-label">Pagas Totales (Contrato) <span class="help-icon" onclick="toggleHelp('h-pagas')">?</span></span>
@@ -273,15 +274,17 @@
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="sp-horas-extra-label-ann">Horas Extra (Mensual)</label>
+                        <label id="sp-horas-extra-label-ann">Horas Extra <span class="help-icon" onclick="toggleHelp('h-ot-hours')">?</span></label>
                         <input type="number" id="sp-pro-overtime-hours-ann" class="input-field pro-input" value="0" min="0">
+                        <div id="h-ot-hours" class="help-note"></div>
                     </div>
                     <div class="input-group">
-                        <label id="sp-precio-extra-label-ann">Precio Hora Extra</label>
+                        <label id="sp-precio-extra-label-ann">Precio Hora Extra <span class="help-icon" onclick="toggleHelp('h-ot-price')">?</span></label>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <input type="number" id="sp-pro-overtime-price-ann" class="input-field pro-input" value="0" min="0" style="flex:1">
                             <button id="btn-add-ot-item-ann" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'ann')">+</button>
                         </div>
+                        <div id="h-ot-price" class="help-note"></div>
                     </div>
                     <div id="sp-extra-ot-list-ann" style="margin-top:10px;"></div>
                 </div>
@@ -309,11 +312,11 @@
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="sp-horas-extra-label-mon">Horas Extra (Mensual)</label>
+                        <label id="sp-horas-extra-label-mon">Horas Extra <span class="help-icon" onclick="toggleHelp('h-ot-hours')">?</span></label>
                         <input type="number" id="sp-pro-overtime-hours-mon" class="input-field pro-input" value="0" min="0">
                     </div>
                     <div class="input-group">
-                        <label id="sp-precio-extra-label-mon">Precio Hora Extra</label>
+                        <label id="sp-precio-extra-label-mon">Precio Hora Extra <span class="help-icon" onclick="toggleHelp('h-ot-price')">?</span></label>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <input type="number" id="sp-pro-overtime-price-mon" class="input-field pro-input" value="0" min="0" style="flex:1">
                             <button id="btn-add-ot-item-mon" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'mon')">+</button>
@@ -349,11 +352,11 @@
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="sp-horas-extra-label-hou">Horas Extra (Mensual)</label>
+                        <label id="sp-horas-extra-label-hou">Horas Extra <span class="help-icon" onclick="toggleHelp('h-ot-hours')">?</span></label>
                         <input type="number" id="sp-pro-overtime-hours-hou" class="input-field pro-input" value="0" min="0">
                     </div>
                     <div class="input-group">
-                        <label id="sp-precio-extra-label-hou">Precio Hora Extra</label>
+                        <label id="sp-precio-extra-label-hou">Precio Hora Extra <span class="help-icon" onclick="toggleHelp('h-ot-price')">?</span></label>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <input type="number" id="sp-pro-overtime-price-hou" class="input-field pro-input" value="0" min="0" style="flex:1">
                             <button id="btn-add-ot-item-hou" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'hou')">+</button>
@@ -385,11 +388,11 @@
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="sp-horas-extra-label-inv">Horas Extra (Mensual)</label>
+                        <label id="sp-horas-extra-label-inv">Horas Extra <span class="help-icon" onclick="toggleHelp('h-ot-hours')">?</span></label>
                         <input type="number" id="sp-pro-overtime-hours-inv" class="input-field pro-input" value="0" min="0">
                     </div>
                     <div class="input-group">
-                        <label id="sp-precio-extra-label-inv">Precio Hora Extra</label>
+                        <label id="sp-precio-extra-label-inv">Precio Hora Extra <span class="help-icon" onclick="toggleHelp('h-ot-price')">?</span></label>
                         <div style="display:flex; gap:10px; align-items:center;">
                             <input type="number" id="sp-pro-overtime-price-inv" class="input-field pro-input" value="0" min="0" style="flex:1">
                             <button id="btn-add-ot-item-inv" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'inv')">+</button>
@@ -437,52 +440,62 @@
                             <label id="sp-hijos-label">Nº Hijos <span class="help-icon" onclick="toggleHelp('h-children')">?</span></label>
                             <input type="number" id="sp-pro-children" class="input-field" value="0" min="0">
                             <div id="h-children" class="help-note"></div>
-                            <div class="input-group toggle-group" style="margin-top:5px">
-                                <label style="font-size:10px" id="sp-hijo-dis-label">Hijo con Discapacidad</label>
-                                <input type="checkbox" id="sp-pro-child-dis" class="toggle-switch">
-                            </div>
-                            <div id="wrapper-sp-child-dis-count" class="input-group hidden" style="margin-top:5px">
-                                <label style="font-size:10px" id="sp-hijo-dis-count-label">¿Cuántos hijos?</label>
-                                <input type="number" id="sp-pro-child-dis-count" class="input-field" value="0" min="0" style="padding: 5px 10px; font-size: 12px;">
+
+                            <!-- Opciones que solo aparecen si hay hijos > 0 -->
+                            <div id="wrapper-sp-child-options" class="hidden" style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ddd;">
+                                <div class="input-group toggle-group">
+                                    <label style="font-size:10px" id="sp-hijo-dis-label">Hijo con Discapacidad</label>
+                                    <input type="checkbox" id="sp-pro-child-dis" class="toggle-switch">
+                                </div>
+                                <div id="wrapper-sp-child-dis-count" class="input-group hidden" style="margin-top:5px">
+                                    <label style="font-size:10px" id="sp-hijo-dis-count-label">¿Cuántos hijos?</label>
+                                    <input type="number" id="sp-pro-child-dis-count" class="input-field" value="0" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                </div>
                             </div>
                         </div>
                         <div class="input-group">
                             <label id="sp-otros-label">Otros a Cargo <span class="help-icon" onclick="toggleHelp('h-others')">?</span></label>
                             <input type="number" id="sp-pro-others" class="input-field" value="0" min="0">
                             <div id="h-others" class="help-note"></div>
-                            <div class="input-group toggle-group" style="margin-top:5px">
-                                <label style="font-size:10px" id="sp-otro-dis-label">Persona con Discapacidad</label>
-                                <input type="checkbox" id="sp-pro-other-dis" class="toggle-switch">
-                            </div>
-                            <div id="wrapper-sp-other-dis-count" class="input-group hidden" style="margin-top:5px">
-                                <label style="font-size:10px" id="sp-otro-dis-count-label">¿Cuántos con discapacidad?</label>
-                                <input type="number" id="sp-pro-other-dis-count" class="input-field" value="0" min="0" style="padding: 5px 10px; font-size: 12px;">
-                            </div>
-                            <div class="input-group toggle-group" style="margin-top:5px">
-                                <label style="font-size:10px" id="sp-otro-75-label">Mayor de 75 años</label>
-                                <input type="checkbox" id="sp-pro-other-75" class="toggle-switch">
-                            </div>
-                            <div id="wrapper-sp-other-75-count" class="input-group hidden" style="margin-top:5px">
-                                <label style="font-size:10px" id="sp-otro-75-count-label">¿Cuántos con +75 años?</label>
-                                <input type="number" id="sp-pro-other-75-count" class="input-field" value="0" min="0" style="padding: 5px 10px; font-size: 12px;">
+
+                            <!-- Opciones que solo aparecen si hay otros > 0 -->
+                            <div id="wrapper-sp-other-options" class="hidden" style="margin-top: 5px; padding-top: 5px; border-top: 1px dashed #ddd;">
+                                <div class="input-group toggle-group">
+                                    <label style="font-size:10px" id="sp-otro-dis-label">Persona con Discapacidad</label>
+                                    <input type="checkbox" id="sp-pro-other-dis" class="toggle-switch">
+                                </div>
+                                <div id="wrapper-sp-other-dis-count" class="input-group hidden" style="margin-top:5px">
+                                    <label style="font-size:10px" id="sp-otro-dis-count-label">¿Cuántos con discapacidad?</label>
+                                    <input type="number" id="sp-pro-other-dis-count" class="input-field" value="0" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                </div>
+                                <div class="input-group toggle-group" style="margin-top:5px">
+                                    <label style="font-size:10px" id="sp-otro-75-label">Mayor de 75 años</label>
+                                    <input type="checkbox" id="sp-pro-other-75" class="toggle-switch">
+                                </div>
+                                <div id="wrapper-sp-other-75-count" class="input-group hidden" style="margin-top:5px">
+                                    <label style="font-size:10px" id="sp-otro-75-count-label">¿Cuántos con +75 años?</label>
+                                    <input type="number" id="sp-pro-other-75-count" class="input-field" value="0" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="pro-fields-wrapper pro-item">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <label id="sp-bonus-list-label" style="font-weight: bold;">Pluses y Bonus (€/mes)</label>
+                            <label id="sp-bonus-list-label" style="font-weight: bold;">Pluses y Bonus (€/mes) <span class="help-icon" onclick="toggleHelp('h-bonus')">?</span></label>
                             <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="addExtraItem('sp', 'bonus')">+</button>
                         </div>
                         <div id="sp-bonus-dynamic-list"></div>
+                        <div id="h-bonus" class="help-note"></div>
                     </div>
 
                     <div class="pro-fields-wrapper pro-item" style="margin-top: 10px;">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <label style="font-weight: bold;">Tipos de Cotización (%)</label>
+                            <label style="font-weight: bold;">Tipos de Cotización (%) <span class="help-icon" onclick="toggleHelp('h-rates')">?</span></label>
                             <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="toggleRatesConfig()">+</button>
                         </div>
                         <div id="sp-rates-config" class="hidden" style="margin-top:10px; padding-top:10px; border-top:1px dashed #ccc;">
+                            <div id="h-rates" class="help-note"></div>
                             <div class="input-group">
                                 <label style="font-size:11px;">Contingencias Generales</label>
                                 <input type="number" id="sp-rate-common" class="input-field pro-input" value="4.7" step="0.01">
@@ -533,20 +546,32 @@
                             <input type="number" id="sp-irpf-manual" class="input-field pro-input" placeholder="Ej: 15">
                             <div id="h-manual-irpf" class="help-note"></div>
                         </div>
-                        <div class="input-group">
-                            <label id="sp-base-manual-label">Base Manual (€/mes) <span class="help-icon" onclick="toggleHelp('h-custom-base')">?</span></label>
-                            <input type="number" id="sp-pro-custom-base" class="input-field pro-input" placeholder="Opcional">
+
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 10px;">
+                            <label style="font-weight: bold; font-size: 13px;">Bases de Cotización Manuales (€/mes) <span class="help-icon" onclick="toggleHelp('h-custom-base')">?</span></label>
+                            <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="toggleBasesConfig()">+</button>
+                        </div>
+                        <div id="sp-bases-config" class="hidden" style="margin-top:10px; padding-top:10px; border-top:1px dashed #ccc;">
                             <div id="h-custom-base" class="help-note"></div>
+                            <div class="input-group">
+                                <label style="font-size:11px;">Base Contingencias Generales</label>
+                                <input type="number" id="sp-pro-base-common" class="input-field pro-input" placeholder="Automática">
+                            </div>
+                            <div class="input-group">
+                                <label style="font-size:11px;">Base Desempleo / FP</label>
+                                <input type="number" id="sp-pro-base-at-ep" class="input-field pro-input" placeholder="Automática">
+                            </div>
                         </div>
                     </div>
 
-                    <div class="input-group pro-item">
-                        <label id="sp-otros-imp-label">Otras Deducciones (€/mes) <span class="help-icon" onclick="toggleHelp('h-extra-tax')">?</span></label>
-                        <input type="number" id="sp-pro-extra-tax" class="input-field pro-input" placeholder="0">
+                    <div class="pro-fields-wrapper pro-item">
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label id="sp-otros-imp-label" style="font-weight: bold;">Otras Deducciones (€/mes) <span class="help-icon" onclick="toggleHelp('h-extra-tax')">?</span></label>
+                            <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="addExtraItem('sp', 'deduction')">+</button>
+                        </div>
+                        <div id="sp-deductions-dynamic-list"></div>
                         <div id="h-extra-tax" class="help-note"></div>
                     </div>
-
-                    <div id="h-bonus" class="help-note"></div>
                 </div>
             </details>
         </section>

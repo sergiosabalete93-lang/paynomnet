@@ -19,7 +19,8 @@ const appState = {
         contrato: 'indef',
         'holiday-prorated': false,
         dynamicBonus: [], // List of { id, amount, cotizaIRPF, cotizaSS, cotizaUnemployment }
-        dynamicOT: []     // List of { id, amount, modeSuffix }
+        dynamicOT: [],     // List of { id, amount, modeSuffix }
+        dynamicDeductions: [] // List of { id, amount }
     },
     ukToggles: {
         'hourly-monthly-base': 'full',
@@ -118,7 +119,7 @@ const i18n = {
             sp_dismissal_sal: "Ej: 2000 o 24000",
             sp_dismissal_years: "Ej: 3.5",
             manual_irpf: "Ej: 15",
-            optional: "Opcional",
+            optional: "Automática",
             uk_annual: "Ej: 35000",
             uk_monthly: "Ej: 2800",
             uk_hourly_rate: "Ej: 15",
@@ -141,11 +142,11 @@ const i18n = {
             pagadores: "Pagadores",
             civil: "Estado Civil",
             conjunta: "Declaración Conjunta",
-            bruto_anual: "Bruto Anual (€)",
+            bruto_anual: "Salario Base Anual (€)",
             n_pagas: "Número de Pagas",
             pagas_totales: "Pagas Totales (Contrato)",
             pagas_prorrateadas: "Pagas Prorrateadas (Repartidas)",
-            bruto_mensual: "Bruto Mensual (€)",
+            bruto_mensual: "Salario Base Mensual (€)",
             pagas_extras: "Pagas Extras",
             precio_hora: "Precio por Hora (€)",
             horas_mes: "Horas al Mes",
@@ -161,7 +162,7 @@ const i18n = {
             otros_imp: "Otras Deducciones (€/mes)",
             bonus_a: "Bonus A (€/mes)",
             bonus_b: "Bonus B (€/mes)",
-            ot_hours: "Horas Extra (Mensual)",
+            ot_hours: "Horas Extra",
             ot_price: "Precio Hora Extra",
             hijo_dis_count: "¿Cuántos hijos?",
             cotiza: "Cotiza",
@@ -321,11 +322,11 @@ const i18n = {
             pagadores: "Employers",
             civil: "Marital Status",
             conjunta: "Joint Declaration",
-            bruto_anual: "Gross Annual (€)",
+            bruto_anual: "Annual Base Salary (€)",
             n_pagas: "Number of Payments",
             pagas_totales: "Total Payments (Contract)",
             pagas_prorrateadas: "Prorated Payments (Monthly)",
-            bruto_mensual: "Gross Monthly (€)",
+            bruto_mensual: "Monthly Base Salary (€)",
             pagas_extras: "Extra Payments",
             precio_hora: "Hourly Rate (€)",
             horas_mes: "Hours per Month",
@@ -341,7 +342,7 @@ const i18n = {
             otros_imp: "Other Deductions (€/mo)",
             bonus_a: "Bonus A (€/mo)",
             bonus_b: "Bonus B (€/mo)",
-            ot_hours: "Overtime Hours (Monthly)",
+            ot_hours: "Overtime Hours",
             ot_price: "Overtime Rate",
             hijo_dis_count: "How many children?",
             cotiza: "Taxable",
@@ -369,22 +370,27 @@ const i18n = {
             postgrad_loan: "Postgraduate Loan"
         },
         help: {
-            mode_annual: "Calculate net pay from your total annual gross salary.",
-            mode_monthly: "Calculate net pay based on your monthly gross earnings.",
-            mode_hourly: "Ideal for hourly workers or short-term temporary contracts.",
-            mode_inverse: "Tell us how much you want to take home and we'll tell you the required gross.",
-            mode_dismissal: "Calculate legal redundancy pay according to 2026 regulations.",
-            children: "Number of children under 25 living with you with no income.",
-            others: "Dependents over 65 or with disabilities in your care.",
-            disability: "Your officially recognized disability degree affects your tax-free allowance.",
-            multipayer: "Having more than one employer in the same year may affect your tax rate.",
-            joint: "If married, joint tax filing is sometimes more beneficial.",
-            pagas: "Choose between 12 payments (prorated extras) or 14 payments.",
-            contract: "Temporary contracts may have different minimum mandatory tax rates.",
-            manual_irpf: "Manually override the tax percentage if you know your company's rate.",
-            custom_base: "If your contribution base differs from gross (e.g., max bases), adjust here.",
-            extra_tax: "Subtract from the net any monthly discount on your payroll that is not a legal tax, such as: union fees, private insurance, garnishments or company plan contributions.",
-            bonus: "Monthly salary supplements. Indicate if they are taxable or net extras.",
+            mode_annual: "Introduce tu sueldo base anual de contrato (sin contar pluses ni extras). La app calculará el neto mensual basándose en el reparto de pagas de tu empresa y los impuestos correspondientes.",
+            mode_monthly: "Introduce tu salario base mensual. Puedes configurar exactamente cuántas pagas tienes al año y cuántas de ellas recibes prorrateadas mes a mes.",
+            mode_hourly: "Ideal para trabajos por horas. Calcula el bruto anual proyectado y extrae los impuestos mensuales.",
+            mode_inverse: "Dinos cuánto quieres cobrar 'limpio' al mes y te diremos cuánto bruto base debes negociar con la empresa.",
+            mode_dismissal: "Calcula la indemnización legal por fin de contrato según los días por año y tiempo trabajado.",
+            children: "Escribe el número total de hijos. Si alguno tiene discapacidad, activa el interruptor y especifica cuántos para aplicar la desgravación de 3.000€ por hijo.",
+            others: "Padres o abuelos que vivan contigo. Especifica si son mayores de 75 años o tienen discapacidad, ya que esto aumenta mucho tu sueldo neto.",
+            disability: "Tu grado de discapacidad personal influye en el mínimo exento de impuestos. Selecciona 'No' si no tienes una resolución oficial.",
+            multipayer: "Activa si has tenido más de un trabajo en el año. Esto baja el límite exento a 12.000€ y suele subir la retención de IRPF.",
+            joint: "Si estás casado/a, la declaración conjunta permite una reducción adicional de 3.400€ en la base imponible.",
+            pagas: "Configura tu contrato: elige el total de pagas (12-16) y cuántas de las extras recibes repartidas en tu nómina cada mes.",
+            contract: "Los contratos temporales tienen una cotización por desempleo ligeramente superior (1,60% vs 1,55%).",
+            manual_irpf: "Usa este campo solo si quieres ignorar el cálculo automático de Hacienda y aplicar un porcentaje de retención fijo que ya conoces de tu nómina.",
+            custom_base: "Pulsa el '+' para definir bases de cotización específicas. Útil si tu base de Seguridad Social no coincide con tu sueldo bruto (por topes máximos o pluses exentos).",
+            extra_tax: "Usa el '+' para añadir gastos que te quitan del neto: cuotas sindicales, seguros, o aportaciones a planes de pensiones.",
+            bonus: "Pluses mensuales (transporte, vestuario, bonus). Pulsa '+' para añadir todos los que necesites y configurar para cada uno si debe pagar IRPF, SS o Desempleo.",
+            antiguedad: "Escribe el importe mensual que recibes por trienios o antigüedad. Se sumará a tu salario base y se proyectará en todas las pagas de tu contrato.",
+            ot_hours: "Horas extras realizadas. Las extras normales cotizan a la Seguridad Social (4,7%) y tributan IRPF.",
+            ot_price: "Precio por cada hora extra según tu contrato o convenio.",
+            bonus: "Pluses mensuales. Pulsa '+' para añadir todos los que necesites y configurar si deben pagar IRPF, SS o Desempleo.",
+            rates: "Porcentajes de cotización. Solo cámbialos si perteneces a un sector con convenios especiales.",
             uk_periods: "Usually 12 months, but some contracts use 4-week (13/yr) or weekly (52) cycles.",
             uk_bik: "Non-cash benefits like company car, medical insurance, etc. (P11D).",
             uk_pension: "Your pension contribution. Can be before tax (Salary Sacrifice) or after.",
@@ -472,7 +478,13 @@ function setupEventListeners() {
     });
 
     getEl('theme-toggle')?.addEventListener('change', (e) => {
-        document.body.className = e.target.checked ? 'theme-dark' : 'theme-light';
+        if (e.target.checked) {
+            document.body.classList.add('theme-dark');
+            document.body.classList.remove('theme-light');
+        } else {
+            document.body.classList.add('theme-light');
+            document.body.classList.remove('theme-dark');
+        }
     });
 
     getEl('lang-select')?.addEventListener('change', (e) => {
@@ -512,20 +524,73 @@ function setupEventListeners() {
         appState.ukToggles['holiday-prorated'] = e.target.checked;
     });
 
+    // Revelación progresiva y Bloqueo de cantidades (Hijos)
+    const updateChildVisibility = (e) => {
+        const val = parseInt(e.target.value) || 0;
+        getEl('wrapper-sp-child-options').classList.toggle('hidden', val <= 0);
+        if (val <= 0) {
+            getEl('sp-pro-child-dis').checked = false;
+            getEl('wrapper-sp-child-dis-count').classList.add('hidden');
+            getEl('sp-pro-child-dis-count').value = 0;
+        }
+    };
+    getEl('sp-pro-children')?.addEventListener('input', updateChildVisibility);
+    getEl('sp-pro-children')?.addEventListener('change', updateChildVisibility);
+
     getEl('sp-pro-child-dis')?.addEventListener('change', (e) => {
         getEl('wrapper-sp-child-dis-count').classList.toggle('hidden', !e.target.checked);
         if (!e.target.checked) getEl('sp-pro-child-dis-count').value = 0;
+        else if (parseInt(getEl('sp-pro-child-dis-count').value) === 0) getEl('sp-pro-child-dis-count').value = 1;
     });
+
+    const limitChildDis = (e) => {
+        const total = parseInt(getEl('sp-pro-children').value) || 0;
+        if (parseInt(e.target.value) > total) e.target.value = total;
+    };
+    getEl('sp-pro-child-dis-count')?.addEventListener('input', limitChildDis);
+    getEl('sp-pro-child-dis-count')?.addEventListener('change', limitChildDis);
+
+    // Revelación progresiva y Bloqueo de cantidades (Otros)
+    const updateOtherVisibility = (e) => {
+        const val = parseInt(e.target.value) || 0;
+        getEl('wrapper-sp-other-options').classList.toggle('hidden', val <= 0);
+        if (val <= 0) {
+            getEl('sp-pro-other-dis').checked = false;
+            getEl('wrapper-sp-other-dis-count').classList.add('hidden');
+            getEl('sp-pro-other-dis-count').value = 0;
+            getEl('sp-pro-other-75').checked = false;
+            getEl('wrapper-sp-other-75-count').classList.add('hidden');
+            getEl('sp-pro-other-75-count').value = 0;
+        }
+    };
+    getEl('sp-pro-others')?.addEventListener('input', updateOtherVisibility);
+    getEl('sp-pro-others')?.addEventListener('change', updateOtherVisibility);
 
     getEl('sp-pro-other-dis')?.addEventListener('change', (e) => {
         getEl('wrapper-sp-other-dis-count').classList.toggle('hidden', !e.target.checked);
         if (!e.target.checked) getEl('sp-pro-other-dis-count').value = 0;
+        else if (parseInt(getEl('sp-pro-other-dis-count').value) === 0) getEl('sp-pro-other-dis-count').value = 1;
     });
+
+    const limitOtherDis = (e) => {
+        const total = parseInt(getEl('sp-pro-others').value) || 0;
+        if (parseInt(e.target.value) > total) e.target.value = total;
+    };
+    getEl('sp-pro-other-dis-count')?.addEventListener('input', limitOtherDis);
+    getEl('sp-pro-other-dis-count')?.addEventListener('change', limitOtherDis);
 
     getEl('sp-pro-other-75')?.addEventListener('change', (e) => {
         getEl('wrapper-sp-other-75-count').classList.toggle('hidden', !e.target.checked);
         if (!e.target.checked) getEl('sp-pro-other-75-count').value = 0;
+        else if (parseInt(getEl('sp-pro-other-75-count').value) === 0) getEl('sp-pro-other-75-count').value = 1;
     });
+
+    const limitOther75 = (e) => {
+        const total = parseInt(getEl('sp-pro-others').value) || 0;
+        if (parseInt(e.target.value) > total) e.target.value = total;
+    };
+    getEl('sp-pro-other-75-count')?.addEventListener('input', limitOther75);
+    getEl('sp-pro-other-75-count')?.addEventListener('change', limitOther75);
 
     // Eventos Consentimiento
     getEl('btn-accept-consent')?.addEventListener('click', () => {
@@ -660,6 +725,10 @@ window.toggleRatesConfig = function() {
     getEl('sp-rates-config').classList.toggle('hidden');
 };
 
+window.toggleBasesConfig = function() {
+    getEl('sp-bases-config').classList.toggle('hidden');
+};
+
 window.addExtraItem = function(country, type, suffix) {
     if (country === 'sp') {
         if (type === 'bonus') {
@@ -668,6 +737,9 @@ window.addExtraItem = function(country, type, suffix) {
         } else if (type === 'ot') {
             const id = Date.now();
             appState.spToggles.dynamicOT.push({ id, amount: 0, suffix });
+        } else if (type === 'deduction') {
+            const id = Date.now();
+            appState.spToggles.dynamicDeductions.push({ id, amount: 0 });
         }
         renderDynamicLists();
     }
@@ -676,6 +748,8 @@ window.addExtraItem = function(country, type, suffix) {
 window.removeExtraItem = function(type, id) {
     if (type === 'bonus') {
         appState.spToggles.dynamicBonus = appState.spToggles.dynamicBonus.filter(b => b.id !== id);
+    } else if (type === 'deduction') {
+        appState.spToggles.dynamicDeductions = appState.spToggles.dynamicDeductions.filter(d => d.id !== id);
     } else {
         appState.spToggles.dynamicOT = appState.spToggles.dynamicOT.filter(o => o.id !== id);
     }
@@ -722,6 +796,21 @@ function renderDynamicLists() {
             });
         }
     });
+
+    // 3. Deductions List
+    const deductionsList = getEl('sp-deductions-dynamic-list');
+    if (deductionsList) {
+        deductionsList.innerHTML = '';
+        appState.spToggles.dynamicDeductions.forEach(d => {
+            const div = document.createElement('div');
+            div.style = "display:flex; gap:10px; margin-top:5px;";
+            div.innerHTML = `
+                <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Importe deducción" value="${d.amount}" onchange="updateDeductionVal(${d.id}, this.value)">
+                <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('deduction', ${d.id})">×</button>
+            `;
+            deductionsList.appendChild(div);
+        });
+    }
 }
 
 window.updateBonusVal = function(id, key, val) {
@@ -732,6 +821,11 @@ window.updateBonusVal = function(id, key, val) {
 window.updateOTVal = function(id, val) {
     const o = appState.spToggles.dynamicOT.find(x => x.id === id);
     if (o) o.amount = parseFloat(val);
+};
+
+window.updateDeductionVal = function(id, val) {
+    const d = appState.spToggles.dynamicDeductions.find(x => x.id === id);
+    if (d) d.amount = parseFloat(val);
 };
 
 window.toggleHelp = function(id) {
@@ -1116,7 +1210,11 @@ function performSpainCalculations(annualGross, pagas) {
     totalGrossAnnual += otAmountAnnual;
     bucketIRPF += otAmountAnnual; // Las horas extra siempre tributan IRPF
 
-    const extraTaxMonthly = parseFloat(getEl('sp-pro-extra-tax')?.value) || 0;
+    // Procesar Deducciones Dinámicas
+    let dynamicDeductionsTotal = 0;
+    appState.spToggles.dynamicDeductions.forEach(d => {
+        dynamicDeductionsTotal += d.amount;
+    });
 
     const holidayProrated = getEl('sp-holiday-prorated')?.checked;
     let holidayPayAnnual = 0;
@@ -1134,14 +1232,22 @@ function performSpainCalculations(annualGross, pagas) {
     const rateFpMei = (parseFloat(getEl('sp-rate-fp-mei')?.value) || 0.25) / 100;
 
     const MAX_SS_BASE_MONTHLY = 4950.00;
-    const customBaseMonthly = parseFloat(getEl('sp-pro-custom-base')?.value);
+    const manualBaseCommon = parseFloat(getEl('sp-pro-base-common')?.value);
+    const manualBaseAtEp = parseFloat(getEl('sp-pro-base-at-ep')?.value);
 
     let baseSSAnnual, baseUnemploymentAnnual;
-    if (!isNaN(customBaseMonthly) && customBaseMonthly > 0) {
-        baseSSAnnual = customBaseMonthly * 12;
-        baseUnemploymentAnnual = customBaseMonthly * 12;
+
+    // Base Contingencias Generales
+    if (!isNaN(manualBaseCommon) && manualBaseCommon > 0) {
+        baseSSAnnual = manualBaseCommon * 12;
     } else {
         baseSSAnnual = Math.min(bucketSS / 12, MAX_SS_BASE_MONTHLY) * 12;
+    }
+
+    // Base AT/EP (Desempleo/FP)
+    if (!isNaN(manualBaseAtEp) && manualBaseAtEp > 0) {
+        baseUnemploymentAnnual = manualBaseAtEp * 12;
+    } else {
         baseUnemploymentAnnual = Math.min(bucketUnemployment / 12, MAX_SS_BASE_MONTHLY) * 12;
     }
 
@@ -1160,9 +1266,9 @@ function performSpainCalculations(annualGross, pagas) {
     }
 
     const totalIRPF = bucketIRPF * (irpfPerc / 100);
-    const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (extraTaxMonthly * 12);
+    const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (dynamicDeductionsTotal * 12);
 
-    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: 0 };
+    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: 0 };
 }
 
 function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount, other75Count, region, disability, isMarried, isJoint, multipayer, totalSSAnnual) {
