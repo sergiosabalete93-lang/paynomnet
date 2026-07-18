@@ -947,6 +947,13 @@ window.setSpainToggle = function(key, val) {
     parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
 
+    if (key === 'contrato') {
+        const rateInput = getEl('sp-rate-unemployment');
+        if (rateInput) {
+            rateInput.value = (val === 'temp') ? '1.60' : '1.55';
+        }
+    }
+
     if (key === 'civil') {
         getEl('wrapper-sp-conjunta').classList.toggle('hidden', val !== 'married');
     }
