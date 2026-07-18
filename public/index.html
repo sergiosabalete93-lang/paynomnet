@@ -482,6 +482,15 @@
                         </div>
                     </div>
 
+                    <div class="pro-fields-wrapper pro-item">
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label id="sp-bonus-list-label" style="font-weight: bold;">Pluses y Bonus (€/mes) <span class="help-icon" onclick="toggleHelp('h-bonus')">?</span></label>
+                            <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="addExtraItem('sp', 'bonus')">+</button>
+                        </div>
+                        <div id="sp-bonus-dynamic-list"></div>
+                        <div id="h-bonus" class="help-note"></div>
+                    </div>
+
                     <div class="pro-fields-wrapper pro-item" style="margin-top: 10px;">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <label style="font-weight: bold;">Tipos de Cotización (%) <span class="help-icon" onclick="toggleHelp('h-rates')">?</span></label>
