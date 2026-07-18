@@ -25,10 +25,11 @@ const appState = {
     ukToggles: {
         'hourly-monthly-base': 'full',
         'pension-type': 'before',
-        'bonus-a-tax': 'yes',
-        'bonus-b-tax': 'yes',
+        dynamicBonus: [],
         'jobs': '1',
-        'holiday-prorated': false
+        'holiday-prorated': false,
+        'ir35-type': 'inside',
+        'ir35-freq': 'daily'
     },
     ukPeriods: {
         annual: 12,
@@ -57,6 +58,7 @@ const i18n = {
         horas: "Por Horas",
         semanal: "Semanal",
         inverse: "Inverso (Neto a Bruto)",
+        ir35: "IR35",
         despido: "Indemnización",
         calc: "CALCULAR",
         results_label: "Resultados del Cálculo",
@@ -113,7 +115,13 @@ const i18n = {
             ewni: "Inglaterra / Gales / NI",
             scotland: "Escocia",
             job1: "1 Empleo",
-            jobs2plus: "2+ Empleos"
+            jobs2plus: "2+ Empleos",
+            inside: "Dentro",
+            outside: "Fuera",
+            daily: "Diario",
+            hourly: "Por Hora",
+            net_pay: "Deducción Bruta (Net Pay)",
+            relief_source: "Deducción Neta (Relief at Source)"
         },
         placeholders: {
             email: "Email (Admin)",
@@ -131,14 +139,15 @@ const i18n = {
             uk_hourly_rate: "Ej: 15",
             uk_hourly_hours: "Ej: 37.5",
             uk_inverse: "Ej: 2200",
-            uk_taxcode_manual: "e.g. S1257L"
+            uk_taxcode_manual: "e.g. S1257L",
+            uk_ir35_rate: "Ej: 500"
         },
         labels: {
             privacidad: "Privacidad",
             terminos: "Términos",
             hijos: "Nº Hijos",
             hijo_dis: "Hijo con Discapacidad",
-            otros: "Otros a Cargo",
+            others: "Otros a Cargo",
             otro_dis: "Persona con Discapacidad",
             otro_75: "Mayor de 75 años",
             otro_dis_count: "¿Cuántos con discapacidad?",
@@ -167,39 +176,49 @@ const i18n = {
             base_manual: "Base Manual (€/mes)",
             antiguedad: "Antigüedad / Trienios (€/mes)",
             otros_imp: "Otras Deducciones (€/mes)",
-            bonus_a: "Bonus A (€/mes)",
-            bonus_b: "Bonus B (€/mes)",
+            bonus_a: "Bonus (€/mes)",
             ot_hours: "Horas Extra",
             ot_price: "Precio Hora Extra",
             hijo_dis_count: "¿Cuántos hijos?",
             cotiza: "Cotiza",
-            tax_region: "Tax Region",
-            ni_cat: "NI Category",
-            gross_annual: "Gross Annual Salary (£)",
-            pay_periods: "Pay Periods",
-            gross_monthly: "Monthly Gross Pay (£)",
-            hourly_rate: "Hourly Rate (£)",
-            hours_week: "Hours per WEEK",
-            hours_month: "Hours per MONTH",
+            tax_region: "Región Fiscal",
+            ni_cat: "Categoría NI",
+            gross_annual: "Salario Base Anual (£)",
+            pay_periods: "Periodos de Pago",
+            gross_monthly: "Salario Base Mensual (£)",
+            hourly_rate: "Precio por Hora (£)",
+            hours_week: "Horas por SEMANA",
+            hours_month: "Horas por MES",
             mon_calc: "Cálculo de Horas Mensuales",
-            weekly_ot: "Horas Extra (Semanal)",
-            monthly_ot: "Horas Extra (Mensual)",
+            weekly_ot: "Horas Extra",
+            monthly_ot: "Horas Extra",
             ot_rate: "Precio Hora Extra (£)",
             target_net: "Neto Mensual Objetivo (£)",
-            current_age: "Current Age",
-            years_service: "Years of Service",
-            weekly_pay: "Weekly Pay (£)",
-            jobs: "Jobs / Empleos",
-            tax_code: "Tax Code",
-            pension_perc: "Pension (%)",
-            benefits_bik: "Benefits (BIK)",
-            student_loan: "Student Loan",
-            postgrad_loan: "Postgraduate Loan"
+            current_age: "Edad Actual",
+            years_service: "Años de Servicio",
+            weekly_pay: "Sueldo Semanal (£)",
+            jobs: "Empleos",
+            tax_code: "Código Fiscal",
+            pension_perc: "Pensión (%)",
+            benefits_bik: "Beneficios (BIK)",
+            student_loan: "Préstamo Estudiantil",
+            postgrad_loan: "Préstamo Posgrado",
+            ir35_type: "Tipo de IR35",
+            assign_rate: "Tarifa de Contrato (£)",
+            umbrella_margin: "Margen de Umbrella (£/sem)",
+            expenses: "Gastos de Empresa (£/mes)",
+            marriage: "Asignación por Matrimonio",
+            blind: "Asignación por Persona Ciega",
+            child_benefit: "Recargo por Ayuda de Hijos",
+            cb_toggle: "Recargo de Ayuda por Hijos",
+            children_count: "Nº de Niños",
+            children_desc: "recibiendo ayuda"
         },
         help: {
             mode_annual: "Calcula tu sueldo neto a partir del bruto total que recibirás en un año completo.",
             mode_monthly: "Calcula tu sueldo neto a partir de lo que cobras mensualmente en bruto.",
             mode_hourly: "Ideal para trabajos por horas o contratos temporales de corta duración.",
+            mode_ir35: "Calcula el ingreso neto para contratistas que trabajan 'Dentro de IR35' (Umbrella) o 'Fuera de IR35' (Sociedad Limitada).",
             mode_inverse: "Dinos cuánto quieres cobrar 'limpio' al mes y te diremos cuánto bruto debes negociar.",
             mode_dismissal: "Calcula la indemnización legal que te corresponde según la ley vigente 2026.",
             children: "Número de hijos menores de 25 años que conviven contigo y no tienen ingresos.",
@@ -215,14 +234,22 @@ const i18n = {
             bonus: "Complementos salariales mensuales. Indica si estos conceptos cotizan o son extras netos.",
             uk_periods: "Normalmente 12 meses, pero algunos contratos usan periodos de 4 semanas (13 al año) o semanales (52).",
             uk_bik: "Beneficios no monetarios como coche de empresa, seguro médico, etc. (P11D).",
-            uk_pension: "Tu aportación al fondo de pensiones. Puede ser antes de impuestos (Salary Sacrifice) o después.",
+            uk_pension: "Net Pay: Se resta de tu sueldo antes de impuestos. Relief at Source: Se resta después de impuestos y el gobierno añade un 20% extra a tu fondo de pensiones.",
             uk_taxcode: "Tu código fiscal (ej: 1257L). Determina cuánto puedes ganar libre de impuestos.",
             uk_ni_letter: "La mayoría de empleados usan la letra A. Influye en tus contribuciones a la Seguridad Social.",
             uk_bonus: "Bonificaciones adicionales. Indica si el importe introducido es antes o después de impuestos.",
             uk_jobs: "Si tienes varios trabajos, tu 'Personal Allowance' suele aplicarse solo al trabajo principal.",
             uk_inverse: "Introduce el neto mensual deseado y calcularemos el salario anual bruto equivalente.",
             uk_redundancy: "Cálculo basado en la ley del Reino Unido (Statutory Redundancy Pay).",
-            uk_hourly_base: "Define cómo convertir horas semanales a mensuales (Promedio año vs Bloques de 4 semanas)."
+            uk_hourly_base: "Define cómo convertir horas semanales a mensuales (Promedio año vs Bloques de 4 semanas).",
+            uk_holiday: "Incluye un 12.07% extra de salario para simular el pago de vacaciones prorrateadas, común en trabajos temporales o agencias.",
+            uk_ir35_type: "Inside: Trato como empleado vía Umbrella (costes más altos). Outside: Relación mercantil vía SL (más eficiente).",
+            uk_assign: "La tarifa total que paga la agencia. Incluye impuestos, costes de empresa y margen.",
+            uk_margin: "Comisión semanal que cobra la Umbrella por la gestión de la nómina.",
+            uk_expenses: "Gastos incurridos para tu negocio (LTD) que se deducen antes de impuestos.",
+            uk_marriage: "Transfiere £1,260 de tu mínimo exento a tu pareja si ésta gana más que tú y tú ganas menos de £12,570. Esto puede ahorrar hasta £252 en impuestos al año.",
+            uk_blind: "Mínimo exento adicional de £3,070 si tienes ceguera legal registrada.",
+            uk_child_benefit: "Si tú o tu pareja ganáis más de £60,000 al año y recibís el Child Benefit, tendréis que devolver parte de la ayuda. La app lo calcula según el número de hijos que indiques."
         }
     },
     en: {
@@ -244,6 +271,7 @@ const i18n = {
         horas: "Hourly",
         semanal: "Weekly",
         inverse: "Inverse (Net to Gross)",
+        ir35: "IR35",
         despido: "Redundancy",
         calc: "CALCULATE",
         results_label: "Calculation Results",
@@ -300,7 +328,13 @@ const i18n = {
             ewni: "England / Wales / NI",
             scotland: "Scotland",
             job1: "1 Job",
-            jobs2plus: "2+ Jobs"
+            jobs2plus: "2+ Jobs",
+            inside: "Inside",
+            outside: "Outside",
+            daily: "Daily",
+            hourly: "Hourly",
+            net_pay: "Net Pay (Before Tax)",
+            relief_source: "Relief at Source (After Tax)"
         },
         placeholders: {
             email: "Email (Admin)",
@@ -318,7 +352,8 @@ const i18n = {
             uk_hourly_rate: "e.g. 15",
             uk_hourly_hours: "e.g. 37.5",
             uk_inverse: "e.g. 2200",
-            uk_taxcode_manual: "e.g. S1257L"
+            uk_taxcode_manual: "e.g. S1257L",
+            uk_ir35_rate: "e.g. 500"
         },
         labels: {
             privacidad: "Privacy",
@@ -353,25 +388,24 @@ const i18n = {
             base_manual: "Manual Base (€/mo)",
             antiguedad: "Longevity / Trienios (€/mo)",
             otros_imp: "Other Deductions (€/mo)",
-            bonus_a: "Bonus A (€/mo)",
-            bonus_b: "Bonus B (€/mo)",
+            bonus_a: "Bonus (€/mo)",
             ot_hours: "Overtime Hours",
             ot_price: "Overtime Rate",
             hijo_dis_count: "How many children?",
             cotiza: "Taxable",
             tax_region: "Tax Region",
             ni_cat: "NI Category",
-            gross_annual: "Gross Annual Salary (£)",
+            gross_annual: "Annual Base Salary (£)",
             pay_periods: "Pay Periods",
-            gross_monthly: "Monthly Gross Pay (£)",
+            gross_monthly: "Monthly Base Salary (£)",
             hourly_rate: "Hourly Rate (£)",
             hours_week: "Hours per WEEK",
             hours_month: "Hours per MONTH",
-            mon_calc: "Cálculo de Horas Mensuales",
-            weekly_ot: "Horas Extra (Semanal)",
-            monthly_ot: "Horas Extra (Mensual)",
-            ot_rate: "Precio Hora Extra (£)",
-            target_net: "Neto Mensual Objetivo (£)",
+            mon_calc: "Monthly Hours Calculation",
+            weekly_ot: "Overtime Hours",
+            monthly_ot: "Overtime Hours",
+            ot_rate: "Overtime Rate (£)",
+            target_net: "Target Monthly Net (£)",
             current_age: "Current Age",
             years_service: "Years of Service",
             weekly_pay: "Weekly Pay (£)",
@@ -380,12 +414,23 @@ const i18n = {
             pension_perc: "Pension (%)",
             benefits_bik: "Benefits (BIK)",
             student_loan: "Student Loan",
-            postgrad_loan: "Postgraduate Loan"
+            postgrad_loan: "Postgraduate Loan",
+            ir35_type: "IR35 Type",
+            assign_rate: "Assignment Rate (£)",
+            umbrella_margin: "Umbrella Margin (£/week)",
+            expenses: "Business Expenses (£/mo)",
+            marriage: "Marriage Allowance",
+            blind: "Blind Person's Allowance",
+            child_benefit: "Child Benefit Charge",
+            cb_toggle: "Child Benefit Charge",
+            children_count: "Number of Children",
+            children_desc: "receiving benefit"
         },
         help: {
             mode_annual: "Enter your annual base salary. The app will calculate your monthly take-home pay based on your contract's payment structure and taxes.",
             mode_monthly: "Enter your gross monthly base salary. You can configure how many extra payments you have per year and how many are prorated monthly.",
             mode_hourly: "Ideal for hourly work. Calculates projected annual gross and extracts monthly taxes.",
+            mode_ir35: "Calculate the net income for contractors working Inside IR35 (Umbrella) or Outside IR35 (Limited Company).",
             mode_inverse: "Tell us how much you want to earn 'clean' per month and we'll tell you the base gross salary you should negotiate.",
             mode_dismissal: "Calculates legal redundancy pay based on days per year and time worked.",
             children: "Number of children living with you. If any have a disability, enable the toggle to apply additional tax relief.",
@@ -405,14 +450,22 @@ const i18n = {
             rates: "Technical adjustment of contribution percentages. Don't change them unless your sector has special rates.",
             uk_periods: "Usually 12 months, but some contracts use 4-week (13/yr) or weekly (52) cycles.",
             uk_bik: "Non-cash benefits like company car, medical insurance, etc. (P11D).",
-            uk_pension: "Your pension contribution. Can be before tax (Salary Sacrifice) or after.",
+            uk_pension: "Net Pay Arrangement: Pension is taken from your gross pay before tax. Relief at Source: Pension is taken after tax, and the provider claims 20% tax relief back from the government.",
             uk_taxcode: "Your tax code (e.g., 1257L). Determines your personal allowance.",
             uk_ni_letter: "Most employees use category A. Affects your NI contributions.",
-            uk_bonus: "Additional bonuses. Indicate if the amount is gross or net.",
+            uk_bonus: "Additional bonuses. Indicate if the amount is taxable or net.",
             uk_jobs: "If you have multiple jobs, your allowance usually applies to the main one.",
             uk_inverse: "Enter desired monthly take-home to calculate equivalent annual gross.",
             uk_redundancy: "UK Statutory Redundancy Pay calculation.",
-            uk_hourly_base: "Define how to convert weekly hours to monthly (Avg Year vs 4-Week blocks)."
+            uk_hourly_base: "Define how to convert weekly hours to monthly (Avg Year vs 4-Week blocks).",
+            uk_holiday: "Includes an extra 12.07% of salary to simulate rolled-up holiday pay, common in temporary or agency work.",
+            uk_ir35_type: "Inside: Treat as employee via Umbrella (higher costs). Outside: Business-to-business via LTD (more efficient).",
+            uk_assign: "The total rate paid by the agency. Includes taxes, employer costs, and margin.",
+            uk_margin: "Weekly fee charged by the Umbrella Company for payroll services.",
+            uk_expenses: "Costs incurred to run your business (LTD) which are deducted before tax.",
+            uk_marriage: "Transfer £1,260 of your personal allowance to your partner if they earn more than you and your income is under £12,570. This can save up to £252 in tax per year.",
+            uk_blind: "Additional £3,070 tax-free allowance if you are registered as blind.",
+            uk_child_benefit: "If you or your partner earn over £60,000 a year and receive Child Benefit, you must pay this charge to repay part of the benefit. The app calculates it based on the number of children you specify."
         }
     }
 };
@@ -553,6 +606,14 @@ function setupEventListeners() {
         getEl('wrapper-sp-child-dis-count').classList.toggle('hidden', !e.target.checked);
         if (!e.target.checked) getEl('sp-pro-child-dis-count').value = 0;
         else if (parseInt(getEl('sp-pro-child-dis-count').value) === 0) getEl('sp-pro-child-dis-count').value = 1;
+    });
+
+    // UK Child Benefit Toggle logic
+    getEl('uk-pro-cb-toggle')?.addEventListener('change', (e) => {
+        getEl('wrapper-uk-cb-count').classList.toggle('hidden', !e.target.checked);
+        if (!e.target.checked) {
+            getEl('uk-pro-children-count').value = 0;
+        }
     });
 
     const limitChildDis = (e) => {
@@ -742,56 +803,81 @@ window.toggleBasesConfig = function() {
 };
 
 window.addExtraItem = function(country, type, suffix) {
-    if (country === 'sp') {
-        if (type === 'bonus') {
-            const id = Date.now();
-            appState.spToggles.dynamicBonus.push({ id, amount: 0, irpf: true, ss: true, unemployment: true });
-        } else if (type === 'ot') {
+    const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
+    if (type === 'bonus') {
+        const id = Date.now();
+        target.dynamicBonus.push({ id, amount: 0, irpf: true, ss: true, unemployment: true });
+    } else if (type === 'ot') {
+        const id = country === 'sp' ? appState.spToggles.dynamicOT : []; // UK OT is usually handled in inputs
+        if (country === 'sp') {
             const id = Date.now();
             appState.spToggles.dynamicOT.push({ id, amount: 0, suffix });
-        } else if (type === 'deduction') {
-            const id = Date.now();
-            appState.spToggles.dynamicDeductions.push({ id, amount: 0 });
         }
-        renderDynamicLists();
+    } else if (type === 'deduction') {
+        const id = Date.now();
+        if (country === 'sp') appState.spToggles.dynamicDeductions.push({ id, amount: 0 });
     }
+    renderDynamicLists();
 };
 
-window.removeExtraItem = function(type, id) {
+window.removeExtraItem = function(type, id, country = 'sp') {
+    const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
     if (type === 'bonus') {
-        appState.spToggles.dynamicBonus = appState.spToggles.dynamicBonus.filter(b => b.id !== id);
-    } else if (type === 'deduction') {
+        target.dynamicBonus = target.dynamicBonus.filter(b => b.id !== id);
+    } else if (type === 'deduction' && country === 'sp') {
         appState.spToggles.dynamicDeductions = appState.spToggles.dynamicDeductions.filter(d => d.id !== id);
-    } else {
+    } else if (type === 'ot' && country === 'sp') {
         appState.spToggles.dynamicOT = appState.spToggles.dynamicOT.filter(o => o.id !== id);
     }
     renderDynamicLists();
 };
 
 function renderDynamicLists() {
-    // 1. Bonus List
-    const bonusList = getEl('sp-bonus-dynamic-list');
-    if (bonusList) {
-        bonusList.innerHTML = '';
+    // 1. Bonus List Spain
+    const bonusListSp = getEl('sp-bonus-dynamic-list');
+    if (bonusListSp) {
+        bonusListSp.innerHTML = '';
         appState.spToggles.dynamicBonus.forEach(b => {
             const div = document.createElement('div');
             div.style = "background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;";
             div.innerHTML = `
                 <div style="display:flex; gap:10px; margin-bottom:5px;">
-                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Importe" value="${b.amount}" onchange="updateBonusVal(${b.id}, 'amount', this.value)">
-                    <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id})">×</button>
+                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Importe" value="${b.amount}" onchange="updateBonusVal('sp', ${b.id}, 'amount', this.value)">
+                    <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id}, 'sp')">×</button>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:5px; font-size:10px;">
-                    <label><input type="checkbox" ${b.irpf ? 'checked' : ''} onchange="updateBonusVal(${b.id}, 'irpf', this.checked)"> IRPF</label>
-                    <label><input type="checkbox" ${b.ss ? 'checked' : ''} onchange="updateBonusVal(${b.id}, 'ss', this.checked)"> SS</label>
-                    <label><input type="checkbox" ${b.unemployment ? 'checked' : ''} onchange="updateBonusVal(${b.id}, 'unemployment', this.checked)"> Paro</label>
+                    <label><input type="checkbox" ${b.irpf ? 'checked' : ''} onchange="updateBonusVal('sp', ${b.id}, 'irpf', this.checked)"> IRPF</label>
+                    <label><input type="checkbox" ${b.ss ? 'checked' : ''} onchange="updateBonusVal('sp', ${b.id}, 'ss', this.checked)"> SS</label>
+                    <label><input type="checkbox" ${b.unemployment ? 'checked' : ''} onchange="updateBonusVal('sp', ${b.id}, 'unemployment', this.checked)"> Paro</label>
                 </div>
             `;
-            bonusList.appendChild(div);
+            bonusListSp.appendChild(div);
         });
     }
 
-    // 2. OT List
+    // 1.2 Bonus List UK
+    const bonusListUK = getEl('uk-bonus-dynamic-list');
+    if (bonusListUK) {
+        const lang = i18n[appState.language];
+        bonusListUK.innerHTML = '';
+        appState.ukToggles.dynamicBonus.forEach(b => {
+            const div = document.createElement('div');
+            div.style = "background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;";
+            div.innerHTML = `
+                <div style="display:flex; gap:10px; margin-bottom:5px;">
+                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Amount" value="${b.amount}" onchange="updateBonusVal('uk', ${b.id}, 'amount', this.value)">
+                    <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id}, 'uk')">×</button>
+                </div>
+                <div style="display:flex; flex-wrap:wrap; gap:5px; font-size:10px;">
+                    <label><input type="checkbox" ${b.irpf ? 'checked' : ''} onchange="updateBonusVal('uk', ${b.id}, 'irpf', this.checked)"> ${lang.irpf}</label>
+                    <label><input type="checkbox" ${b.ss ? 'checked' : ''} onchange="updateBonusVal('uk', ${b.id}, 'ss', this.checked)"> NI</label>
+                </div>
+            `;
+            bonusListUK.appendChild(div);
+        });
+    }
+
+    // 2. OT List Spain
     const suffixes = ['ann', 'mon', 'hou', 'inv'];
     suffixes.forEach(s => {
         const otList = getEl(`sp-extra-ot-list-${s}`);
@@ -802,14 +888,14 @@ function renderDynamicLists() {
                 div.style = "display:flex; gap:10px; margin-top:5px;";
                 div.innerHTML = `
                     <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Plus extra" value="${o.amount}" onchange="updateOTVal(${o.id}, this.value)">
-                    <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('ot', ${o.id})">×</button>
+                    <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('ot', ${o.id}, 'sp')">×</button>
                 `;
                 otList.appendChild(div);
             });
         }
     });
 
-    // 3. Deductions List
+    // 3. Deductions List Spain
     const deductionsList = getEl('sp-deductions-dynamic-list');
     if (deductionsList) {
         deductionsList.innerHTML = '';
@@ -818,16 +904,17 @@ function renderDynamicLists() {
             div.style = "display:flex; gap:10px; margin-top:5px;";
             div.innerHTML = `
                 <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Importe deducción" value="${d.amount}" onchange="updateDeductionVal(${d.id}, this.value)">
-                <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('deduction', ${d.id})">×</button>
+                <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('deduction', ${d.id}, 'sp')">×</button>
             `;
             deductionsList.appendChild(div);
         });
     }
 }
 
-window.updateBonusVal = function(id, key, val) {
-    const b = appState.spToggles.dynamicBonus.find(x => x.id === id);
-    if (b) b[key] = key === 'amount' ? parseFloat(val) : val;
+window.updateBonusVal = function(country, id, key, val) {
+    const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
+    const b = target.dynamicBonus.find(x => x.id === id);
+    if (b) b[key] = (key === 'amount') ? parseFloat(val) : val;
 };
 
 window.updateOTVal = function(id, val) {
@@ -864,6 +951,19 @@ window.setUKToggle = function(key, val) {
     const parent = event.target.parentNode;
     parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
     event.target.classList.add('active');
+
+    if (key === 'ir35-type') {
+        getEl('wrapper-uk-inside-only').classList.toggle('hidden', val !== 'inside');
+        getEl('wrapper-uk-outside-only').classList.toggle('hidden', val !== 'outside');
+    }
+};
+
+window.syncUKHoliday = function(checked) {
+    appState.ukToggles['holiday-prorated'] = checked;
+    ['ann', 'mon', 'hou', 'inv', 'ir35'].forEach(s => {
+        const el = getEl(`uk-holiday-prorated-${s}`);
+        if (el) el.checked = checked;
+    });
 };
 
 window.setUKPeriods = function(mode, val) {
@@ -917,6 +1017,7 @@ function updateUITranslations() {
     getEl('mode-ann-text').textContent = lang.anual;
     getEl('mode-mon-text').textContent = lang.mensual;
     getEl('mode-hou-text').textContent = lang.horas;
+    if (getEl('mode-ir35-text')) getEl('mode-ir35-text').textContent = lang.ir35;
     getEl('mode-inv-text').textContent = lang.inverse;
     getEl('mode-dis-text').textContent = lang.despido;
 
@@ -976,13 +1077,13 @@ function updateUITranslations() {
     if (getEl('sp-precio-extra-label-hou')) getEl('sp-precio-extra-label-hou').textContent = lang.labels.ot_price;
     if (getEl('sp-horas-extra-label-inv')) getEl('sp-horas-extra-label-inv').textContent = lang.labels.ot_hours;
     if (getEl('sp-precio-extra-label-inv')) getEl('sp-precio-extra-label-inv').textContent = lang.labels.ot_price;
-    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-ann')) getEl('uk-precio-extra-label-ann').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-mon')) getEl('uk-precio-extra-label-mon').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = appState.ukHourlyFreq === 'weekly' ? lang.labels.weekly_ot : lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-hou')) getEl('uk-precio-extra-label-hou').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-inv')) getEl('uk-precio-extra-label-inv').textContent = lang.labels.ot_rate;
     if (getEl('sp-hijo-dis-count-label')) getEl('sp-hijo-dis-count-label').textContent = lang.labels.hijo_dis_count;
     if (getEl('sp-cotiza-a-label')) getEl('sp-cotiza-a-label').textContent = lang.labels.cotiza;
@@ -1001,6 +1102,25 @@ function updateUITranslations() {
     if (getEl('sp-pro-custom-base')) getEl('sp-pro-custom-base').placeholder = lang.placeholders.optional;
 
     // UK labels
+    if (getEl('uk-holiday-label')) getEl('uk-holiday-label').textContent = lang.holiday_label;
+    ['ann', 'mon', 'hou', 'inv', 'ir35'].forEach(s => {
+        if (getEl(`uk-holiday-label-${s}`)) getEl(`uk-holiday-label-${s}`).firstChild.textContent = lang.holiday_label + " ";
+    });
+
+    if (getEl('uk-ir35-type-label')) getEl('uk-ir35-type-label').firstChild.textContent = lang.labels.ir35_type + " ";
+    if (getEl('btn-uk-inside')) getEl('btn-uk-inside').textContent = lang.options.inside;
+    if (getEl('btn-uk-outside')) getEl('btn-uk-outside').textContent = lang.options.outside;
+    if (getEl('uk-assignment-label')) getEl('uk-assignment-label').firstChild.textContent = lang.labels.assign_rate + " ";
+    if (getEl('btn-uk-ir35-daily')) getEl('btn-uk-ir35-daily').textContent = lang.options.daily;
+    if (getEl('btn-uk-ir35-hourly')) getEl('btn-uk-ir35-hourly').textContent = lang.options.hourly;
+    if (getEl('uk-umbrella-label')) getEl('uk-umbrella-label').firstChild.textContent = lang.labels.umbrella_margin + " ";
+    if (getEl('uk-expenses-label')) getEl('uk-expenses-label').firstChild.textContent = lang.labels.expenses + " ";
+    if (getEl('uk-marriage-label')) getEl('uk-marriage-label').firstChild.textContent = lang.labels.marriage + " ";
+    if (getEl('uk-blind-label')) getEl('uk-blind-label').firstChild.textContent = lang.labels.blind + " ";
+    if (getEl('uk-cb-toggle-label')) getEl('uk-cb-toggle-label').firstChild.textContent = lang.labels.cb_toggle + " ";
+    if (getEl('uk-children-cb-label')) getEl('uk-children-cb-label').textContent = lang.labels.children_count;
+    if (getEl('uk-cb-desc-label')) getEl('uk-cb-desc-label').textContent = lang.labels.children_desc;
+
     if (getEl('uk-region-label')) getEl('uk-region-label').textContent = lang.labels.tax_region;
     if (getEl('opt-uk-ewni')) getEl('opt-uk-ewni').textContent = lang.options.ewni;
     if (getEl('opt-uk-sco')) getEl('opt-uk-sco').textContent = lang.options.scotland;
@@ -1025,34 +1145,29 @@ function updateUITranslations() {
     if (getEl('uk-mon-calc-label')) getEl('uk-mon-calc-label').firstChild.textContent = lang.labels.mon_calc + " ";
     if (getEl('btn-uk-cal-month')) getEl('btn-uk-cal-month').textContent = lang.options.cal_month;
     if (getEl('btn-uk-4weeks')) getEl('btn-uk-4weeks').textContent = lang.options.four_weeks;
-    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-ann')) getEl('uk-precio-extra-label-ann').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-mon')) getEl('uk-precio-extra-label-mon').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = appState.ukHourlyFreq === 'weekly' ? lang.labels.weekly_ot : lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-hou')) getEl('uk-precio-extra-label-hou').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.monthly_ot;
+    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.ot_hours;
     if (getEl('uk-precio-extra-label-inv')) getEl('uk-precio-extra-label-inv').textContent = lang.labels.ot_rate;
     if (getEl('uk-inverso-neto-label')) getEl('uk-inverso-neto-label').firstChild.textContent = lang.labels.target_net + " ";
     if (getEl('uk-despido-edad-label')) getEl('uk-despido-edad-label').firstChild.textContent = lang.labels.current_age + " ";
     if (getEl('uk-despido-anos-label')) getEl('uk-despido-anos-label').textContent = lang.labels.years_service;
     if (getEl('uk-despido-semana-label')) getEl('uk-despido-semana-label').textContent = lang.labels.weekly_pay;
     if (getEl('uk-advanced-label')) getEl('uk-advanced-label').textContent = lang.labels.adv_config;
+    if (getEl('uk-bonus-list-label')) getEl('uk-bonus-list-label').firstChild.textContent = lang.labels.bonus_a.replace(' A', '') + " ";
     if (getEl('uk-jobs-label')) getEl('uk-jobs-label').firstChild.textContent = lang.labels.jobs + " ";
     if (getEl('btn-uk-1job')) getEl('btn-uk-1job').textContent = lang.options.job1;
     if (getEl('btn-uk-2jobs')) getEl('btn-uk-2jobs').textContent = lang.options.jobs2plus;
     if (getEl('uk-tax-code-label')) getEl('uk-tax-code-label').firstChild.textContent = lang.labels.tax_code + " ";
     if (getEl('opt-uk-custom-code')) getEl('opt-uk-custom-code').textContent = lang.options.other_manual;
     if (getEl('uk-pension-label')) getEl('uk-pension-label').firstChild.textContent = lang.labels.pension_perc + " ";
-    if (getEl('btn-uk-pension-before')) getEl('btn-uk-pension-before').textContent = lang.options.before_tax;
-    if (getEl('btn-uk-pension-after')) getEl('btn-uk-pension-after').textContent = lang.options.after_tax;
+    if (getEl('btn-uk-pension-before')) getEl('btn-uk-pension-before').textContent = lang.options.net_pay;
+    if (getEl('btn-uk-pension-source')) getEl('btn-uk-pension-source').textContent = lang.options.relief_source;
     if (getEl('uk-bik-label')) getEl('uk-bik-label').firstChild.textContent = lang.labels.benefits_bik + " ";
-    if (getEl('uk-bonus-a-label')) getEl('uk-bonus-a-label').firstChild.textContent = lang.labels.bonus_a + " ";
-    if (getEl('btn-uk-bonus-a-taxed')) getEl('btn-uk-bonus-a-taxed').textContent = lang.options.taxed;
-    if (getEl('btn-uk-bonus-a-net')) getEl('btn-uk-bonus-a-net').textContent = lang.options.net_paid;
-    if (getEl('uk-bonus-b-label')) getEl('uk-bonus-b-label').textContent = lang.labels.bonus_b;
-    if (getEl('btn-uk-bonus-b-taxed')) getEl('btn-uk-bonus-b-taxed').textContent = lang.options.taxed;
-    if (getEl('btn-uk-bonus-b-net')) getEl('btn-uk-bonus-b-net').textContent = lang.options.net_paid;
     if (getEl('uk-stud-loan-label')) getEl('uk-stud-loan-label').textContent = lang.labels.student_loan;
     if (getEl('opt-uk-sl-none')) getEl('opt-uk-sl-none').textContent = lang.options.none;
     if (getEl('uk-postgrad-label')) getEl('uk-postgrad-label').textContent = lang.labels.postgrad_loan;
@@ -1099,9 +1214,18 @@ function updateUITranslations() {
         'h-uk-jobs': lang.help.uk_jobs,
         'h-uk-inverse': lang.help.uk_inverse,
         'h-uk-redundancy': lang.help.uk_redundancy,
+        'h-uk-holiday': lang.help.uk_holiday,
+        'h-uk-ir35-type': lang.help.uk_ir35_type,
+        'h-uk-assign': lang.help.uk_assign,
+        'h-uk-margin': lang.help.uk_margin,
+        'h-uk-expenses': lang.help.uk_expenses,
+        'h-uk-marriage': lang.help.uk_marriage,
+        'h-uk-blind': lang.help.uk_blind,
+        'h-uk-child-benefit': lang.help.uk_child_benefit,
         'h-mode-annual': lang.help.mode_annual,
         'h-mode-monthly': lang.help.mode_monthly,
         'h-mode-hourly': lang.help.mode_hourly,
+        'h-mode-ir35': lang.help.mode_ir35,
         'h-mode-inverse': lang.help.mode_inverse,
         'h-mode-dismissal': lang.help.mode_dismissal,
         'h-uk-hourly-base': lang.help.uk_hourly_base
@@ -1415,6 +1539,8 @@ function calculateUK() {
                 periods = 12;
             }
         }
+    } else if (appState.mode === 'ir35') {
+        calculateUKIR35(); return;
     } else if (appState.mode === 'inverse') {
         calculateUKInverse(); return;
     } else if (appState.mode === 'dismissal') {
@@ -1422,14 +1548,20 @@ function calculateUK() {
     }
 
     const res = performUKCalculations(annualGross, periods);
-    const freqLabel = periods > 14 ? lang.semanal : lang.mensual;
+    const freqLabel = periods > 51 ? lang.semanal : lang.mensual;
 
     renderResult(lang.bruto + " " + freqLabel, (annualGross / periods).toFixed(2) + "£");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "£");
-    if (res.bonusTotalMonthly > 0) renderResult(lang.extras, res.bonusTotalMonthly.toFixed(2) + "£");
+
+    // Dynamic Bonus Display for UK
+    if (res.bonusTotalMonthly > 0) {
+        renderResult(lang.extras, res.bonusTotalMonthly.toFixed(2) + "£");
+    }
+
     if (res.pension > 0) renderResult(lang.pension, "-" + (res.pension / periods).toFixed(2) + "£");
     renderResult(lang.irpf, "-" + (res.tax / periods).toFixed(2) + "£");
     renderResult(lang.ss + " (NI)", "-" + (res.ni / periods).toFixed(2) + "£");
+    if (res.cbCharge > 0) renderResult(lang.labels.child_benefit, "-" + (res.cbCharge / periods).toFixed(2) + "£");
 
     if (res.studentLoan > 0) renderResult(lang.student_loan_res, "-" + (res.studentLoan / periods).toFixed(2) + "£");
 
@@ -1440,15 +1572,68 @@ function calculateUK() {
     getEl('net-result-value').textContent = (res.net / periods).toFixed(2) + "£";
 }
 
+function calculateUKIR35() {
+    const lang = i18n[appState.language];
+    const type = appState.ukToggles['ir35-type'] || 'inside';
+    const rate = parseFloat(getEl('uk-ir35-rate').value) || 0;
+    const freq = appState.ukToggles['ir35-freq'] || 'daily';
+
+    // Assignment Rate projected to Annual
+    let annualRevenue = 0;
+    if (freq === 'daily') {
+        annualRevenue = rate * 260; // 260 working days/yr
+    } else {
+        annualRevenue = rate * 37.5 * 52; // standard 37.5h week
+    }
+
+    if (type === 'inside') {
+        const margin = parseFloat(getEl('uk-umbrella-margin').value) || 25;
+        const annualMargin = margin * 52;
+
+        // 1. Remove Umbrella Margin
+        let afterMargin = annualRevenue - annualMargin;
+
+        // 2. Reverse calculate Employer Costs from Assignment Rate
+        // Assignment = Gross + ErNI + Apprenticeship Levy + ErPension
+        // Approx factor for 2026 ErCosts: 1.138 (ErNI) + 0.005 (AL) + 0.03 (Pension) = ~1.173
+        const grossSalary = afterMargin / 1.15; // Simplified reverse for guidance
+
+        const res = performUKCalculations(grossSalary, 12);
+        renderResult("Assignment Revenue", annualRevenue.toFixed(2) + "£");
+        renderResult(lang.labels.umbrella_margin, annualMargin.toFixed(2) + "£");
+        renderResult(lang.bruto_result_label, grossSalary.toFixed(2) + "£");
+        getEl('net-result-value').textContent = (res.net / 12).toFixed(2) + "£";
+    } else {
+        const expenses = parseFloat(getEl('uk-business-expenses').value) || 0;
+        const annualExpenses = expenses * 12;
+        const profit = annualRevenue - annualExpenses;
+
+        // Outside IR35: 19-25% Corp Tax (Simplified 20% for 2026 guidance)
+        const corpTax = profit * 0.20;
+        const availableForDividends = profit - corpTax;
+
+        // Strategy: Salary at NI Primary Threshold (£12,570) + Dividends
+        const salary = 12570;
+        const dividends = availableForDividends - salary;
+
+        // Dividend Tax (Simplified 2026: 8.75% after £500 allowance)
+        const divTax = Math.max(0, dividends - 500) * 0.0875;
+
+        const netAnnual = salary + dividends - divTax;
+
+        renderResult("Revenue", annualRevenue.toFixed(2) + "£");
+        renderResult(lang.labels.expenses, annualExpenses.toFixed(2) + "£");
+        renderResult("Corporation Tax", "-" + corpTax.toFixed(2) + "£");
+        renderResult("Dividends (Net)", dividends.toFixed(2) + "£");
+
+        getEl('net-result-value').textContent = (netAnnual / 12).toFixed(2) + "£";
+    }
+}
+
 function performUKCalculations(annual, periods = 12) {
     const bik = (parseFloat(getEl('uk-pro-bik')?.value) || 0) * 12;
     const pPerc = parseFloat(getEl('uk-pro-pension')?.value) || 0;
     const pType = appState.ukToggles['pension-type'] || 'before';
-
-    const bonusA = parseFloat(getEl('uk-pro-bonus-a')?.value) || 0;
-    const bonusATaxed = appState.ukToggles['bonus-a-tax'] === 'yes';
-    const bonusB = parseFloat(getEl('uk-pro-bonus-b')?.value) || 0;
-    const bonusBTaxed = appState.ukToggles['bonus-b-tax'] === 'yes';
 
     // Overtime for UK
     const mode = appState.mode;
@@ -1469,9 +1654,22 @@ function performUKCalculations(annual, periods = 12) {
     const holidayProrated = getEl('uk-holiday-prorated')?.checked;
     let holidayPayAnnual = 0;
     if (holidayProrated) {
-        // UK Statutory: 12.07%
         holidayPayAnnual = annual * 0.1207;
     }
+
+    // 3. Bonus logic (Dynamic)
+    let taxableBonusAnnual = otAmountAnnual;
+    let nonTaxableBonusAnnual = 0;
+    let bonusTotalMonthlyTotal = otAmountMonthly;
+
+    appState.ukToggles.dynamicBonus.forEach(b => {
+        if (b.irpf) {
+            taxableBonusAnnual += b.amount * 12;
+        } else {
+            nonTaxableBonusAnnual += b.amount * 12;
+        }
+        bonusTotalMonthlyTotal += b.amount;
+    });
 
     const taxCodeSelect = getEl('uk-pro-taxcode-select')?.value;
     const taxCodeManual = getEl('uk-pro-taxcode-manual')?.value.toUpperCase() || "";
@@ -1483,18 +1681,23 @@ function performUKCalculations(annual, periods = 12) {
     const studentLoanPlan = getEl('uk-pro-student-loan')?.value || "none";
     const hasPostgrad = getEl('uk-pro-postgrad')?.checked;
     const isMultipayer = appState.ukToggles.jobs === '2';
+    const isMarriage = getEl('uk-pro-marriage')?.checked;
+    const isBlind = getEl('uk-pro-blind')?.checked;
+    const cbChildren = parseInt(getEl('uk-pro-child-benefit-income')?.value) || 0;
 
     // 1. Detect region from Tax Code prefix 'S'
     let isScottish = (regionSelect === "SCO") || taxCode.startsWith('S');
 
     // 2. Allowance from Tax Code
     let allowance = isMultipayer ? 0 : 12570;
+    if (isMarriage && !isMultipayer) allowance += 1260;
+    if (isBlind && !isMultipayer) allowance += 3070;
+
     if (taxCode && !isMultipayer) {
         if (taxCode.startsWith('K')) {
             const kVal = parseInt(taxCode.replace(/\D/g, ''));
             if (!isNaN(kVal)) allowance = -kVal * 10;
         } else {
-            // Support for S prefix (Scottish) and standard numbers
             const numOnly = taxCode.replace(/\D/g, '');
             if (numOnly !== "") {
                 allowance = parseInt(numOnly) * 10;
@@ -1509,11 +1712,6 @@ function performUKCalculations(annual, periods = 12) {
     if (annual > 100000 && !isMultipayer && !taxCode?.startsWith('K')) {
         allowance = Math.max(0, allowance - (annual - 100000) / 2);
     }
-
-    // 3. Bonus logic
-    const taxableBonusAnnual = (bonusATaxed ? bonusA : 0) * 12 + (bonusBTaxed ? bonusB : 0) * 12 + otAmountAnnual;
-    const nonTaxableBonusAnnual = (!bonusATaxed ? bonusA : 0) * 12 + (!bonusBTaxed ? bonusB : 0) * 12;
-    const bonusTotalMonthlyTotal = bonusA + bonusB + otAmountMonthly;
 
     // 4. Pension
     const pensionAnnual = (annual + holidayPayAnnual + taxableBonusAnnual) * (pPerc / 100);
@@ -1538,6 +1736,7 @@ function performUKCalculations(annual, periods = 12) {
 
     // 6. Income Tax
     let taxableAmount = Math.max(0, annual + holidayPayAnnual + taxableBonusAnnual + bik - allowance);
+    // Net Pay Arrangement: deduction before tax. Relief at source: after tax.
     if (pType === 'before') taxableAmount = Math.max(0, taxableAmount - pensionAnnual);
 
     let tax = 0;
@@ -1569,8 +1768,20 @@ function performUKCalculations(annual, periods = 12) {
     else if (studentLoanPlan === "plan5" && slBase > 25000) studentLoan += (slBase - 25000) * 0.09;
     if (hasPostgrad && slBase > 21000) studentLoan += (slBase - 21000) * 0.06;
 
-    let net = annual + holidayPayAnnual + taxableBonusAnnual + nonTaxableBonusAnnual - tax - ni - pensionAnnual - studentLoan;
-    return { tax, ni, employerNi, pension: pensionAnnual, studentLoan, net, bonusTotalMonthly: bonusTotalMonthlyTotal, holidayPayMonthly: holidayPayAnnual / periods };
+    // 8. Child Benefit Charge
+    let cbCharge = 0;
+    const hasCB = getEl('uk-pro-cb-toggle')?.checked;
+    const cbChildren = parseInt(getEl('uk-pro-children-count')?.value) || 0;
+    if (hasCB && annual > 60000 && cbChildren > 0) {
+        const weeklyBenefit = 22.15 + (cbChildren - 1) * 14.70;
+        const totalBenefit = weeklyBenefit * 52;
+        const excess = Math.max(0, annual - 60000);
+        const perc = Math.min(1, excess / 20000);
+        cbCharge = totalBenefit * perc;
+    }
+
+    let net = annual + holidayPayAnnual + taxableBonusAnnual + nonTaxableBonusAnnual - tax - ni - pensionAnnual - studentLoan - cbCharge;
+    return { tax, ni, employerNi, pension: pensionAnnual, studentLoan, cbCharge, net, bonusTotalMonthly: bonusTotalMonthlyTotal, holidayPayMonthly: holidayPayAnnual / periods };
 }
 
 function calculateUKRedundancy() {
