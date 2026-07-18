@@ -522,7 +522,7 @@ function initApp() {
     getEl('lang-select').value = appState.language;
 
     // Load defaults (Spain active)
-    resetToDefaultMode();
+    setCountry('spain');
 }
 
 function setupEventListeners() {
@@ -723,6 +723,12 @@ function setCountry(c) {
 
     document.querySelectorAll('.country-module').forEach(m => m.classList.add('hidden'));
     getEl(`module-${c}`).classList.remove('hidden');
+
+    // IR35 mode is UK only
+    const ir35Btn = getEl('btn-mode-ir35');
+    if (ir35Btn) {
+        ir35Btn.classList.toggle('hidden', c === 'spain');
+    }
 
     resetToDefaultMode();
     updateUITranslations();
@@ -1014,12 +1020,12 @@ function updateUITranslations() {
     getEl('mode-label').textContent = lang.mode_label;
     getEl('btn-spain').textContent = lang.spain;
     getEl('btn-uk').textContent = lang.uk;
-    getEl('mode-ann-text').textContent = lang.anual;
-    getEl('mode-mon-text').textContent = lang.mensual;
-    getEl('mode-hou-text').textContent = lang.horas;
+    if (getEl('mode-ann-text')) getEl('mode-ann-text').textContent = lang.anual;
+    if (getEl('mode-mon-text')) getEl('mode-mon-text').textContent = lang.mensual;
+    if (getEl('mode-hou-text')) getEl('mode-hou-text').textContent = lang.horas;
     if (getEl('mode-ir35-text')) getEl('mode-ir35-text').textContent = lang.ir35;
-    getEl('mode-inv-text').textContent = lang.inverse;
-    getEl('mode-dis-text').textContent = lang.despido;
+    if (getEl('mode-inv-text')) getEl('mode-inv-text').textContent = lang.inverse;
+    if (getEl('mode-dis-text')) getEl('mode-dis-text').textContent = lang.despido;
 
     // España labels
     if (getEl('sp-hijos-label')) getEl('sp-hijos-label').firstChild.textContent = lang.labels.hijos + " ";
@@ -1065,8 +1071,6 @@ function updateUITranslations() {
     if (getEl('sp-base-manual-label')) getEl('sp-base-manual-label').firstChild.textContent = lang.labels.base_manual + " ";
     if (getEl('sp-antiguedad-label')) getEl('sp-antiguedad-label').textContent = lang.labels.antiguedad;
     if (getEl('sp-otros-imp-label')) getEl('sp-otros-imp-label').firstChild.textContent = lang.labels.otros_imp + " ";
-    if (getEl('sp-bonus-a-label')) getEl('sp-bonus-a-label').firstChild.textContent = lang.labels.bonus_a + " ";
-    if (getEl('sp-bonus-b-label')) getEl('sp-bonus-b-label').textContent = lang.labels.bonus_b;
     if (getEl('sp-horas-extra-label')) getEl('sp-horas-extra-label').textContent = lang.labels.ot_hours;
     if (getEl('sp-precio-extra-label')) getEl('sp-precio-extra-label').textContent = lang.labels.ot_price;
     if (getEl('sp-horas-extra-label-ann')) getEl('sp-horas-extra-label-ann').textContent = lang.labels.ot_hours;
@@ -1683,7 +1687,8 @@ function performUKCalculations(annual, periods = 12) {
     const isMultipayer = appState.ukToggles.jobs === '2';
     const isMarriage = getEl('uk-pro-marriage')?.checked;
     const isBlind = getEl('uk-pro-blind')?.checked;
-    const cbChildren = parseInt(getEl('uk-pro-child-benefit-income')?.value) || 0;
+    const hasCB = getEl('uk-pro-cb-toggle')?.checked;
+    const cbChildren = parseInt(getEl('uk-pro-children-count')?.value) || 0;
 
     // 1. Detect region from Tax Code prefix 'S'
     let isScottish = (regionSelect === "SCO") || taxCode.startsWith('S');
@@ -1770,8 +1775,6 @@ function performUKCalculations(annual, periods = 12) {
 
     // 8. Child Benefit Charge
     let cbCharge = 0;
-    const hasCB = getEl('uk-pro-cb-toggle')?.checked;
-    const cbChildren = parseInt(getEl('uk-pro-children-count')?.value) || 0;
     if (hasCB && annual > 60000 && cbChildren > 0) {
         const weeklyBenefit = 22.15 + (cbChildren - 1) * 14.70;
         const totalBenefit = weeklyBenefit * 52;
@@ -1834,7 +1837,8 @@ function activatePro(msg) {
 const PRO_MASTER_EMAIL = "paynomnet@gmail.com";
 getEl('btn-become-pro')?.addEventListener('click', () => activatePro("Acceso PRO Activado"));
 getEl('btn-login')?.addEventListener('click', () => {
-    if (getEl('auth-email').value === PRO_MASTER_EMAIL) activatePro("Admin Login");
+    const emailInput = getEl('auth-email');
+    if (emailInput && emailInput.value === PRO_MASTER_EMAIL) activatePro("Admin Login");
 });
 
 /* ==========================================================================
