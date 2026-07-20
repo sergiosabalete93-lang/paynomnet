@@ -10,8 +10,7 @@ const ASSETS_TO_CACHE = [
     'ads/ads-engine.js',
     'manifest.json',
     'assets/icon-192.png',
-    'assets/icon-512.png',
-    'assets/under-construction.png'
+    'assets/icon-512.png'
 ];
 
 // Instalación: Guarda los archivos en la caché del móvil

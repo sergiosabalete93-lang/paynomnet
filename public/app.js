@@ -139,7 +139,7 @@ const i18n = {
             uk_hourly_rate: "Ej: 15",
             uk_hourly_hours: "Ej: 37.5",
             uk_inverse: "Ej: 2200",
-            uk_taxcode_manual: "e.g. S1257L",
+            uk_taxcode_manual: "Ej: S1257L",
             uk_ir35_rate: "Ej: 500"
         },
         labels: {
@@ -179,7 +179,7 @@ const i18n = {
             bonus_a: "Bonus (€/mes)",
             ot_hours: "Horas Extra",
             ot_price: "Precio Hora Extra",
-            hijo_dis_count: "¿Cuántos hijos?",
+            hijo_dis_count: "Nº de Niños",
             cotiza: "Cotiza",
             tax_region: "Región Fiscal",
             ni_cat: "Categoría NI",
@@ -352,7 +352,7 @@ const i18n = {
             uk_hourly_rate: "e.g. 15",
             uk_hourly_hours: "e.g. 37.5",
             uk_inverse: "e.g. 2200",
-            uk_taxcode_manual: "e.g. S1257L",
+            uk_taxcode_manual: "Ej: S1257L",
             uk_ir35_rate: "e.g. 500"
         },
         labels: {
@@ -516,9 +516,16 @@ function checkTC() {
 }
 
 function initApp() {
-    // Detectar idioma del sistema
+    // Detectar idioma: Prioridad al guardado, luego al sistema
+    const savedLang = localStorage.getItem('app_language');
     const sysLang = navigator.language.split('-')[0];
-    if (sysLang === 'en') appState.language = 'en';
+
+    if (savedLang) {
+        appState.language = savedLang;
+    } else if (sysLang === 'en') {
+        appState.language = 'en';
+    }
+
     getEl('lang-select').value = appState.language;
 
     // Load defaults (Spain active)
@@ -554,6 +561,7 @@ function setupEventListeners() {
 
     getEl('lang-select')?.addEventListener('change', (e) => {
         appState.language = e.target.value;
+        localStorage.setItem('app_language', e.target.value);
         updateUITranslations();
     });
 
@@ -1037,7 +1045,7 @@ function updateUITranslations() {
     // España labels
     if (getEl('sp-hijos-label')) getEl('sp-hijos-label').firstChild.textContent = lang.labels.hijos + " ";
     if (getEl('sp-hijo-dis-label')) getEl('sp-hijo-dis-label').textContent = lang.labels.hijo_dis;
-    if (getEl('sp-otros-label')) getEl('sp-otros-label').firstChild.textContent = lang.labels.otros + " ";
+    if (getEl('sp-otros-label')) getEl('sp-otros-label').firstChild.textContent = lang.labels.others + " ";
     if (getEl('sp-otro-dis-label')) getEl('sp-otro-dis-label').textContent = lang.labels.otro_dis;
     if (getEl('sp-otro-75-label')) getEl('sp-otro-75-label').textContent = lang.labels.otro_75;
     if (getEl('sp-otro-dis-count-label')) getEl('sp-otro-dis-count-label').textContent = lang.labels.otro_dis_count;
@@ -1252,6 +1260,47 @@ function resetToDefaultMode() {
     const btn = document.getElementById('btn-mode-annual');
     if (btn) btn.click();
 }
+
+window.resetAllFields = function(country) {
+    if (!confirm(appState.language === 'es' ? '¿Limpiar todos los datos?' : 'Clear all data?')) return;
+
+    if (country === 'sp') {
+        // Reset Spain Toggles y Listas
+        appState.spToggles.dynamicBonus = [];
+        appState.spToggles.dynamicOT = [];
+        appState.spToggles.dynamicDeductions = [];
+        appState.spToggles.disability = 'none';
+        appState.spToggles.civil = 'single';
+        appState.spToggles.pagas = 12;
+        appState.spToggles.pagas_prorrateadas = 0;
+        appState.spToggles.contrato = 'indef';
+        appState.spToggles['holiday-prorated'] = false;
+
+        // Reset Inputs Spain
+        const ids = ['sp-annual-gross', 'sp-monthly-gross', 'sp-hourly-price', 'sp-hourly-hours', 'sp-inverse-net', 'sp-dismissal-salary', 'sp-dismissal-years', 'sp-pro-antiguedad', 'sp-pro-children', 'sp-pro-others', 'sp-irpf-manual', 'sp-pro-base-common', 'sp-pro-base-at-ep'];
+        ids.forEach(id => { const el = getEl(id); if(el) el.value = el.defaultValue || (el.type === 'number' ? 0 : ''); });
+
+        // UI Reset
+        setCountry('spain');
+    } else {
+        // Reset UK Toggles y Listas
+        appState.ukToggles.dynamicBonus = [];
+        appState.ukToggles['pension-type'] = 'before';
+        appState.ukToggles.jobs = '1';
+        appState.ukToggles['holiday-prorated'] = false;
+
+        // Reset Inputs UK
+        const ids = ['uk-annual-gross', 'uk-monthly-gross', 'uk-hourly-rate', 'uk-hourly-hours', 'uk-inverse-net', 'uk-ir35-rate', 'uk-umbrella-margin', 'uk-business-expenses', 'uk-redundancy-age', 'uk-redundancy-years', 'uk-redundancy-weekly', 'uk-pro-pension', 'uk-pro-bik'];
+        ids.forEach(id => { const el = getEl(id); if(el) el.value = el.defaultValue || (el.type === 'number' ? 0 : ''); });
+
+        setCountry('uk');
+    }
+
+    renderDynamicLists();
+    updateUITranslations();
+    updatePagasUI();
+    getEl('results-section').classList.add('hidden');
+};
 
 function processCalculation() {
     getEl('results-loader')?.classList.add('hidden');
@@ -1809,14 +1858,16 @@ function calculateUKRedundancy() {
 function calculateUKInverse() {
     const lang = i18n[appState.language];
     const target = parseFloat(getEl('uk-inverse-net').value) || 0;
-    let low = target * 12, high = target * 12 * 4, gross = low;
+    const periods = appState.ukPeriods.annual; // Usar periodos configurados (12, 13, 14)
+
+    let low = target * periods, high = target * periods * 4, gross = low;
     for(let i=0; i<40; i++) {
         gross = (low + high) / 2;
-        let res = performUKCalculations(gross);
-        if (res.net / 12 < target) low = gross; else high = gross;
+        let res = performUKCalculations(gross, periods);
+        if (res.net / periods < target) low = gross; else high = gross;
     }
     renderResult(lang.bruto_est + " " + lang.anual, gross.toFixed(2) + "£");
-    getEl('net-result-value').textContent = (gross / 12).toFixed(2) + "£";
+    getEl('net-result-value').textContent = (gross / periods).toFixed(2) + "£";
 }
 
 /* ==========================================================================
