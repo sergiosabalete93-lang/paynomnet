@@ -1264,8 +1264,11 @@ function resetToDefaultMode() {
 window.resetAllFields = function(country) {
     if (!confirm(appState.language === 'es' ? '¿Limpiar todos los datos?' : 'Clear all data?')) return;
 
+    const modulePrefix = country === 'sp' ? 'module-spain' : 'module-uk';
+    const moduleEl = getEl(modulePrefix);
+
     if (country === 'sp') {
-        // Reset Spain Toggles y Listas
+        // 1. Reset Internal State Spain
         appState.spToggles.dynamicBonus = [];
         appState.spToggles.dynamicOT = [];
         appState.spToggles.dynamicDeductions = [];
@@ -1275,31 +1278,42 @@ window.resetAllFields = function(country) {
         appState.spToggles.pagas_prorrateadas = 0;
         appState.spToggles.contrato = 'indef';
         appState.spToggles['holiday-prorated'] = false;
-
-        // Reset Inputs Spain
-        const ids = ['sp-annual-gross', 'sp-monthly-gross', 'sp-hourly-price', 'sp-hourly-hours', 'sp-inverse-net', 'sp-dismissal-salary', 'sp-dismissal-years', 'sp-pro-antiguedad', 'sp-pro-children', 'sp-pro-others', 'sp-irpf-manual', 'sp-pro-base-common', 'sp-pro-base-at-ep'];
-        ids.forEach(id => { const el = getEl(id); if(el) el.value = el.defaultValue || (el.type === 'number' ? 0 : ''); });
-
-        // UI Reset
-        setCountry('spain');
     } else {
-        // Reset UK Toggles y Listas
+        // 1. Reset Internal State UK
         appState.ukToggles.dynamicBonus = [];
         appState.ukToggles['pension-type'] = 'before';
         appState.ukToggles.jobs = '1';
         appState.ukToggles['holiday-prorated'] = false;
-
-        // Reset Inputs UK
-        const ids = ['uk-annual-gross', 'uk-monthly-gross', 'uk-hourly-rate', 'uk-hourly-hours', 'uk-inverse-net', 'uk-ir35-rate', 'uk-umbrella-margin', 'uk-business-expenses', 'uk-redundancy-age', 'uk-redundancy-years', 'uk-redundancy-weekly', 'uk-pro-pension', 'uk-pro-bik'];
-        ids.forEach(id => { const el = getEl(id); if(el) el.value = el.defaultValue || (el.type === 'number' ? 0 : ''); });
-
-        setCountry('uk');
+        appState.ukToggles['ir35-type'] = 'inside';
+        appState.ukToggles['ir35-freq'] = 'daily';
     }
 
+    // 2. Reset All Inputs in the module (Text, Number, Checkbox)
+    if (moduleEl) {
+        const inputs = moduleEl.querySelectorAll('input, select');
+        inputs.forEach(input => {
+            if (input.type === 'checkbox') {
+                input.checked = false;
+            } else if (input.tagName === 'SELECT') {
+                input.selectedIndex = 0;
+            } else {
+                input.value = input.defaultValue || (input.type === 'number' ? 0 : '');
+            }
+        });
+    }
+
+    // 3. Hide all progressive revelation wrappers
+    if (moduleEl) {
+        moduleEl.querySelectorAll('[id*="wrapper-"]').forEach(w => w.classList.add('hidden'));
+    }
+
+    // 4. Global UI Refresh
     renderDynamicLists();
     updateUITranslations();
     updatePagasUI();
+    setCountry(country === 'sp' ? 'spain' : 'uk');
     getEl('results-section').classList.add('hidden');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
 };
 
 function processCalculation() {
