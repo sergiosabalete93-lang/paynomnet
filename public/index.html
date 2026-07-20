@@ -233,7 +233,7 @@
                 </div>
                 <div class="input-group">
                     <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes) <span class="help-icon" onclick="toggleHelp('h-antiguedad')">?</span></label>
-                    <input type="number" step="any" id="sp-pro-antiguedad" class="input-field" value="0" min="0">
+                    <input type="number" step="any" id="sp-pro-antiguedad" class="input-field" value="0" min="0" placeholder="Pon cual es el dinero total de tus trieños">
                     <div id="h-antiguedad" class="help-note"></div>
                 </div>
                 <div class="input-group">
@@ -399,6 +399,34 @@
                     <button class="btn-toggle-sp" onclick="setSpainToggle('contrato', 'temp')" id="btn-cont-temp">Temporal</button>
                 </div>
                 <div id="h-contract" class="help-note"></div>
+                <div id="wrapper-sp-meses-trabajo" class="input-group hidden" style="margin-top: 10px;">
+                    <label id="sp-meses-label">Meses trabajados este año</label>
+                    <input type="number" id="sp-pro-meses" class="input-field" value="12" min="1" max="12">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label id="sp-grupo-label">Grupo de Cotización <span class="help-icon" onclick="toggleHelp('h-grupo')">?</span></label>
+                <select id="sp-pro-grupo" class="dropdown-select">
+                    <option value="1">1 - Ingenieros y Licenciados</option>
+                    <option value="2">2 - Ingenieros Técnicos y Ayudantes</option>
+                    <option value="3">3 - Jefes Administrativos y de Taller</option>
+                    <option value="4">4 - Ayudantes no Titulados</option>
+                    <option value="5">5 - Oficiales Administrativos</option>
+                    <option value="6">6 - Subalternos</option>
+                    <option value="7" selected>7 - Auxiliares Administrativos</option>
+                    <option value="8">8 - Oficiales de Primera y Segunda</option>
+                    <option value="9">9 - Oficiales de Tercera y Especialistas</option>
+                    <option value="10">10 - Peones</option>
+                    <option value="11">11 - Menores de 18 años</option>
+                </select>
+                <div id="h-grupo" class="help-note"></div>
+            </div>
+
+            <div class="input-group">
+                <label id="sp-jornada-label">Jornada Laboral (Horas/Semana) <span class="help-icon" onclick="toggleHelp('h-jornada')">?</span></label>
+                <input type="number" step="any" id="sp-pro-jornada" class="input-field" value="40" min="1" max="40">
+                <div id="h-jornada" class="help-note"></div>
             </div>
 
             <div class="input-group">
@@ -475,6 +503,15 @@
 
                     <div class="pro-fields-wrapper pro-item">
                         <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label id="sp-especie-list-label" style="font-weight: bold;">Retribución en Especie (€/mes) <span class="help-icon" onclick="toggleHelp('h-especie')">?</span></label>
+                            <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="addExtraItem('sp', 'especie')">+</button>
+                        </div>
+                        <div id="sp-especie-dynamic-list"></div>
+                        <div id="h-especie" class="help-note"></div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item">
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                             <label id="sp-bonus-list-label" style="font-weight: bold;">Pluses y Bonus (€/mes) <span class="help-icon" onclick="toggleHelp('h-bonus')">?</span></label>
                             <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="addExtraItem('sp', 'bonus')">+</button>
                         </div>
@@ -513,6 +550,9 @@
                                 <option value="catalunya">Cataluña</option>
                                 <option value="andalucia">Andalucía</option>
                                 <option value="valencia">Com. Valenciana</option>
+                                <option value="canarias">Canarias</option>
+                                <option value="ceuta">Ceuta</option>
+                                <option value="melilla">Melilla</option>
                             </select>
                         </div>
                         <div class="input-group">

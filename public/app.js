@@ -18,9 +18,10 @@ const appState = {
         pagas_prorrateadas: 0,
         contrato: 'indef',
         'holiday-prorated': false,
-        dynamicBonus: [], // List of { id, amount, cotizaIRPF, cotizaSS, cotizaUnemployment }
-        dynamicOT: [],     // List of { id, amount, modeSuffix }
-        dynamicDeductions: [] // List of { id, amount }
+        dynamicBonus: [],
+        dynamicEspecie: [], // New
+        dynamicOT: [],
+        dynamicDeductions: []
     },
     ukToggles: {
         'hourly-monthly-base': 'full',
@@ -821,6 +822,9 @@ window.addExtraItem = function(country, type, suffix) {
     if (type === 'bonus') {
         const id = Date.now();
         target.dynamicBonus.push({ id, amount: 0, irpf: true, ss: true, unemployment: true });
+    } else if (type === 'especie') {
+        const id = Date.now();
+        appState.spToggles.dynamicEspecie.push({ id, amount: 0 });
     } else if (type === 'ot') {
         const id = country === 'sp' ? appState.spToggles.dynamicOT : []; // UK OT is usually handled in inputs
         if (country === 'sp') {
@@ -838,6 +842,8 @@ window.removeExtraItem = function(type, id, country = 'sp') {
     const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
     if (type === 'bonus') {
         target.dynamicBonus = target.dynamicBonus.filter(b => b.id !== id);
+    } else if (type === 'especie' && country === 'sp') {
+        appState.spToggles.dynamicEspecie = appState.spToggles.dynamicEspecie.filter(e => e.id !== id);
     } else if (type === 'deduction' && country === 'sp') {
         appState.spToggles.dynamicDeductions = appState.spToggles.dynamicDeductions.filter(d => d.id !== id);
     } else if (type === 'ot' && country === 'sp') {
@@ -847,6 +853,21 @@ window.removeExtraItem = function(type, id, country = 'sp') {
 };
 
 function renderDynamicLists() {
+    // 0. Especie List Spain
+    const especieListSp = getEl('sp-especie-dynamic-list');
+    if (especieListSp) {
+        especieListSp.innerHTML = '';
+        appState.spToggles.dynamicEspecie.forEach(e => {
+            const div = document.createElement('div');
+            div.style = "display:flex; gap:10px; margin-top:5px;";
+            div.innerHTML = `
+                <input type="number" step="any" class="input-field" style="flex:1; padding:5px;" placeholder="Importe especie" value="${e.amount}" onchange="updateEspecieVal(${e.id}, this.value)">
+                <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('especie', ${e.id}, 'sp')">×</button>
+            `;
+            especieListSp.appendChild(div);
+        });
+    }
+
     // 1. Bonus List Spain
     const bonusListSp = getEl('sp-bonus-dynamic-list');
     if (bonusListSp) {
@@ -925,6 +946,11 @@ function renderDynamicLists() {
     }
 }
 
+window.updateEspecieVal = function(id, val) {
+    const e = appState.spToggles.dynamicEspecie.find(x => x.id === id);
+    if (e) e.amount = parseFloat(val);
+};
+
 window.updateBonusVal = function(country, id, key, val) {
     const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
     const b = target.dynamicBonus.find(x => x.id === id);
@@ -960,6 +986,7 @@ window.setSpainToggle = function(key, val) {
         if (rateInput) {
             rateInput.value = (val === 'temp') ? '1.60' : '1.55';
         }
+        getEl('wrapper-sp-meses-trabajo')?.classList.toggle('hidden', val !== 'temp');
     }
 
     if (key === 'civil') {
@@ -1355,12 +1382,16 @@ function calculateSpain() {
 
     const res = performSpainCalculations(annualContractBase, pagas);
 
+    // Ajuste de Proyección de IRPF según meses trabajados
+    const irpfAjustado = res.irpfPerc * (res.workingMonths / 12);
+    const totalIRPFAnual = res.taxableAnnual * (irpfAjustado / 100);
+
     // --- Lógica de Visualización de Mes Normal (Precisión Contable) ---
     const basePagaBruta = annualContractBase / pagas;
     const visibleMonthlyGross = basePagaBruta + (basePagaBruta * prorrated / 12) + res.otAmountMonthly + res.netMonthlyAdditions;
 
     const monthlySS = res.totalSS / 12;
-    const monthlyIRPF = res.totalIRPF / pagas;
+    const monthlyIRPF = totalIRPFAnual / res.workingMonths;
     const visibleMonthlyIRPF = monthlyIRPF * (1 + prorrated / 12);
 
     renderResult(lang.bruto + " " + lang.mensual, visibleMonthlyGross.toFixed(2) + "€");
@@ -1395,6 +1426,10 @@ function performSpainCalculations(annualGross, pagas) {
     const isMarried = appState.spToggles.civil === 'married';
     const isJoint = isMarried && getEl('sp-pro-conjunta')?.checked;
     const isTemporal = appState.spToggles.contrato === 'temp';
+    const workingMonths = isTemporal ? (parseInt(getEl('sp-pro-meses')?.value) || 12) : 12;
+    const group = parseInt(getEl('sp-pro-grupo')?.value) || 7;
+    const weeklyHours = parseFloat(getEl('sp-pro-jornada')?.value) || 40;
+    const jornadaPerc = Math.min(1, weeklyHours / 40);
 
     // Base Salarial (Salario + Antigüedad) - Multiplica por PAGAS
     const antiguedad = parseFloat(getEl('sp-pro-antiguedad')?.value) || 0;
@@ -1405,6 +1440,17 @@ function performSpainCalculations(annualGross, pagas) {
     let bucketSS = contractBaseAnnual;
     let bucketUnemployment = contractBaseAnnual;
     let totalGrossAnnual = contractBaseAnnual; // TODO el dinero que entra
+
+    // Procesar Retribución en Especie (Tributan pero no se cobran)
+    let especieAnnualSum = 0;
+    appState.spToggles.dynamicEspecie.forEach(e => {
+        const annualAmt = e.amount * 12;
+        especieAnnualSum += annualAmt;
+        bucketIRPF += annualAmt;
+        bucketSS += annualAmt;
+        bucketUnemployment += annualAmt;
+        totalGrossAnnual += annualAmt;
+    });
 
     // Procesar Bonus Dinámicos
     let bonusMonthlySum = 0;
@@ -1454,24 +1500,32 @@ function performSpainCalculations(annualGross, pagas) {
     const rateUnemployment = (parseFloat(getEl('sp-rate-unemployment')?.value) || (isTemporal ? 1.60 : 1.55)) / 100;
     const rateFpMei = (parseFloat(getEl('sp-rate-fp-mei')?.value) || 0.25) / 100;
 
+    // Bases Mínimas Proyectadas 2026 (Prorrateadas según Jornada)
+    const basesMinimas = {
+        1: 1950, 2: 1620, 3: 1410, 4: 1360, 5: 1360, 6: 1360, 7: 1360, 8: 1360, 9: 1360, 10: 1360, 11: 1360
+    };
+    const minLegalMonthly = (basesMinimas[group] || 1360) * jornadaPerc;
+
     const MAX_SS_BASE_MONTHLY = 4950.00;
     const manualBaseCommon = parseFloat(getEl('sp-pro-base-common')?.value);
     const manualBaseAtEp = parseFloat(getEl('sp-pro-base-at-ep')?.value);
 
     let baseSSAnnual, baseUnemploymentAnnual;
 
-    // Base Contingencias Generales
+    // Base Contingencias Generales (Con suelo de Grupo y techo de Ley)
     if (!isNaN(manualBaseCommon) && manualBaseCommon > 0) {
         baseSSAnnual = manualBaseCommon * 12;
     } else {
-        baseSSAnnual = Math.min(bucketSS / 12, MAX_SS_BASE_MONTHLY) * 12;
+        const monthlyBase = Math.max(minLegalMonthly, Math.min(bucketSS / 12, MAX_SS_BASE_MONTHLY));
+        baseSSAnnual = monthlyBase * 12;
     }
 
     // Base AT/EP (Desempleo/FP)
     if (!isNaN(manualBaseAtEp) && manualBaseAtEp > 0) {
         baseUnemploymentAnnual = manualBaseAtEp * 12;
     } else {
-        baseUnemploymentAnnual = Math.min(bucketUnemployment / 12, MAX_SS_BASE_MONTHLY) * 12;
+        const monthlyBase = Math.max(minLegalMonthly, Math.min(bucketUnemployment / 12, MAX_SS_BASE_MONTHLY));
+        baseUnemploymentAnnual = monthlyBase * 12;
     }
 
     const totalSS = (baseSSAnnual * rateCommon) +
@@ -1489,9 +1543,10 @@ function performSpainCalculations(annualGross, pagas) {
     }
 
     const totalIRPF = bucketIRPF * (irpfPerc / 100);
-    const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (dynamicDeductionsTotal * 12);
+    // El neto final resta la Seguridad Social, el IRPF, las deducciones y la Retribución en Especie (porque ya se ha recibido)
+    const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (dynamicDeductionsTotal * 12) - especieAnnualSum;
 
-    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: bonusMonthlySum };
+    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: bonusMonthlySum, workingMonths };
 }
 
 function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount, other75Count, region, disability, isMarried, isJoint, multipayer, totalSSAnnual) {
@@ -1538,6 +1593,7 @@ function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount
 
     if (region === 'madrid') tax *= 0.95;
     else if (region === 'catalunya') tax *= 1.01;
+    else if (region === 'ceuta' || region === 'melilla') tax *= 0.50; // Deducción 50% IRPF
 
     return (tax / gross) * 100;
 }
