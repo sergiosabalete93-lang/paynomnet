@@ -856,7 +856,7 @@ function renderDynamicLists() {
             div.style = "background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;";
             div.innerHTML = `
                 <div style="display:flex; gap:10px; margin-bottom:5px;">
-                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Importe" value="${b.amount}" onchange="updateBonusVal('sp', ${b.id}, 'amount', this.value)">
+                    <input type="number" step="any" class="input-field" style="flex:1; padding:5px;" placeholder="Importe" value="${b.amount}" onchange="updateBonusVal('sp', ${b.id}, 'amount', this.value)">
                     <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id}, 'sp')">×</button>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:5px; font-size:10px;">
@@ -879,7 +879,7 @@ function renderDynamicLists() {
             div.style = "background: rgba(255,255,255,0.5); padding: 10px; border-radius: 8px; margin-bottom: 10px; border: 1px solid #eee;";
             div.innerHTML = `
                 <div style="display:flex; gap:10px; margin-bottom:5px;">
-                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Amount" value="${b.amount}" onchange="updateBonusVal('uk', ${b.id}, 'amount', this.value)">
+                    <input type="number" step="any" class="input-field" style="flex:1; padding:5px;" placeholder="Amount" value="${b.amount}" onchange="updateBonusVal('uk', ${b.id}, 'amount', this.value)">
                     <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id}, 'uk')">×</button>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:5px; font-size:10px;">
@@ -901,7 +901,7 @@ function renderDynamicLists() {
                 const div = document.createElement('div');
                 div.style = "display:flex; gap:10px; margin-top:5px;";
                 div.innerHTML = `
-                    <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Plus extra" value="${o.amount}" onchange="updateOTVal(${o.id}, this.value)">
+                    <input type="number" step="any" class="input-field" style="flex:1; padding:5px;" placeholder="Plus extra" value="${o.amount}" onchange="updateOTVal(${o.id}, this.value)">
                     <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('ot', ${o.id}, 'sp')">×</button>
                 `;
                 otList.appendChild(div);
@@ -917,7 +917,7 @@ function renderDynamicLists() {
             const div = document.createElement('div');
             div.style = "display:flex; gap:10px; margin-top:5px;";
             div.innerHTML = `
-                <input type="number" class="input-field" style="flex:1; padding:5px;" placeholder="Importe deducción" value="${d.amount}" onchange="updateDeductionVal(${d.id}, this.value)">
+                <input type="number" step="any" class="input-field" style="flex:1; padding:5px;" placeholder="Importe deducción" value="${d.amount}" onchange="updateDeductionVal(${d.id}, this.value)">
                 <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('deduction', ${d.id}, 'sp')">×</button>
             `;
             deductionsList.appendChild(div);
@@ -1407,8 +1407,10 @@ function performSpainCalculations(annualGross, pagas) {
     let totalGrossAnnual = contractBaseAnnual; // TODO el dinero que entra
 
     // Procesar Bonus Dinámicos
+    let bonusMonthlySum = 0;
     appState.spToggles.dynamicBonus.forEach(b => {
         const annualAmt = b.amount * 12;
+        bonusMonthlySum += b.amount;
         totalGrossAnnual += annualAmt;
         if (b.irpf) bucketIRPF += annualAmt;
         if (b.ss) bucketSS += annualAmt;
@@ -1489,7 +1491,7 @@ function performSpainCalculations(annualGross, pagas) {
     const totalIRPF = bucketIRPF * (irpfPerc / 100);
     const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (dynamicDeductionsTotal * 12);
 
-    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: 0 };
+    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: bonusMonthlySum };
 }
 
 function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount, other75Count, region, disability, isMarried, isJoint, multipayer, totalSSAnnual) {
