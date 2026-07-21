@@ -1,5 +1,3 @@
-import './firebase-config.js';
-
 /* ==========================================================================
    1. ESTADO GLOBAL Y CONFIGURACIÓN
    ========================================================================== */
@@ -38,8 +36,10 @@ const appState = {
     ukHourlyFreq: null
 };
 
-// Hacer appState global para ads-engine.js
+// Hacer appState global de forma inmediata para otros scripts
 window.appState = appState;
+
+import './firebase-config.js';
 
 const i18n = {
     es: {
@@ -493,6 +493,13 @@ document.addEventListener('DOMContentLoaded', () => {
     checkConsent();
     initApp();
     setupEventListeners();
+
+    // Inicialización de componentes adicionales
+    setupHelperCalc();
+    setupDraggable(getEl('floating-calc'));
+
+    // Carga inicial segura (después de registrar listeners)
+    setCountry('spain');
     updateUITranslations();
     updatePagasUI();
 
@@ -566,9 +573,6 @@ function initApp() {
             .then(() => console.log("SW: Registrado"))
             .catch(err => console.warn("SW: Error", err));
     }
-
-    // Load defaults (Spain active)
-    setCountry('spain');
 
     // 4. Bloquear teclas inválidas en todos los inputs numéricos
     document.querySelectorAll('input[type="number"]').forEach(input => {
@@ -2370,8 +2374,5 @@ function setupDraggable(el) {
     }
 }
 
-// Inicializar al cargar
-document.addEventListener('DOMContentLoaded', () => {
-    setupHelperCalc();
-    setupDraggable(getEl('floating-calc'));
-});
+// Evento DOMContentLoaded centralizado arriba (Fase 2)
+
