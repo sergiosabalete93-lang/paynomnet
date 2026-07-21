@@ -228,12 +228,12 @@
                     <button class="btn-reset-small" onclick="resetAllFields('sp')">LIMPIAR / RESET</button>
                 </div>
                 <div class="input-group">
-                    <label id="sp-anual-bruto-label">Bruto Anual (€)</label>
+                    <label id="sp-anual-bruto-label">Bruto Anual (€) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-annual')">?</span></label>
                     <input type="number" step="any" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000" max="10000000000">
                 </div>
                 <div class="input-group">
                     <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-antiguedad')">?</span></label>
-                    <input type="number" step="any" id="sp-pro-antiguedad" class="input-field" value="0" min="0" placeholder="Pon cual es el dinero total de tus trieños">
+                    <input type="number" step="any" id="sp-pro-antiguedad" class="input-field" min="0" placeholder="Pon cual es el dinero total de tus trieños">
                     <div id="h-antiguedad" class="help-note"></div>
                 </div>
                 <div class="input-group">
@@ -254,13 +254,13 @@
                 </div>
                 <div class="input-group">
                     <label id="sp-horas-extra-label-ann">Horas Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                    <input type="number" step="any" id="sp-pro-overtime-hours-ann" class="input-field pro-input" value="0" min="0">
+                    <input type="number" step="any" id="sp-pro-overtime-hours-ann" class="input-field pro-input" placeholder="Horas realizadas">
                     <div id="h-ot-hours" class="help-note"></div>
                 </div>
                 <div class="input-group">
                     <label id="sp-precio-extra-label-ann">Precio Hora Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="number" step="any" id="sp-pro-overtime-price-ann" class="input-field pro-input" value="0" min="0" style="flex:1">
+                        <input type="number" step="any" id="sp-pro-overtime-price-ann" class="input-field pro-input" min="0" style="flex:1" placeholder="Precio bruto/hora">
                         <button id="btn-add-ot-item-ann" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'ann')">+</button>
                     </div>
                     <div id="h-ot-price" class="help-note"></div>
@@ -270,7 +270,7 @@
 
             <div id="spain-monthly" class="calc-form hidden">
                 <div class="input-group">
-                    <label id="sp-mensual-bruto-label">Bruto Mensual (€)</label>
+                    <label id="sp-mensual-bruto-label">Bruto Mensual (€) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-monthly')">?</span></label>
                     <input type="number" step="any" id="sp-monthly-gross" class="input-field" placeholder="Ej: 2000" max="10000000000">
                 </div>
                 <div class="input-group">
@@ -290,12 +290,12 @@
                 </div>
                 <div class="input-group">
                     <label id="sp-horas-extra-label-mon">Horas Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                    <input type="number" step="any" id="sp-pro-overtime-hours-mon" class="input-field pro-input" value="0" min="0">
+                    <input type="number" step="any" id="sp-pro-overtime-hours-mon" class="input-field pro-input" placeholder="Horas realizadas">
                 </div>
                 <div class="input-group">
                     <label id="sp-precio-extra-label-mon">Precio Hora Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="number" step="any" id="sp-pro-overtime-price-mon" class="input-field pro-input" value="0" min="0" style="flex:1">
+                        <input type="number" step="any" id="sp-pro-overtime-price-mon" class="input-field pro-input" min="0" style="flex:1" placeholder="Precio bruto/hora">
                         <button id="btn-add-ot-item-mon" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'mon')">+</button>
                     </div>
                 </div>
@@ -304,11 +304,11 @@
 
             <div id="spain-hourly" class="calc-form hidden">
                 <div class="input-group">
-                    <label id="sp-hora-precio-label">Precio por Hora (€)</label>
+                    <label id="sp-hora-precio-label">Precio por Hora (€) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></label>
                     <input type="number" step="any" id="sp-hourly-price" class="input-field" placeholder="Ej: 12">
                 </div>
                 <div class="input-group">
-                    <label id="sp-hora-horas-label">Horas al Mes</label>
+                    <label id="sp-hora-horas-label">Horas al Mes <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></label>
                     <input type="number" step="any" id="sp-hourly-hours" class="input-field" placeholder="Ej: 160">
                 </div>
                 <div class="input-group">
@@ -328,12 +328,12 @@
                 </div>
                 <div class="input-group">
                     <label id="sp-horas-extra-label-hou">Horas Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                    <input type="number" step="any" id="sp-pro-overtime-hours-hou" class="input-field pro-input" value="0" min="0">
+                    <input type="number" step="any" id="sp-pro-overtime-hours-hou" class="input-field pro-input" placeholder="Horas realizadas">
                 </div>
                 <div class="input-group">
                     <label id="sp-precio-extra-label-hou">Precio Hora Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="number" step="any" id="sp-pro-overtime-price-hou" class="input-field pro-input" value="0" min="0" style="flex:1">
+                        <input type="number" step="any" id="sp-pro-overtime-price-hou" class="input-field pro-input" min="0" style="flex:1" placeholder="Precio bruto/hora">
                         <button id="btn-add-ot-item-hou" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'hou')">+</button>
                     </div>
                 </div>
@@ -342,7 +342,7 @@
 
             <div id="spain-inverse" class="calc-form hidden pro-feature">
                 <div class="input-group">
-                    <label id="sp-inverso-neto-label">Neto Mensual Objetivo (€)</label>
+                    <label id="sp-inverso-neto-label">Neto Mensual Objetivo (€) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-inverse')">?</span></label>
                     <input type="number" step="any" id="sp-inverse-net" class="input-field" placeholder="Ej: 1800">
                 </div>
                 <div class="input-group">
@@ -362,12 +362,12 @@
                 </div>
                 <div class="input-group">
                     <label id="sp-horas-extra-label-inv">Horas Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                    <input type="number" step="any" id="sp-pro-overtime-hours-inv" class="input-field pro-input" value="0" min="0">
+                    <input type="number" step="any" id="sp-pro-overtime-hours-inv" class="input-field pro-input" placeholder="Horas realizadas">
                 </div>
                 <div class="input-group">
                     <label id="sp-precio-extra-label-inv">Precio Hora Extra <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
                     <div style="display:flex; gap:10px; align-items:center;">
-                        <input type="number" step="any" id="sp-pro-overtime-price-inv" class="input-field pro-input" value="0" min="0" style="flex:1">
+                        <input type="number" step="any" id="sp-pro-overtime-price-inv" class="input-field pro-input" min="0" style="flex:1" placeholder="Precio bruto/hora">
                         <button id="btn-add-ot-item-inv" class="btn-dis" style="width:40px; height:40px; font-weight:bold; font-size:20px;" onclick="addExtraItem('sp', 'ot', 'inv')">+</button>
                     </div>
                 </div>
@@ -376,11 +376,11 @@
 
             <div id="spain-dismissal" class="calc-form hidden pro-feature">
                 <div class="input-group">
-                    <label id="sp-despido-salario-label">Salario (Mensual o Anual)</label>
+                    <label id="sp-despido-salario-label">Salario (Mensual o Anual) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-dismissal')">?</span></label>
                     <input type="number" step="any" id="sp-dismissal-salary" class="input-field" placeholder="Ej: 2000 o 24000">
                 </div>
                 <div class="input-group">
-                    <label id="sp-despido-anos-label">Años trabajados</label>
+                    <label id="sp-despido-anos-label">Años trabajados <span class="help-icon" onclick="toggleHelp(event, 'h-mode-dismissal')">?</span></label>
                     <input type="number" step="any" id="sp-dismissal-years" class="input-field" placeholder="Ej: 3.5">
                 </div>
                 <div class="input-group">
@@ -439,14 +439,6 @@
                 <div id="h-disability" class="help-note"></div>
             </div>
 
-            <div class="input-group">
-                <span class="sub-label" id="sp-civil-label">Estado Civil</span>
-                <div class="frequency-toggle">
-                    <button class="btn-toggle-sp active" onclick="setSpainToggle(event, 'civil', 'single')" id="btn-civil-single">Soltero/a</button>
-                    <button class="btn-toggle-sp" onclick="setSpainToggle(event, 'civil', 'married')" id="btn-civil-married">Casado/a</button>
-                </div>
-            </div>
-
             <div class="input-group toggle-group" style="padding-bottom: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 20px;">
                 <label id="sp-holiday-label">Vacaciones Prorrateadas</label>
                 <input type="checkbox" id="sp-holiday-prorated" class="toggle-switch">
@@ -459,7 +451,7 @@
                     <div class="pro-fields-wrapper pro-item">
                         <div class="input-group">
                             <label id="sp-hijos-label">Nº Hijos <span class="help-icon" onclick="toggleHelp(event, 'h-children')">?</span></label>
-                            <input type="number" step="any" id="sp-pro-children" class="input-field" value="0" min="0">
+                            <input type="number" step="any" id="sp-pro-children" class="input-field" placeholder="¿Cuántos hijos?">
                             <div id="h-children" class="help-note"></div>
 
                             <!-- Opciones que solo aparecen si hay hijos > 0 -->
@@ -470,13 +462,13 @@
                                 </div>
                                 <div id="wrapper-sp-child-dis-count" class="input-group hidden" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-hijo-dis-count-label">¿Cuántos hijos?</label>
-                                    <input type="number" step="any" id="sp-pro-child-dis-count" class="input-field" value="0" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                    <input type="number" step="any" id="sp-pro-child-dis-count" class="input-field" min="0" style="padding: 8px 12px; font-size: 13px;">
                                 </div>
                             </div>
                         </div>
                         <div class="input-group">
                             <label id="sp-otros-label">Otros a Cargo <span class="help-icon" onclick="toggleHelp(event, 'h-others')">?</span></label>
-                            <input type="number" step="any" id="sp-pro-others" class="input-field" value="0" min="0">
+                            <input type="number" step="any" id="sp-pro-others" class="input-field" placeholder="Personas dependientes">
                             <div id="h-others" class="help-note"></div>
 
                             <!-- Opciones que solo aparecen si hay otros > 0 -->
@@ -487,7 +479,7 @@
                                 </div>
                                 <div id="wrapper-sp-other-dis-count" class="input-group hidden" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-otro-dis-count-label">¿Cuántos con discapacidad?</label>
-                                    <input type="number" step="any" id="sp-pro-other-dis-count" class="input-field" value="0" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                    <input type="number" step="any" id="sp-pro-other-dis-count" class="input-field" min="0" style="padding: 8px 12px; font-size: 13px;">
                                 </div>
                                 <div class="input-group toggle-group" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-otro-75-label">Mayor de 75 años</label>
@@ -495,7 +487,7 @@
                                 </div>
                                 <div id="wrapper-sp-other-75-count" class="input-group hidden" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-otro-75-count-label">¿Cuántos con +75 años?</label>
-                                    <input type="number" step="any" id="sp-pro-other-75-count" class="input-field" value="0" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                    <input type="number" step="any" id="sp-pro-other-75-count" class="input-field" min="0" style="padding: 8px 12px; font-size: 13px;">
                                 </div>
                             </div>
                         </div>
@@ -565,7 +557,7 @@
                         </div>
                     </div>
 
-                    <div class="input-group toggle-group pro-item hidden" id="wrapper-sp-conjunta">
+                    <div class="input-group toggle-group pro-item" id="wrapper-sp-conjunta">
                         <label id="sp-conjunta-label">Declaración Conjunta <span class="help-icon" onclick="toggleHelp(event, 'h-joint')">?</span></label>
                         <input type="checkbox" id="sp-pro-conjunta" class="toggle-switch">
                         <div id="h-joint" class="help-note"></div>
@@ -617,8 +609,8 @@
                     <button class="btn-reset-small" onclick="resetAllFields('uk')">CLEAR ALL</button>
                 </div>
                 <div class="input-group">
-                    <label id="uk-anual-bruto-label">Annual Base Salary (£)</label>
-                    <input type="number" id="uk-annual-gross" class="input-field" placeholder="Ej: 35000" max="10000000000">
+                    <label id="uk-anual-bruto-label">Annual Base Salary (£) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-annual')">?</span></label>
+                    <input type="number" id="uk-annual-gross" class="input-field" placeholder="Base salary (e.g. 35000)" max="10000000000">
                 </div>
                 <div class="input-group">
                     <label id="uk-pay-periods-label">Pay Periods <span class="help-icon" onclick="toggleHelp(event, 'h-uk-periods')">?</span></label>
@@ -631,12 +623,12 @@
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="uk-horas-extra-label-ann">Overtime Hours</label>
-                        <input type="number" id="uk-pro-overtime-hours-ann" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-horas-extra-label-ann">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                        <input type="number" id="uk-pro-overtime-hours-ann" class="input-field pro-input" placeholder="Hours worked">
                     </div>
                     <div class="input-group">
-                        <label id="uk-precio-extra-label-ann">Overtime Rate (£)</label>
-                        <input type="number" id="uk-pro-overtime-price-ann" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-precio-extra-label-ann">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                        <input type="number" id="uk-pro-overtime-price-ann" class="input-field pro-input" placeholder="Rate per hour">
                     </div>
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
@@ -649,8 +641,8 @@
             <!-- MONTHLY -->
             <div id="uk-monthly" class="calc-form hidden">
                 <div class="input-group">
-                    <label id="uk-mensual-bruto-label">Monthly Base Salary (£)</label>
-                    <input type="number" step="any" id="uk-monthly-gross" class="input-field" placeholder="Ej: 2800" max="10000000000">
+                    <label id="uk-mensual-bruto-label">Monthly Base Salary (£) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-monthly')">?</span></label>
+                    <input type="number" step="any" id="uk-monthly-gross" class="input-field" placeholder="Monthly pay (e.g. 3000)" max="10000000000">
                 </div>
                 <div class="input-group">
                     <label id="uk-pay-periods-mon-label">Pay Periods <span class="help-icon" onclick="toggleHelp(event, 'h-uk-periods-monthly')">?</span></label>
@@ -663,12 +655,12 @@
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="uk-horas-extra-label-mon">Overtime Hours</label>
-                        <input type="number" step="any" id="uk-pro-overtime-hours-mon" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-horas-extra-label-mon">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                        <input type="number" step="any" id="uk-pro-overtime-hours-mon" class="input-field pro-input" placeholder="Hours worked">
                     </div>
                     <div class="input-group">
-                        <label id="uk-precio-extra-label-mon">Overtime Rate (£)</label>
-                        <input type="number" step="any" id="uk-pro-overtime-price-mon" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-precio-extra-label-mon">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                        <input type="number" step="any" id="uk-pro-overtime-price-mon" class="input-field pro-input" placeholder="Rate per hour">
                     </div>
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
@@ -684,12 +676,12 @@
                     <button class="btn-freq" onclick="setHourlyType('uk', 'monthly')" id="btn-uk-monthly">Monthly</button>
                 </div>
                 <div class="input-group">
-                    <label id="uk-hora-precio-label">Hourly Rate (£)</label>
-                    <input type="number" step="any" id="uk-hourly-rate" class="input-field" placeholder="Ej: 15">
+                    <label id="uk-hora-precio-label">Hourly Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></label>
+                    <input type="number" step="any" id="uk-hourly-rate" class="input-field" placeholder="Hourly rate (e.g. 15.50)">
                 </div>
                 <div class="input-group">
-                    <label id="lbl-uk-hourly-hours">Hours per WEEK</label>
-                    <input type="number" step="any" id="uk-hourly-hours" class="input-field" placeholder="Ej: 37.5">
+                    <label id="lbl-uk-hourly-hours">Hours per WEEK <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></label>
+                    <input type="number" step="any" id="uk-hourly-hours" class="input-field" placeholder="Weekly hours (e.g. 37.5)">
                 </div>
                 <!-- Hourly Monthly Base Toggle -->
                 <div class="input-group" id="uk-hourly-monthly-config" style="display:none">
@@ -702,12 +694,12 @@
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="uk-horas-extra-label-hou">Overtime Hours</label>
-                        <input type="number" step="any" id="uk-pro-overtime-hours-hou" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-horas-extra-label-hou">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                        <input type="number" step="any" id="uk-pro-overtime-hours-hou" class="input-field pro-input" placeholder="Hours worked">
                     </div>
                     <div class="input-group">
-                        <label id="uk-precio-extra-label-hou">Overtime Rate (£)</label>
-                        <input type="number" step="any" id="uk-pro-overtime-price-hou" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-precio-extra-label-hou">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                        <input type="number" step="any" id="uk-pro-overtime-price-hou" class="input-field pro-input" placeholder="Rate per hour">
                     </div>
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
@@ -720,17 +712,17 @@
             <div id="uk-inverse" class="calc-form hidden pro-feature">
                 <div class="input-group">
                     <label id="uk-inverso-neto-label">Target Monthly Net (£) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-inverse')">?</span></label>
-                    <input type="number" step="any" id="uk-inverse-net" class="input-field" placeholder="Ej: 2200">
+                    <input type="number" step="any" id="uk-inverse-net" class="input-field" placeholder="Desired net monthly">
                     <div id="h-uk-inverse" class="help-note"></div>
                 </div>
                 <div class="pro-fields-wrapper">
                     <div class="input-group">
-                        <label id="uk-horas-extra-label-inv">Overtime Hours</label>
-                        <input type="number" step="any" id="uk-pro-overtime-hours-inv" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-horas-extra-label-inv">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                        <input type="number" step="any" id="uk-pro-overtime-hours-inv" class="input-field pro-input" placeholder="Hours worked">
                     </div>
                     <div class="input-group">
-                        <label id="uk-precio-extra-label-inv">Overtime Rate (£)</label>
-                        <input type="number" step="any" id="uk-pro-overtime-price-inv" class="input-field pro-input" value="0" min="0">
+                        <label id="uk-precio-extra-label-inv">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                        <input type="number" step="any" id="uk-pro-overtime-price-inv" class="input-field pro-input" placeholder="Rate per hour">
                     </div>
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
@@ -752,7 +744,7 @@
 
                 <div class="input-group">
                     <label id="uk-assignment-label">Assignment Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-assign')">?</span></label>
-                    <input type="number" step="any" id="uk-ir35-rate" class="input-field" placeholder="Ej: 500">
+                    <input type="number" step="any" id="uk-ir35-rate" class="input-field" placeholder="Full rate (e.g. 500)">
                     <div class="frequency-toggle" style="margin-top:5px">
                         <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'ir35-freq', 'daily')" id="btn-uk-ir35-daily">Daily</button>
                         <button class="btn-toggle-uk" onclick="setUKToggle(event, 'ir35-freq', 'hourly')" id="btn-uk-ir35-hourly">Hourly</button>
@@ -771,7 +763,7 @@
                 <div id="wrapper-uk-outside-only" class="hidden">
                     <div class="input-group">
                         <label id="uk-expenses-label">Business Expenses (£/mo) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-expenses')">?</span></label>
-                        <input type="number" step="any" id="uk-business-expenses" class="input-field pro-input" value="0">
+                        <input type="number" step="any" id="uk-business-expenses" class="input-field pro-input" placeholder="Business costs">
                         <div id="h-uk-expenses" class="help-note"></div>
                     </div>
                 </div>
@@ -822,7 +814,7 @@
                         <div id="wrapper-uk-cb-count" class="input-group hidden" style="margin-top:10px;">
                             <label id="uk-children-cb-label">Number of Children</label>
                             <div style="display:flex; gap:10px; align-items:center;">
-                                <input type="number" step="any" id="uk-pro-children-count" class="input-field pro-input" placeholder="0" value="0" style="width:100px;">
+                                <input type="number" step="any" id="uk-pro-children-count" class="input-field pro-input" placeholder="0" style="width:100px;">
                                 <span style="font-size:10px;" id="uk-cb-desc-label">receiving benefit</span>
                             </div>
                         </div>
@@ -881,7 +873,7 @@
                     <div class="pro-fields-wrapper pro-item">
                         <div class="input-group">
                             <label id="uk-pension-label">Pension (%) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-pension')">?</span></label>
-                            <input type="number" step="any" id="uk-pro-pension" class="input-field pro-input" value="5">
+                            <input type="number" step="any" id="uk-pro-pension" class="input-field pro-input" placeholder="e.g. 5">
                             <div class="frequency-toggle" style="margin-top:5px">
                                 <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Net Pay (Before Tax)</button>
                                 <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'source')" style="font-size:10px" id="btn-uk-pension-source">Relief at Source</button>
@@ -890,7 +882,7 @@
                         </div>
                         <div class="input-group">
                             <label id="uk-bik-label">Benefits (BIK) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-bik')">?</span></label>
-                            <input type="number" step="any" id="uk-pro-bik" class="input-field pro-input" value="0">
+                            <input type="number" step="any" id="uk-pro-bik" class="input-field pro-input" placeholder="P11D value">
                             <div id="h-uk-bik" class="help-note"></div>
                         </div>
                     </div>

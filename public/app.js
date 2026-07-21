@@ -13,7 +13,6 @@ const appState = {
     spToggles: {
         disability: 'none',
         multipayer: 'no',
-        civil: 'single',
         pagas: 12,
         pagas_prorrateadas: 0,
         contrato: 'indef',
@@ -126,22 +125,22 @@ const i18n = {
         },
         placeholders: {
             email: "Email (Admin)",
-            sp_annual: "Ej: 24000",
-            sp_monthly: "Ej: 2000",
-            sp_hourly_price: "Ej: 12",
-            sp_hourly_hours: "Ej: 160",
-            sp_inverse: "Ej: 1800",
-            sp_dismissal_sal: "Ej: 2000 o 24000",
-            sp_dismissal_years: "Ej: 3.5",
-            manual_irpf: "Ej: 15",
-            optional: "Automática",
-            uk_annual: "Ej: 35000",
-            uk_monthly: "Ej: 2800",
-            uk_hourly_rate: "Ej: 15",
-            uk_hourly_hours: "Ej: 37.5",
-            uk_inverse: "Ej: 2200",
+            sp_annual: "Sueldo bruto (ej: 30000)",
+            sp_monthly: "Sueldo mensual (ej: 2100)",
+            sp_hourly_price: "Precio hora (ej: 12.50)",
+            sp_hourly_hours: "Horas al mes (ej: 160)",
+            sp_inverse: "Sueldo neto deseado",
+            sp_dismissal_sal: "Último sueldo o anual",
+            sp_dismissal_years: "Años en la empresa",
+            manual_irpf: "Fuerza un % (ej: 14)",
+            optional: "Dejar vacío si es automático",
+            uk_annual: "Base salary (e.g. 35000)",
+            uk_monthly: "Monthly pay (e.g. 3000)",
+            uk_hourly_rate: "Hourly rate (e.g. 15.50)",
+            uk_hourly_hours: "Weekly hours (e.g. 37.5)",
+            uk_inverse: "Neto mensual deseado",
             uk_taxcode_manual: "Ej: S1257L",
-            uk_ir35_rate: "Ej: 500"
+            uk_ir35_rate: "Full rate (e.g. 500)"
         },
         labels: {
             privacidad: "Privacidad",
@@ -156,7 +155,6 @@ const i18n = {
             tu_dis: "Tu Discapacidad",
             comunidad: "Comunidad",
             pagadores: "Pagadores",
-            civil: "Estado Civil",
             conjunta: "Declaración Conjunta",
             bruto_anual: "Salario Base Anual (€)",
             n_pagas: "Número de Pagas",
@@ -216,49 +214,49 @@ const i18n = {
             children_desc: "recibiendo ayuda"
         },
         help: {
-            mode_annual: "Calcula tu sueldo neto a partir del bruto total (antes de quitar impuestos) que pactes para todo un año completo.",
-            mode_monthly: "Calcula cuánto cobrarás 'limpio' en el banco a partir de tu sueldo bruto mensual.",
-            mode_hourly: "Ideal para trabajos por horas. Dinos cuánto te pagan la hora y cuántas horas haces al mes, y sacaremos tu neto mensual proyectado.",
-            mode_ir35: "Cálculo especial para contratistas en Reino Unido que trabajan bajo la normativa IR35 (Umbrella o SL).",
-            mode_inverse: "Dinos cuánto quieres cobrar 'limpio' al mes y te diremos exactamente cuánto sueldo bruto debes negociar con tu empresa.",
-            mode_dismissal: "Calcula el dinero que te corresponde legalmente si te despiden, basándonos en tu sueldo y el tiempo trabajado.",
-            children: "Escribe cuántos hijos menores de 25 años viven contigo. ¡Atención! Si algún hijo tiene una discapacidad legal reconocida, activa el interruptor para pagar mucho menos IRPF.",
-            others: "Si viven contigo padres o abuelos mayores de 65 años (o personas con discapacidad) que dependen de ti económicamente.",
-            disability: "Si tienes un certificado oficial de discapacidad, elígelo aquí. Esto aumenta tu 'mínimo personal' y hace que te quiten menos impuestos cada mes.",
-            multipayer: "Actívalo si has tenido más de un trabajo este año. Al tener dos empresas, es muy probable que Hacienda te suba la retención para que no te salga a pagar en la declaración.",
-            joint: "Si estás casado/a, a veces sale más rentable hacer la declaración de la renta juntos. Actívalo para ver si tu neto mensual mejora.",
-            pagas: "Mira tu contrato: si tienes las extras repartidas en el sueldo cada mes, elige 12. Si cobras una paga extra en junio y otra en diciembre, elige 14.",
-            contract: "Indefinido: Trabajo estable. Temporal: Contratos de fin de obra o sustitución. La ley quita un poco más de porcentaje para el paro en los contratos temporales.",
-            manual_irpf: "Usa esto SOLO si ya sabes exactamente qué porcentaje de IRPF te quita tu empresa y quieres forzar a la app a usar ese mismo número.",
-            custom_base: "Usa esto solo si eres un experto y sabes que tu base de cotización no coincide con tu sueldo (ej: si superas los límites máximos por ley).",
-            extra_tax: "Añade aquí cualquier descuento fijo que te quiten cada mes y que no sean impuestos, como: cuota del sindicato, un embargo judicial o el pago de un préstamo de empresa.",
-            bonus: "Añade aquí cualquier 'plus' o 'extra' que cobres en dinero (Plus transporte, incentivos, etc). Puedes marcar si ese plus paga impuestos o si te lo dan 'limpio'.",
-            antiguedad: "Escribe el dinero TOTAL que cobras al mes por trienios o por llevar años en la empresa. No pongas los años, pon el dinero (€).",
-            ot_hours: "Pon cuántas horas extra has hecho este mes. Las horas extra normales tienen un descuento de Seguridad Social mucho más pequeño (solo el 4.7%).",
-            ot_price: "Escribe cuánto te pagan por cada hora extra según tu convenio o contrato.",
-            'h-grupo': "Es tu categoría legal según tu título. El Grupo 1 (Jefes/Ingenieros) tiene mínimos legales más altos. Si ganas poco pero tu grupo es alto, pagarás más Seguridad Social por ley.",
-            'h-jornada': "Escribe cuántas horas trabajas a la semana. Lo normal son 40. Si trabajas a media jornada (20h), los mínimos legales se reducen a la mitad automáticamente.",
-            'h-meses': "Solo para temporales. Si solo vas a trabajar 6 meses este año, la app ajustará tu IRPF a la baja. ¡Cobrarás más neto cada mes!",
-            'h-especie': "Cosas que te da la empresa pero no en dinero (Seguro médico, coche, tickets). Pagan impuestos como si fuera dinero, pero la app los restará al final para ver tu dinero real en el banco.",
-            rates: "Configuración técnica de porcentajes. No los toques a menos que tu sector tenga convenios especiales de cotización.",
-            uk_periods: "Usually 12 months, but some contracts use 4-week (13/yr) or weekly (52) cycles.",
-            uk_bik: "Non-cash benefits like company car, medical insurance, etc. (P11D).",
-            uk_pension: "Net Pay Arrangement: Pension is taken from your gross pay before tax. Relief at Source: Pension is taken after tax, and the provider claims 20% tax relief back from the government.",
-            uk_taxcode: "Your tax code (e.g., 1257L). Determines your personal allowance.",
-            uk_ni_letter: "Most employees use category A. Affects your NI contributions.",
-            uk_bonus: "Additional bonuses. Indicate if the amount is taxable or net.",
-            uk_jobs: "If you have multiple jobs, your allowance usually applies to the main one.",
-            uk_inverse: "Enter desired monthly take-home to calculate equivalent annual gross.",
-            uk_redundancy: "UK Statutory Redundancy Pay calculation.",
-            uk_hourly_base: "Define how to convert weekly hours to monthly (Avg Year vs 4-Week blocks).",
-            uk_holiday: "Includes an extra 12.07% of salary to simulate rolled-up holiday pay, common in temporary or agency work.",
-            uk_ir35_type: "Inside: Treat as employee via Umbrella (higher costs). Outside: Business-to-business via LTD (more efficient).",
-            uk_assign: "The total rate paid by the agency. Includes taxes, employer costs, and margin.",
-            uk_margin: "Weekly fee charged by the Umbrella Company for payroll services.",
-            uk_expenses: "Costs incurred to run your business (LTD) which are deducted before tax.",
-            uk_marriage: "Transfer £1,260 of your personal allowance to your partner if they earn more than you and your income is under £12,570. This can save up to £252 in tax per year.",
-            uk_blind: "Additional £3,070 tax-free allowance if you are registered as blind.",
-            uk_child_benefit: "If you or your partner earn over £60,000 a year and receive Child Benefit, you must pay this charge to repay part of the benefit. The app calculates it based on the number of children you specify."
+            mode_annual: "Calcula tu sueldo neto a partir del bruto total anual pactado con tu empresa.",
+            mode_monthly: "Calcula tu neto mensual limpio a partir de tu sueldo bruto mensual actual.",
+            mode_hourly: "Ideal si cobras por horas. Indica tu precio/hora y las horas que haces al mes para proyectar tu sueldo.",
+            mode_ir35: "Cálculo especializado para contratistas en Reino Unido bajo normativa IR35 (Umbrella o LTD).",
+            mode_inverse: "Dinos cuánto quieres cobrar 'limpio' al mes y calcularemos el sueldo bruto que debes negociar.",
+            mode_dismissal: "Calcula la indemnización legal aproximada en caso de despido según tu antigüedad y salario.",
+            children: "Hijos menores de 25 años que vivan contigo. Si tienen discapacidad, activa el interruptor para reducir el IRPF.",
+            others: "Padres o abuelos mayores de 65 años a tu cargo. Especificar su discapacidad o edad (+75) reduce tu impuesto.",
+            disability: "Tu grado de discapacidad oficial. Esto aumenta tu mínimo personal libre de impuestos.",
+            multipayer: "Actívalo si has trabajado en más de una empresa este año; Hacienda suele subir la retención en estos casos.",
+            joint: "Declaración de la renta conjunta. Suele interesar si uno de los dos cónyuges no tiene ingresos.",
+            pagas: "12 si las extras están prorrateadas cada mes. 14 si cobras una extra en junio y otra en diciembre.",
+            contract: "Indefinido (fijo) o Temporal. Los temporales tienen una retención de Seguridad Social ligeramente distinta.",
+            manual_irpf: "Úsalo solo si quieres forzar el porcentaje exacto que ya ves en tu nómina real para cuadrar resultados.",
+            custom_base: "La base de cotización suele ser igual al bruto, pero con límites legales. No lo toques si no eres experto.",
+            extra_tax: "Cualquier otro descuento neto mensual: cuota sindical, embargos o préstamos de empresa.",
+            bonus: "Conceptos extra en dinero (plus transporte, incentivos). Puedes marcar si tributan o si son netos.",
+            antiguedad: "Importe total que cobras al mes por años en la empresa (trienios, sexenios, etc.). No pongas los años, pon el dinero.",
+            ot_hours: "Número de horas trabajadas fuera de tu jornada normal este mes.",
+            ot_price: "El precio bruto por cada hora extra según tu contrato.",
+            'h-grupo': "Tu categoría profesional según contrato. Determina las bases mínimas y máximas de cotización.",
+            'h-jornada': "Horas semanales de tu contrato. El estándar es 40h. Si es menos, los mínimos legales se ajustan.",
+            'h-meses': "Si tu contrato es temporal y solo vas a trabajar unos meses, la app ajustará tu IRPF a la baja.",
+            'h-especie': "Pagos no monetarios (seguro médico, coche). Tributan como sueldo pero se restan del neto final al cobrarse 'en cosas'.",
+            rates: "Porcentajes técnicos de cotización. No los cambies a menos que tengas un convenio muy especial.",
+            uk_periods: "Frecuencia de cobro: 12 meses (estándar), 13 (cada 4 semanas) o 52 (semanal).",
+            uk_bik: "Beneficios en especie (P11D) como coche de empresa o seguro médico privado.",
+            uk_pension: "Ahorro jubilación. 'Net Pay': se resta antes de impuestos. 'Relief at Source': se resta después y el gobierno añade el 20%.",
+            uk_taxcode: "Código fiscal (ej: 1257L). Define cuánto ganas sin pagar impuestos. 1257L es el estándar para un solo empleo.",
+            uk_ni_letter: "Categoría del National Insurance. La 'A' es para la mayoría de empleados adultos.",
+            uk_bonus: "Bonificaciones extra. Indica si la cantidad es bruta (tributable) o neta (ya limpia).",
+            uk_jobs: "Si tienes más de un empleo, tu mínimo exento suele aplicarse solo al trabajo principal.",
+            uk_inverse: "Introduce el neto mensual que deseas y calcularemos el sueldo bruto anual equivalente.",
+            uk_redundancy: "Indemnización por despido en UK según edad, años trabajados y tope semanal de £725 (2026).",
+            uk_hourly_base: "Cómo convertir tus horas semanales a mensuales (Promedio anual o bloques de 4 semanas).",
+            uk_holiday: "Incluye un 12.07% extra simulando el pago de vacaciones no disfrutadas, común en agencias.",
+            uk_ir35_type: "Inside: Eres empleado fiscal (vía Umbrella). Outside: Eres una empresa independiente (LTD).",
+            uk_assign: "La tarifa total que paga el cliente por tus servicios antes de cualquier descuento.",
+            uk_margin: "Tarifa semanal fija que cobra la empresa Umbrella por hacerte la nómina.",
+            uk_expenses: "Gastos de negocio que puedes deducir del beneficio antes de impuestos (solo en modo LTD/Outside).",
+            uk_marriage: "Permite transferir £1,260 de tu mínimo exento a tu pareja si gana menos que tú.",
+            uk_blind: "Aumento del mínimo exento de £3,070 extra si estás registrado como invidente.",
+            uk_child_benefit: "Si ganas más de £60,000, debes devolver parte de las ayudas por hijos recibidas vía impuestos."
         }
     },
     en: {
@@ -347,22 +345,22 @@ const i18n = {
         },
         placeholders: {
             email: "Email (Admin)",
-            sp_annual: "e.g. 24000",
-            sp_monthly: "e.g. 2000",
-            sp_hourly_price: "e.g. 12",
-            sp_hourly_hours: "e.g. 160",
-            sp_inverse: "e.g. 1800",
-            sp_dismissal_sal: "e.g. 2000 or 24000",
-            sp_dismissal_years: "e.g. 3.5",
-            manual_irpf: "e.g. 15",
-            optional: "Optional",
-            uk_annual: "e.g. 35000",
-            uk_monthly: "e.g. 2800",
-            uk_hourly_rate: "e.g. 15",
-            uk_hourly_hours: "e.g. 37.5",
-            uk_inverse: "e.g. 2200",
-            uk_taxcode_manual: "Ej: S1257L",
-            uk_ir35_rate: "e.g. 500"
+            sp_annual: "Gross salary (e.g. 30000)",
+            sp_monthly: "Monthly salary (e.g. 2100)",
+            sp_hourly_price: "Hourly rate (e.g. 12.50)",
+            sp_hourly_hours: "Monthly hours (e.g. 160)",
+            sp_inverse: "Desired net pay",
+            sp_dismissal_sal: "Latest salary or annual",
+            sp_dismissal_years: "Years of service",
+            manual_irpf: "Force % (e.g. 14)",
+            optional: "Leave blank for automatic",
+            uk_annual: "Base salary (e.g. 35000)",
+            uk_monthly: "Monthly pay (e.g. 3000)",
+            uk_hourly_rate: "Hourly rate (e.g. 15.50)",
+            uk_hourly_hours: "Weekly hours (e.g. 37.5)",
+            uk_inverse: "Desired net monthly",
+            uk_taxcode_manual: "e.g. S1257L",
+            uk_ir35_rate: "Full rate (e.g. 500)"
         },
         labels: {
             privacidad: "Privacy",
@@ -377,7 +375,6 @@ const i18n = {
             tu_dis: "Your Disability",
             comunidad: "Region",
             pagadores: "Employers",
-            civil: "Marital Status",
             conjunta: "Joint Declaration",
             bruto_anual: "Annual Base Salary (€)",
             n_pagas: "Number of Payments",
@@ -436,45 +433,45 @@ const i18n = {
             children_desc: "receiving benefit"
         },
         help: {
-            mode_annual: "Enter your annual base salary. The app will calculate your monthly take-home pay based on your contract's payment structure and taxes.",
-            mode_monthly: "Enter your gross monthly base salary. You can configure how many extra payments you have per year and how many are prorated monthly.",
-            mode_hourly: "Ideal for hourly work. Calculates projected annual gross and extracts monthly taxes.",
-            mode_ir35: "Calculate the net income for contractors working Inside IR35 (Umbrella) or Outside IR35 (Limited Company).",
-            mode_inverse: "Tell us how much you want to earn 'clean' per month and we'll tell you the base gross salary you should negotiate.",
-            mode_dismissal: "Calculates legal redundancy pay based on days per year and time worked.",
-            children: "Number of children living with you. If any have a disability, enable the toggle to apply additional tax relief.",
-            others: "Parents or grandparents living with you. Specifying if they are over 75 or have a disability can significantly increase your net pay.",
-            disability: "Your personal degree of disability affects the tax-free personal allowance. Select 'None' if you don't have an official resolution.",
-            multipayer: "Enable if you've had more than one employer during the year. This lowers the tax-free limit and usually increases income tax withholding.",
-            joint: "For married couples, a joint declaration can sometimes provide an additional reduction in taxable income.",
-            pagas: "Configure your contract: choose total payments (12-16) and how many extra payments are spread across your monthly paychecks.",
-            contract: "Temporary contracts have slightly different social security contributions for unemployment.",
-            manual_irpf: "Use this field only if you want to override the automatic tax calculation with a fixed percentage you already know from your payslip.",
-            custom_base: "Define specific contribution bases. Useful if your social security base doesn't match your gross salary due to caps or exempt items.",
-            extra_tax: "Add specific deductions from your net pay: union fees, private health insurance, or voluntary contributions.",
-            antiguedad: "Monthly amount for longevity or seniority. It's added to your base salary and projected across all contract payments.",
-            ot_hours: "Number of overtime hours worked. Normal overtime is subject to reduced social security and regular income tax.",
-            ot_price: "The gross price you receive for each overtime hour according to your contract or collective agreement.",
-            bonus: "Monthly bonuses (transport, bonus, goals). For each one, you can decide if it's subject to social security, unemployment, or income tax.",
-            rates: "Technical adjustment of contribution percentages. Don't change them unless your sector has special rates.",
-            uk_periods: "Usually 12 months, but some contracts use 4-week (13/yr) or weekly (52) cycles.",
-            uk_bik: "Non-cash benefits like company car, medical insurance, etc. (P11D).",
-            uk_pension: "Net Pay Arrangement: Pension is taken from your gross pay before tax. Relief at Source: Pension is taken after tax, and the provider claims 20% tax relief back from the government.",
-            uk_taxcode: "Your tax code (e.g., 1257L). Determines your personal allowance.",
-            uk_ni_letter: "Most employees use category A. Affects your NI contributions.",
-            uk_bonus: "Additional bonuses. Indicate if the amount is taxable or net.",
-            uk_jobs: "If you have multiple jobs, your allowance usually applies to the main one.",
-            uk_inverse: "Enter desired monthly take-home to calculate equivalent annual gross.",
-            uk_redundancy: "UK Statutory Redundancy Pay calculation.",
-            uk_hourly_base: "Define how to convert weekly hours to monthly (Avg Year vs 4-Week blocks).",
-            uk_holiday: "Includes an extra 12.07% of salary to simulate rolled-up holiday pay, common in temporary or agency work.",
-            uk_ir35_type: "Inside: Treat as employee via Umbrella (higher costs). Outside: Business-to-business via LTD (more efficient).",
-            uk_assign: "The total rate paid by the agency. Includes taxes, employer costs, and margin.",
-            uk_margin: "Weekly fee charged by the Umbrella Company for payroll services.",
-            uk_expenses: "Costs incurred to run your business (LTD) which are deducted before tax.",
-            uk_marriage: "Transfer £1,260 of your personal allowance to your partner if they earn more than you and your income is under £12,570. This can save up to £252 in tax per year.",
-            uk_blind: "Additional £3,070 tax-free allowance if you are registered as blind.",
-            uk_child_benefit: "If you or your partner earn over £60,000 a year and receive Child Benefit, you must pay this charge to repay part of the benefit. The app calculates it based on the number of children you specify.",
+            mode_annual: "Calculate your take-home pay based on the total annual gross salary agreed with your employer.",
+            mode_monthly: "Calculate your monthly net pay based on your current monthly gross salary.",
+            mode_hourly: "Perfect for hourly roles. Enter your hourly rate and monthly hours to project your income.",
+            mode_ir35: "Specialized calculation for UK contractors working via Umbrella or Limited companies.",
+            mode_inverse: "Enter your target monthly net pay, and we will calculate the gross salary you should negotiate.",
+            mode_dismissal: "Estimate your legal redundancy pay based on your years of service and salary.",
+            children: "Children under 25 living with you. If they have a disability, enable the toggle for tax relief.",
+            others: "Dependent parents or grandparents. Specifying disability or age (+75) increases your tax-free allowance.",
+            disability: "Your official disability degree. This increases your personal tax-free allowance.",
+            multipayer: "Enable if you worked for more than one employer this year; tax agencies often increase withholding to avoid debt.",
+            joint: "Joint tax return for married couples. Usually beneficial if one spouse has low or no income.",
+            pagas: "12 if bonuses are spread monthly. 14 if you receive extra checks in Summer and Christmas.",
+            contract: "Permanent vs. Temporary. Temporary contracts may have slightly different social security contributions.",
+            manual_irpf: "Use this field only to force an exact tax percentage you already know from your payslip.",
+            custom_base: "The contribution base usually matches gross pay but has legal caps. Leave blank if unsure.",
+            extra_tax: "Any other monthly net deductions: union fees, court orders, or company loan repayments.",
+            antiguedad: "Total monthly amount paid for years at the company. Enter the money amount, not the number of years.",
+            ot_hours: "Number of hours worked beyond your standard contracted hours this month.",
+            ot_price: "The gross hourly rate for overtime as per your contract or collective agreement.",
+            bonus: "Extra cash payments (transport, performance). You can choose if they are taxable or net.",
+            rates: "Technical contribution percentages. Do not change unless you have a very specific agreement.",
+            uk_periods: "Payment frequency: 12 months (standard), 13 (every 4 weeks), or 52 (weekly).",
+            uk_bik: "Benefits in Kind (P11D) such as company car or private medical insurance.",
+            uk_pension: "Retirement savings. 'Net Pay': taken before tax. 'Relief at Source': taken after tax with a 20% gov top-up.",
+            uk_taxcode: "Tax code (e.g., 1257L). Determines your tax-free allowance. 1257L is standard for one job.",
+            uk_ni_letter: "National Insurance category. 'A' is the standard for most adult employees.",
+            uk_bonus: "Additional bonuses. Indicate if the amount is gross (taxable) or net (already clean).",
+            uk_jobs: "If you have multiple jobs, your personal allowance usually applies only to your main role.",
+            uk_inverse: "Enter your target monthly net take-home to find the equivalent annual gross salary.",
+            uk_redundancy: "Statutory redundancy pay based on age, years of service, and £725 weekly cap (2026).",
+            uk_hourly_base: "How to convert weekly hours to monthly (Annual average vs. 4-week blocks).",
+            uk_holiday: "Adds an extra 12.07% to simulate rolled-up holiday pay, common for agency workers.",
+            uk_ir35_type: "Inside: Taxed as an employee (via Umbrella). Outside: Independent business (LTD).",
+            uk_assign: "The total rate paid by the client for your services before any deductions or taxes.",
+            uk_margin: "Fixed weekly fee charged by the Umbrella company for payroll services.",
+            uk_expenses: "Business costs you can deduct from profit before tax (only in LTD/Outside mode)." ,
+            uk_marriage: "Allows transferring £1,260 of your personal allowance to your partner if they earn less.",
+            uk_blind: "Additional tax-free allowance if you are registered as blind.",
+            uk_child_benefit: "If earning over £60,000, you must pay a charge to repay some of the child benefits received.",
             'h-grupo': "It's your legal category based on your title. Group 1 (Heads/Engineers) has higher legal minimums. If you earn little but your group is high, you will pay more Social Security by law.",
             'h-jornada': "Enter how many hours you work per week. Normal is 40. If you work part-time (20h), the legal minimums are automatically reduced by half.",
             'h-meses': "Only for temporary contracts. If you are only going to work 6 months this year, the app will adjust your tax downward. You will take home more net each month!",
@@ -1000,10 +997,6 @@ window.setSpainToggle = function(event, key, val) {
         }
         getEl('wrapper-sp-meses-trabajo')?.classList.toggle('hidden', val !== 'temp');
     }
-
-    if (key === 'civil') {
-        getEl('wrapper-sp-conjunta').classList.toggle('hidden', val !== 'married');
-    }
 };
 
 window.setUKToggle = function(event, key, val) {
@@ -1094,9 +1087,6 @@ function updateUITranslations() {
     if (getEl('sp-comunidad-label')) getEl('sp-comunidad-label').textContent = lang.labels.comunidad;
     if (getEl('opt-sp-comun')) getEl('opt-sp-comun').textContent = lang.options.common;
     if (getEl('sp-pagadores-label')) getEl('sp-pagadores-label').firstChild.textContent = lang.labels.pagadores + " ";
-    if (getEl('sp-civil-label')) getEl('sp-civil-label').textContent = lang.labels.civil;
-    if (getEl('btn-civil-single')) getEl('btn-civil-single').textContent = lang.options.single;
-    if (getEl('btn-civil-married')) getEl('btn-civil-married').textContent = lang.options.married;
     if (getEl('sp-conjunta-label')) getEl('sp-conjunta-label').firstChild.textContent = lang.labels.conjunta + " ";
     if (getEl('sp-anual-bruto-label')) getEl('sp-anual-bruto-label').textContent = lang.labels.bruto_anual;
     if (getEl('sp-pagas-tot-label')) getEl('sp-pagas-tot-label').firstChild.textContent = lang.labels.pagas_totales + " ";
@@ -1236,13 +1226,26 @@ function updateUITranslations() {
     if (getEl('btn-accept-consent')) getEl('btn-accept-consent').textContent = lang.consent_btn_all;
     if (getEl('btn-reject-consent')) getEl('btn-reject-consent').textContent = lang.consent_btn_min;
 
-    // UK placeholders
+    // Placeholders dinámicos
+    if (getEl('auth-email')) getEl('auth-email').placeholder = lang.placeholders.email;
+    if (getEl('sp-annual-gross')) getEl('sp-annual-gross').placeholder = lang.placeholders.sp_annual;
+    if (getEl('sp-monthly-gross')) getEl('sp-monthly-gross').placeholder = lang.placeholders.sp_monthly;
+    if (getEl('sp-hourly-price')) getEl('sp-hourly-price').placeholder = lang.placeholders.sp_hourly_price;
+    if (getEl('sp-hourly-hours')) getEl('sp-hourly-hours').placeholder = lang.placeholders.sp_hourly_hours;
+    if (getEl('sp-inverse-net')) getEl('sp-inverse-net').placeholder = lang.placeholders.sp_inverse;
+    if (getEl('sp-dismissal-salary')) getEl('sp-dismissal-salary').placeholder = lang.placeholders.sp_dismissal_sal;
+    if (getEl('sp-dismissal-years')) getEl('sp-dismissal-years').placeholder = lang.placeholders.sp_dismissal_years;
+    if (getEl('sp-irpf-manual')) getEl('sp-irpf-manual').placeholder = lang.placeholders.manual_irpf;
+    if (getEl('sp-pro-base-common')) getEl('sp-pro-base-common').placeholder = lang.placeholders.optional;
+    if (getEl('sp-pro-base-at-ep')) getEl('sp-pro-base-at-ep').placeholder = lang.placeholders.optional;
+
     if (getEl('uk-annual-gross')) getEl('uk-annual-gross').placeholder = lang.placeholders.uk_annual;
     if (getEl('uk-monthly-gross')) getEl('uk-monthly-gross').placeholder = lang.placeholders.uk_monthly;
     if (getEl('uk-hourly-rate')) getEl('uk-hourly-rate').placeholder = lang.placeholders.uk_hourly_rate;
     if (getEl('uk-hourly-hours')) getEl('uk-hourly-hours').placeholder = lang.placeholders.uk_hourly_hours;
     if (getEl('uk-inverse-net')) getEl('uk-inverse-net').placeholder = lang.placeholders.uk_inverse;
     if (getEl('uk-pro-taxcode-manual')) getEl('uk-pro-taxcode-manual').placeholder = lang.placeholders.uk_taxcode_manual;
+    if (getEl('uk-ir35-rate')) getEl('uk-ir35-rate').placeholder = lang.placeholders.uk_ir35_rate;
 
     // Calcular botón
     getEl('btn-calculate').textContent = lang.calc;
@@ -1319,7 +1322,6 @@ window.resetAllFields = function(country) {
         appState.spToggles.dynamicOT = [];
         appState.spToggles.dynamicDeductions = [];
         appState.spToggles.disability = 'none';
-        appState.spToggles.civil = 'single';
         appState.spToggles.pagas = 12;
         appState.spToggles.pagas_prorrateadas = 0;
         appState.spToggles.contrato = 'indef';
@@ -1401,17 +1403,13 @@ function calculateSpain() {
 
     const res = performSpainCalculations(annualContractBase, pagas);
 
-    // Ajuste de Proyección de IRPF según meses trabajados
-    const irpfAjustado = res.irpfPerc * (res.workingMonths / 12);
-    const totalIRPFAnual = res.taxableAnnual * (irpfAjustado / 100);
-
     // --- Lógica de Visualización de Mes Normal (Precisión Contable) ---
     const basePagaBruta = annualContractBase / pagas;
     const visibleMonthlyGross = basePagaBruta + (basePagaBruta * prorrated / 12) + res.otAmountMonthly + res.netMonthlyAdditions;
 
     const monthlySS = res.totalSS / 12;
-    const monthlyIRPF = totalIRPFAnual / res.workingMonths;
-    const visibleMonthlyIRPF = monthlyIRPF * (1 + prorrated / 12);
+    // El IRPF mensual es el total anual dividido entre 12, ya que la base mensual visible ya incluye el prorrateo de extras.
+    const visibleMonthlyIRPF = res.totalIRPF / 12;
 
     renderResult(lang.bruto + " " + lang.mensual, visibleMonthlyGross.toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
@@ -1420,7 +1418,7 @@ function calculateSpain() {
     // Seguridad Social: Siempre se muestra el descuento de 1/12
     renderResult(lang.ss, "-" + monthlySS.toFixed(2) + "€");
 
-    // IRPF: Se ajusta según el prorrateo para que el Neto cuadre
+    // IRPF: Refleja el descuento mensual real basado en el total anual
     renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + visibleMonthlyIRPF.toFixed(2) + "€");
 
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
@@ -1442,8 +1440,7 @@ function performSpainCalculations(annualGross, pagas) {
     const region = getEl('sp-pro-region')?.value || "comun";
     const disability = appState.spToggles.disability;
     const multipayer = appState.spToggles.multipayer === 'yes';
-    const isMarried = appState.spToggles.civil === 'married';
-    const isJoint = isMarried && getEl('sp-pro-conjunta')?.checked;
+    const isJoint = getEl('sp-pro-conjunta')?.checked;
     const isTemporal = appState.spToggles.contrato === 'temp';
     const workingMonths = isTemporal ? (parseInt(getEl('sp-pro-meses')?.value) || 12) : 12;
     const group = parseInt(getEl('sp-pro-grupo')?.value) || 7;
@@ -1556,9 +1553,9 @@ function performSpainCalculations(annualGross, pagas) {
     let irpfPerc;
     if (appState.isPro && manualVal !== "") {
         irpfPerc = parseFloat(manualVal);
-        if (isNaN(irpfPerc)) irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDisCount, other75Count, region, disability, isMarried, isJoint, multipayer, totalSS);
+        if (isNaN(irpfPerc)) irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDisCount, other75Count, region, disability, isJoint, multipayer, totalSS);
     } else {
-        irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDisCount, other75Count, region, disability, isMarried, isJoint, multipayer, totalSS);
+        irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDisCount, other75Count, region, disability, isJoint, multipayer, totalSS);
     }
 
     const totalIRPF = bucketIRPF * (irpfPerc / 100);
@@ -1568,7 +1565,7 @@ function performSpainCalculations(annualGross, pagas) {
     return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: bonusMonthlySum, workingMonths };
 }
 
-function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount, other75Count, region, disability, isMarried, isJoint, multipayer, totalSSAnnual) {
+function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount, other75Count, region, disability, isJoint, multipayer, totalSSAnnual) {
     let allowance = 5550;
     if (disability === '33') allowance += 3000;
     else if (disability === '65') allowance += 12000;
