@@ -32,11 +32,14 @@ const appState = {
         'ir35-freq': 'daily'
     },
     ukPeriods: {
-        annual: 12,
-        monthly: 12
+        annual: 0,
+        monthly: 0
     },
-    ukHourlyFreq: 'weekly'
+    ukHourlyFreq: null
 };
+
+// Hacer appState global para ads-engine.js
+window.appState = appState;
 
 const i18n = {
     es: {
@@ -557,8 +560,32 @@ function initApp() {
 
     getEl('lang-select').value = appState.language;
 
+    // 3. Registrar Service Worker
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('./sw.js')
+            .then(() => console.log("SW: Registrado"))
+            .catch(err => console.warn("SW: Error", err));
+    }
+
     // Load defaults (Spain active)
     setCountry('spain');
+
+    // 4. Bloquear teclas inválidas en todos los inputs numéricos
+    document.querySelectorAll('input[type="number"]').forEach(input => {
+        input.addEventListener('keydown', (e) => {
+            if (['e', 'E', '+', '-'].includes(e.key)) {
+                e.preventDefault();
+            }
+        });
+
+        // Limpiar error al empezar a escribir
+        input.addEventListener('input', () => {
+            input.classList.remove('input-error');
+            const parent = input.closest('.input-group');
+            const errorMsg = parent?.querySelector('.error-label');
+            if (errorMsg) errorMsg.remove();
+        });
+    });
 }
 
 function applyTheme(isDark, save = true) {
@@ -730,6 +757,8 @@ function setupEventListeners() {
 
     // Botón Calcular
     getEl('btn-calculate')?.addEventListener('click', () => {
+        if (!validateForm()) return;
+
         if ((appState.mode === 'inverse' || appState.mode === 'dismissal') && !appState.isPro) {
             alert(i18n[appState.language].pro_alert);
             return;
@@ -750,20 +779,93 @@ function setupEventListeners() {
         const shouldShowInterstitial = (appState.adClickCount % 2 === 0) && !appState.isPro && appState.adClickCount > 0;
 
         if (shouldShowInterstitial) {
-            // Intentar mostrar anuncio intersticial si está disponible (vía AdMob/AdSense)
-            if (window.adsbygoogle && typeof window.adsbygoogle.push === 'function') {
-                try {
-                    // Nota: En web/TWA el intersticial se gestiona por AdSense/AdMob Auto-ads o manual
-                    // Para disparar uno manual en web se suele usar la API de H5 Games o similares,
-                    // pero aquí usaremos el retraso simulado para dar tiempo a la carga.
-                    console.log("Mostrando anuncio Intersticial...");
-                } catch(e) { console.error("Error al cargar anuncio:", e); }
+            // Intentar mostrar anuncio intersticial si está disponible
+            if (window.showInterstitialAd) {
+                showInterstitialAd(() => processCalculation());
+            } else {
+                setTimeout(processCalculation, 600);
             }
-            setTimeout(() => processCalculation(), 2000);
         } else {
             setTimeout(processCalculation, 600);
         }
     });
+}
+
+function validateForm() {
+    let isValid = true;
+    const errors = [];
+    const lang = i18n[appState.language];
+
+    // Limpiar errores previos
+    document.querySelectorAll('.input-error').forEach(el => el.classList.remove('input-error'));
+    document.querySelectorAll('.error-label').forEach(el => el.remove());
+    document.querySelectorAll('.group-error').forEach(el => el.classList.remove('group-error'));
+
+    const markError = (id, msg) => {
+        const el = getEl(id);
+        if (!el) return;
+        el.classList.add('input-error');
+        const parent = el.closest('.input-group') || el.parentNode;
+        const label = document.createElement('div');
+        label.className = 'error-label';
+        label.innerHTML = `<span>⚠</span> ${msg}`;
+        parent.appendChild(label);
+        if (errors.length === 0) errors.push(el);
+        isValid = false;
+    };
+
+    const markGroupError = (groupId, msg) => {
+        const group = getEl(groupId);
+        if (!group) return;
+        group.classList.add('group-error');
+        const label = document.createElement('div');
+        label.className = 'error-label';
+        label.innerHTML = `<span>⚠</span> ${msg}`;
+        group.parentNode.insertBefore(label, group.nextSibling);
+        if (errors.length === 0) errors.push(group);
+        isValid = false;
+    };
+
+    const c = appState.country;
+    const m = appState.mode;
+
+    // 1. Validar Inputs Numéricos Obligatorios
+    if (c === 'spain') {
+        const val = (id) => parseFloat(getEl(id)?.value) || 0;
+        if (m === 'annual' && val('sp-annual-gross') <= 0) markError('sp-annual-gross', "Sueldo anual requerido");
+        if (m === 'monthly' && val('sp-monthly-gross') <= 0) markError('sp-monthly-gross', "Sueldo mensual requerido");
+        if (m === 'hourly') {
+            if (val('sp-hourly-price') <= 0) markError('sp-hourly-price', "Precio hora requerido");
+            if (val('sp-hourly-hours') <= 0) markError('sp-hourly-hours', "Horas mensuales requeridas");
+        }
+        if (m === 'inverse' && val('sp-inverse-net') <= 0) markError('sp-inverse-net', "Neto objetivo requerido");
+        if (m === 'dismissal') {
+            if (val('sp-dismissal-salary') <= 0) markError('sp-dismissal-salary', "Salario requerido");
+            if (val('sp-dismissal-years') <= 0) markError('sp-dismissal-years', "Años requeridos");
+        }
+
+        // 2. Validar Selecciones Obligatorias (Botones)
+        if (appState.spToggles.pagas === 0) markGroupError('sp-pagas-tot-' + (m === 'dismissal' ? 'annual' : m), "Selecciona número de pagas");
+        if (!appState.spToggles.contrato) markGroupError('btn-cont-indef', "Selecciona tipo contrato");
+    } else {
+        const val = (id) => parseFloat(getEl(id)?.value) || 0;
+        if (m === 'annual' && val('uk-annual-gross') <= 0) markError('uk-annual-gross', "Annual salary required");
+        if (m === 'monthly' && val('uk-monthly-gross') <= 0) markError('uk-monthly-gross', "Monthly salary required");
+        if (m === 'hourly') {
+            if (val('uk-hourly-rate') <= 0) markError('uk-hourly-rate', "Hourly rate required");
+            if (val('uk-hourly-hours') <= 0) markError('uk-hourly-hours', "Hours required");
+        }
+        if (m === 'inverse' && val('uk-inverse-net') <= 0) markError('uk-inverse-net', "Target net required");
+        if (m === 'ir35' && val('uk-ir35-rate') <= 0) markError('uk-ir35-rate', "Assignment rate required");
+
+        if (appState.ukPeriods[m] === 0 && m !== 'dismissal' && m !== 'ir35') markGroupError('uk-pay-periods-label', "Select pay periods");
+    }
+
+    if (!isValid && errors.length > 0) {
+        errors[0].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    return isValid;
 }
 
 function setCountry(c) {
@@ -801,7 +903,18 @@ function setMode(m) {
 /* ==========================================================================
    3. LOGICA DE TOGGLES ESPECÍFICOS
    ========================================================================== */
-window.setSpainPagas = function(val) {
+window.setSpainPagas = function(event, val) {
+    if (event) {
+        const parent = event.target.parentNode;
+        parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+        const parentGroup = event.target.closest('.group-error');
+        if (parentGroup) {
+            parentGroup.classList.remove('group-error');
+            const errorLabel = parentGroup.nextElementSibling;
+            if (errorLabel?.classList.contains('error-label')) errorLabel.remove();
+        }
+    }
     appState.spToggles.pagas = parseInt(val);
     // Reset prorrateadas if they exceed new max
     const maxProrrated = appState.spToggles.pagas - 12;
@@ -1018,9 +1131,19 @@ window.toggleHelp = function(event, id) {
 
 window.setSpainToggle = function(event, key, val) {
     appState.spToggles[key] = val;
-    const parent = event.target.parentNode;
-    parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event) {
+        const parent = event.target.parentNode;
+        parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Limpiar error visual
+        const groupParent = event.target.closest('.group-error') || (event.target.id === 'btn-cont-indef' || event.target.id === 'btn-cont-temp' ? event.target.parentNode : null);
+        if (groupParent) {
+            groupParent.classList.remove('group-error');
+            const errorLabel = groupParent.nextElementSibling;
+            if (errorLabel?.classList.contains('error-label')) errorLabel.remove();
+        }
+    }
 
     if (key === 'contrato') {
         const rateInput = getEl('sp-rate-unemployment');

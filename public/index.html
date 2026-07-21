@@ -203,15 +203,14 @@
                 <button id="btn-uk" class="btn-country">UK</button>
             </div>
             
-            <h2 id="mode-label" class="section-title">Modo / Mode</h2>
-            <div class="button-group mode-buttons">
-                <button id="btn-mode-annual" class="btn-mode active"><span id="mode-ann-text">Anual</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-annual')">?</span></button>
-                <button id="btn-mode-monthly" class="btn-mode"><span id="mode-mon-text">Mensual</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-monthly')">?</span></button>
-                <button id="btn-mode-hourly" class="btn-mode"><span id="mode-hou-text">Horas</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></button>
-                <button id="btn-mode-ir35" class="btn-mode pro-feature"><span id="mode-ir35-text">IR35</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-ir35')">?</span> <span class="pro-badge">PRO</span></button>
-                <button id="btn-mode-inverse" class="btn-mode pro-feature"><span id="mode-inv-text">Inverso</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-inverse')">?</span> <span class="pro-badge">PRO</span></button>
-                <button id="btn-mode-dismissal" class="btn-mode pro-feature"><span id="mode-dis-text">Despido</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-dismissal')">?</span> <span class="pro-badge">PRO</span></button>
-            </div>
+                <div class="button-group mode-buttons">
+                    <button id="btn-mode-annual" class="btn-mode"><span id="mode-ann-text">Anual</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-annual')">?</span></button>
+                    <button id="btn-mode-monthly" class="btn-mode"><span id="mode-mon-text">Mensual</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-monthly')">?</span></button>
+                    <button id="btn-mode-hourly" class="btn-mode"><span id="mode-hou-text">Horas</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></button>
+                    <button id="btn-mode-ir35" class="btn-mode pro-feature"><span id="mode-ir35-text">IR35</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-ir35')">?</span> <span class="pro-badge">PRO</span></button>
+                    <button id="btn-mode-inverse" class="btn-mode pro-feature"><span id="mode-inv-text">Inverso</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-inverse')">?</span> <span class="pro-badge">PRO</span></button>
+                    <button id="btn-mode-dismissal" class="btn-mode pro-feature"><span id="mode-dis-text">Despido</span> <span class="help-icon" onclick="toggleHelp(event, 'h-mode-dismissal')">?</span> <span class="pro-badge">PRO</span></button>
+                </div>
             <div id="h-mode-annual" class="help-note"></div>
             <div id="h-mode-monthly" class="help-note"></div>
             <div id="h-mode-hourly" class="help-note"></div>
@@ -238,10 +237,10 @@
                 <div class="input-group">
                     <span class="sub-label" id="sp-pagas-tot-label">Pagas Totales (Contrato) <span class="help-icon" onclick="toggleHelp(event, 'h-pagas')">?</span></span>
                     <div class="frequency-toggle" id="sp-pagas-tot-annual">
-                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 16)">16</button>
                     </div>
                     <div id="h-pagas" class="help-note"></div>
                 </div>
@@ -275,10 +274,10 @@
                 <div class="input-group">
                     <span class="sub-label" id="sp-pagas-tot-label-mon">Pagas Totales (Contrato)</span>
                     <div class="frequency-toggle" id="sp-pagas-tot-monthly">
-                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 16)">16</button>
                     </div>
                 </div>
                 <div id="sp-prorrateo-wrapper-monthly" class="input-group hidden">
@@ -313,10 +312,10 @@
                 <div class="input-group">
                     <span class="sub-label" id="sp-pagas-tot-label-hou">Pagas Totales (Contrato)</span>
                     <div class="frequency-toggle" id="sp-pagas-tot-hourly">
-                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 16)">16</button>
                     </div>
                 </div>
                 <div id="sp-prorrateo-wrapper-hourly" class="input-group hidden">
@@ -347,10 +346,10 @@
                 <div class="input-group">
                     <span class="sub-label" id="sp-pagas-tot-label-inv">Pagas Totales (Contrato)</span>
                     <div class="frequency-toggle" id="sp-pagas-tot-inverse">
-                        <button class="btn-toggle-sp active" onclick="setSpainPagas(12)">12</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(14)">14</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(15)">15</button>
-                        <button class="btn-toggle-sp" onclick="setSpainPagas(16)">16</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 12)">12</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 14)">14</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 15)">15</button>
+                        <button class="btn-toggle-sp" onclick="setSpainPagas(event, 16)">16</button>
                     </div>
                 </div>
                 <div id="sp-prorrateo-wrapper-inverse" class="input-group hidden">
@@ -394,7 +393,7 @@
             <div class="input-group">
                 <span class="sub-label" id="sp-tipo-cont-label">Tipo de Contrato <span class="help-icon" onclick="toggleHelp(event, 'h-contract')">?</span></span>
                 <div class="frequency-toggle">
-                    <button class="btn-toggle-sp active" onclick="setSpainToggle(event, 'contrato', 'indef')" id="btn-cont-indef">Indefinido</button>
+                    <button class="btn-toggle-sp" onclick="setSpainToggle(event, 'contrato', 'indef')" id="btn-cont-indef">Indefinido</button>
                     <button class="btn-toggle-sp" onclick="setSpainToggle(event, 'contrato', 'temp')" id="btn-cont-temp">Temporal</button>
                 </div>
                 <div id="h-contract" class="help-note"></div>
@@ -431,7 +430,7 @@
             <div class="input-group">
                 <span class="sub-label" id="sp-tu-dis-label">Tu Discapacidad <span class="help-icon" onclick="toggleHelp(event, 'h-disability')">?</span></span>
                 <div class="disability-group">
-                    <button class="btn-dis active" onclick="setSpainToggle(event, 'disability', 'none')" id="btn-dis-none">No</button>
+                    <button class="btn-dis" onclick="setSpainToggle(event, 'disability', 'none')" id="btn-dis-none">No</button>
                     <button class="btn-dis" onclick="setSpainToggle(event, 'disability', '33')">>33%</button>
                     <button class="btn-dis" onclick="setSpainToggle(event, 'disability', '65')">>65%</button>
                 </div>
@@ -622,7 +621,7 @@
                 <div class="input-group">
                     <label id="uk-pay-periods-label">Pay Periods <span class="help-icon" onclick="toggleHelp(event, 'h-uk-periods')">?</span></label>
                     <div class="frequency-toggle">
-                        <button class="btn-periods-uk active" onclick="setUKPeriods(event, 'annual', 12)">12</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'annual', 12)">12</button>
                         <button class="btn-periods-uk" onclick="setUKPeriods(event, 'annual', 13)">13</button>
                         <button class="btn-periods-uk" onclick="setUKPeriods(event, 'annual', 14)">14</button>
                     </div>
@@ -654,7 +653,7 @@
                 <div class="input-group">
                     <label id="uk-pay-periods-mon-label">Pay Periods <span class="help-icon" onclick="toggleHelp(event, 'h-uk-periods-monthly')">?</span></label>
                     <div class="frequency-toggle">
-                        <button class="btn-periods-uk active" onclick="setUKPeriods(event, 'monthly', 12)">12</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'monthly', 12)">12</button>
                         <button class="btn-periods-uk" onclick="setUKPeriods(event, 'monthly', 13)">13</button>
                         <button class="btn-periods-uk" onclick="setUKPeriods(event, 'monthly', 14)">14</button>
                     </div>
@@ -679,8 +678,8 @@
             <!-- HOURLY -->
             <div id="uk-hourly" class="calc-form hidden">
                 <div class="frequency-toggle">
-                    <button class="btn-freq active" onclick="setHourlyType('uk', 'weekly')" id="btn-uk-weekly">Weekly</button>
-                    <button class="btn-freq" onclick="setHourlyType('uk', 'monthly')" id="btn-uk-monthly">Monthly</button>
+                    <button class="btn-freq" onclick="setHourlyType(event, 'uk', 'weekly')" id="btn-uk-weekly">Weekly</button>
+                    <button class="btn-freq" onclick="setHourlyType(event, 'uk', 'monthly')" id="btn-uk-monthly">Monthly</button>
                 </div>
                 <div class="input-group">
                     <label id="uk-hora-precio-label">Hourly Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></label>
@@ -743,7 +742,7 @@
                 <div class="input-group">
                     <span class="sub-label" id="uk-ir35-type-label">Contrato IR35 <span class="help-icon" onclick="toggleHelp(event, 'h-uk-ir35-type')">?</span></span>
                     <div class="frequency-toggle">
-                        <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'ir35-type', 'inside')" id="btn-uk-inside">Inside</button>
+                        <button class="btn-toggle-uk" onclick="setUKToggle(event, 'ir35-type', 'inside')" id="btn-uk-inside">Inside</button>
                         <button class="btn-toggle-uk" onclick="setUKToggle(event, 'ir35-type', 'outside')" id="btn-uk-outside">Outside</button>
                     </div>
                     <div id="h-uk-ir35-type" class="help-note"></div>
@@ -753,7 +752,7 @@
                     <label id="uk-assignment-label">Assignment Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-assign')">?</span></label>
                     <input type="number" step="any" id="uk-ir35-rate" class="input-field" placeholder="Full rate (e.g. 500)">
                     <div class="frequency-toggle" style="margin-top:5px">
-                        <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'ir35-freq', 'daily')" id="btn-uk-ir35-daily">Daily</button>
+                        <button class="btn-toggle-uk" onclick="setUKToggle(event, 'ir35-freq', 'daily')" id="btn-uk-ir35-daily">Daily</button>
                         <button class="btn-toggle-uk" onclick="setUKToggle(event, 'ir35-freq', 'hourly')" id="btn-uk-ir35-hourly">Hourly</button>
                     </div>
                     <div id="h-uk-assign" class="help-note"></div>
@@ -855,7 +854,7 @@
                         <div class="input-group">
                             <span class="sub-label" id="uk-jobs-label">Jobs / Empleos <span class="help-icon" onclick="toggleHelp(event, 'h-uk-jobs')">?</span></span>
                             <div class="frequency-toggle">
-                                <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'jobs', '1')" id="btn-uk-1job">1 Job</button>
+                                <button class="btn-toggle-uk" onclick="setUKToggle(event, 'jobs', '1')" id="btn-uk-1job">1 Job</button>
                                 <button class="btn-toggle-uk" onclick="setUKToggle(event, 'jobs', '2')" id="btn-uk-2jobs">2+ Jobs</button>
                             </div>
                             <div id="h-uk-jobs" class="help-note"></div>
@@ -882,7 +881,7 @@
                             <label id="uk-pension-label">Pension (%) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-pension')">?</span></label>
                             <input type="number" step="any" id="uk-pro-pension" class="input-field pro-input" placeholder="e.g. 5">
                             <div class="frequency-toggle" style="margin-top:5px">
-                                <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Net Pay (Before Tax)</button>
+                                <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Net Pay (Before Tax)</button>
                                 <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'source')" style="font-size:10px" id="btn-uk-pension-source">Relief at Source</button>
                             </div>
                             <div id="h-uk-pension" class="help-note"></div>
@@ -984,6 +983,7 @@
         </div>
     </div>
 
+    <script src="ads/ads-engine.js"></script>
     <script type="module" src="app.js"></script>
 </body>
 </html>

@@ -2,7 +2,7 @@
   "name": "Paynomnet - Nóminas Inteligentes",
   "short_name": "Paynomnet",
   "description": "Calculadora profesional de nóminas para España y Reino Unido.",
-  "start_url": "index.html",
+  "start_url": ".",
   "display": "standalone",
   "background_color": "#0056b3",
   "theme_color": "#0056b3",

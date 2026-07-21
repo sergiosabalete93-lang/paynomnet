@@ -268,7 +268,36 @@ body.menu-open {
     color: var(--text-main);
     font-size: 1rem;
     outline: none;
-    transition: border-color var(--transition-speed);
+    transition: all var(--transition-speed);
+}
+
+.input-field.input-error {
+    border-color: var(--danger-color);
+    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.2);
+}
+
+.error-label {
+    color: var(--danger-color);
+    font-size: 10px;
+    font-weight: bold;
+    margin-top: 4px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    75% { transform: translateX(4px); }
+}
+
+.group-error {
+    border: 2px solid var(--danger-color);
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(220, 53, 69, 0.05);
 }
 
 .input-field:focus {
