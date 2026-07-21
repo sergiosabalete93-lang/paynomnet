@@ -2,6 +2,7 @@
     VARIABLES DE TEMA (Claro / Oscuro)
    ========================================================================== */
 :root, .theme-light {
+    color-scheme: light;
     --bg-main: #f4f7f6;
     --bg-card: #ffffff;
     --text-main: #333333;
@@ -19,6 +20,7 @@
 }
 
 .theme-dark {
+    color-scheme: dark;
     --bg-main: #121212;
     --bg-card: #1e1e1e;
     --text-main: #f0f0f0;

@@ -125,22 +125,22 @@ const i18n = {
         },
         placeholders: {
             email: "Email (Admin)",
-            sp_annual: "Sueldo bruto (ej: 30000)",
-            sp_monthly: "Sueldo mensual (ej: 2100)",
-            sp_hourly_price: "Precio hora (ej: 12.50)",
+            sp_annual: "Sueldo bruto anual (ej: 30000)",
+            sp_monthly: "Sueldo mensual bruto (ej: 2100)",
+            sp_hourly_price: "Precio hora bruto (ej: 12.50)",
             sp_hourly_hours: "Horas al mes (ej: 160)",
-            sp_inverse: "Sueldo neto deseado",
-            sp_dismissal_sal: "Último sueldo o anual",
-            sp_dismissal_years: "Años en la empresa",
+            sp_inverse: "Sueldo neto mensual deseado",
+            sp_dismissal_sal: "Último sueldo bruto o anual",
+            sp_dismissal_years: "Años totales en la empresa",
             manual_irpf: "Fuerza un % (ej: 14)",
             optional: "Dejar vacío si es automático",
-            uk_annual: "Base salary (e.g. 35000)",
-            uk_monthly: "Monthly pay (e.g. 3000)",
-            uk_hourly_rate: "Hourly rate (e.g. 15.50)",
-            uk_hourly_hours: "Weekly hours (e.g. 37.5)",
-            uk_inverse: "Neto mensual deseado",
-            uk_taxcode_manual: "Ej: S1257L",
-            uk_ir35_rate: "Full rate (e.g. 500)"
+            uk_annual: "Total annual gross (e.g. 35000)",
+            uk_monthly: "Total monthly gross (e.g. 3000)",
+            uk_hourly_rate: "Gross hourly rate (e.g. 15.50)",
+            uk_hourly_hours: "Standard weekly hours (e.g. 37.5)",
+            uk_inverse: "Desired net monthly take-home",
+            uk_taxcode_manual: "e.g. S1257L or C1257L",
+            uk_ir35_rate: "Daily or hourly rate (e.g. 500)"
         },
         labels: {
             privacidad: "Privacidad",
@@ -237,12 +237,13 @@ const i18n = {
             'h-grupo': "Tu categoría profesional según contrato. Determina las bases mínimas y máximas de cotización.",
             'h-jornada': "Horas semanales de tu contrato. El estándar es 40h. Si es menos, los mínimos legales se ajustan.",
             'h-meses': "Si tu contrato es temporal y solo vas a trabajar unos meses, la app ajustará tu IRPF a la baja.",
-            'h-especie': "Pagos no monetarios (seguro médico, coche). Tributan como sueldo pero se restan del neto final al cobrarse 'en cosas'.",
+            'h-especie': "Pagos no monetarios (seguro médico, coche). Tributan como sueldo pero se restan al final al cobrarse 'en cosas'.",
+            'h-exento': "Conceptos que no pagan impuestos ni SS, como dietas de viaje o kilometraje (hasta 0.26€/km). Suman directo a tu neto.",
             rates: "Porcentajes técnicos de cotización. No los cambies a menos que tengas un convenio muy especial.",
-            uk_periods: "Frecuencia de cobro: 12 meses (estándar), 13 (cada 4 semanas) o 52 (semanal).",
-            uk_bik: "Beneficios en especie (P11D) como coche de empresa o seguro médico privado.",
-            uk_pension: "Ahorro jubilación. 'Net Pay': se resta antes de impuestos. 'Relief at Source': se resta después y el gobierno añade el 20%.",
-            uk_taxcode: "Código fiscal (ej: 1257L). Define cuánto ganas sin pagar impuestos. 1257L es el estándar para un solo empleo.",
+            uk_periods: "Frecuencia de cobro en UK: 12 meses, 13 (cada 4 semanas) o 52 (semanal).",
+            uk_bik: "Beneficios no monetarios (P11D) como coche de empresa. Tributan como ingresos pero no los recibes en efectivo.",
+            uk_pension: "Ahorro jubilación. Por ley (Auto-enrolment), se calcula sobre lo que ganes entre £6,240 y £50,270 al año.",
+            uk_taxcode: "Indica tu mínimo exento. '1257L' es el normal (£12,570 libres). El prefijo 'S' es para Escocia y 'C' para Gales.",
             uk_ni_letter: "Categoría del National Insurance. La 'A' es para la mayoría de empleados adultos.",
             uk_bonus: "Bonificaciones extra. Indica si la cantidad es bruta (tributable) o neta (ya limpia).",
             uk_jobs: "Si tienes más de un empleo, tu mínimo exento suele aplicarse solo al trabajo principal.",
@@ -448,17 +449,18 @@ const i18n = {
             contract: "Permanent vs. Temporary. Temporary contracts may have slightly different social security contributions.",
             manual_irpf: "Use this field only to force an exact tax percentage you already know from your payslip.",
             custom_base: "The contribution base usually matches gross pay but has legal caps. Leave blank if unsure.",
-            extra_tax: "Any other monthly net deductions: union fees, court orders, or company loan repayments.",
-            antiguedad: "Total monthly amount paid for years at the company. Enter the money amount, not the number of years.",
+            extra_tax: "Subtract amounts taken directly from your bank net pay. E.g., union fees, company loans, or court orders. NOT for regular taxes.",
+            bonus: "Extra cash payments (transport, performance). You can choose if they are gross (taxed) or net (clean).",
+            antiguedad: "Total monthly amount for years at the company. Enter the money amount in euros, not the number of years.",
+            'h-exento': "Income not subject to tax or SS, like travel expenses or mileage (up to 0.26€/km). Adds directly to your net pay.",
             ot_hours: "Number of hours worked beyond your standard contracted hours this month.",
             ot_price: "The gross hourly rate for overtime as per your contract or collective agreement.",
-            bonus: "Extra cash payments (transport, performance). You can choose if they are taxable or net.",
             rates: "Technical contribution percentages. Do not change unless you have a very specific agreement.",
-            uk_periods: "Payment frequency: 12 months (standard), 13 (every 4 weeks), or 52 (weekly).",
-            uk_bik: "Benefits in Kind (P11D) such as company car or private medical insurance.",
-            uk_pension: "Retirement savings. 'Net Pay': taken before tax. 'Relief at Source': taken after tax with a 20% gov top-up.",
-            uk_taxcode: "Tax code (e.g., 1257L). Determines your tax-free allowance. 1257L is standard for one job.",
-            uk_ni_letter: "National Insurance category. 'A' is the standard for most adult employees.",
+            uk_periods: "Payment frequency in UK: 12 months (standard), 13 (every 4 weeks), or 52 (weekly).",
+            uk_bik: "Non-cash benefits (P11D) like company cars or private medical insurance. They are taxed as income.",
+            uk_pension: "Retirement savings. By law (Auto-enrolment), it is calculated on earnings between £6,240 and £50,270 per year.",
+            uk_taxcode: "Your personal allowance code. '1257L' is standard (£12,570 free). Prefixes 'S' for Scotland and 'C' for Wales.",
+            uk_ni_letter: "National Insurance category. 'A' is for most adults. 'J' is for deferred rate (2%).",
             uk_bonus: "Additional bonuses. Indicate if the amount is gross (taxable) or net (already clean).",
             uk_jobs: "If you have multiple jobs, your personal allowance usually applies only to your main role.",
             uk_inverse: "Enter your target monthly net take-home to find the equivalent annual gross salary.",
@@ -466,8 +468,8 @@ const i18n = {
             uk_hourly_base: "How to convert weekly hours to monthly (Annual average vs. 4-week blocks).",
             uk_holiday: "Adds an extra 12.07% to simulate rolled-up holiday pay, common for agency workers.",
             uk_ir35_type: "Inside: Taxed as an employee (via Umbrella). Outside: Independent business (LTD).",
-            uk_assign: "The total rate paid by the client for your services before any deductions or taxes.",
-            uk_margin: "Fixed weekly fee charged by the Umbrella company for payroll services.",
+            uk_assign: "The total 'day rate' or 'hourly rate' paid by the client before any deductions.",
+            uk_margin: "Fixed weekly fee charged by the Umbrella company for their payroll service.",
             uk_expenses: "Business costs you can deduct from profit before tax (only in LTD/Outside mode)." ,
             uk_marriage: "Allows transferring £1,260 of your personal allowance to your partner if they earn less.",
             uk_blind: "Additional tax-free allowance if you are registered as blind.",
@@ -526,6 +528,23 @@ function checkTC() {
 }
 
 function initApp() {
+    // 1. Detectar tema preferido
+    const savedTheme = localStorage.getItem('app_theme');
+    const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    if (savedTheme) {
+        applyTheme(savedTheme === 'dark', false);
+    } else {
+        applyTheme(systemPrefersDark, false);
+    }
+
+    // 2. Escuchar cambios de tema del sistema en tiempo real
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+        if (!localStorage.getItem('app_theme')) { // Solo si el usuario no ha forzado un tema manual
+            applyTheme(e.matches, false);
+        }
+    });
+
     // Detectar idioma: Prioridad al guardado, luego al sistema
     const savedLang = localStorage.getItem('app_language');
     const sysLang = navigator.language.split('-')[0];
@@ -540,6 +559,25 @@ function initApp() {
 
     // Load defaults (Spain active)
     setCountry('spain');
+}
+
+function applyTheme(isDark, save = true) {
+    if (isDark) {
+        document.body.classList.add('theme-dark');
+        document.body.classList.remove('theme-light');
+        getEl('meta-theme-color')?.setAttribute('content', '#121212');
+    } else {
+        document.body.classList.add('theme-light');
+        document.body.classList.remove('theme-dark');
+        getEl('meta-theme-color')?.setAttribute('content', '#0056b3');
+    }
+
+    const toggle = getEl('theme-toggle');
+    if (toggle) toggle.checked = isDark;
+
+    if (save) {
+        localStorage.setItem('app_theme', isDark ? 'dark' : 'light');
+    }
 }
 
 function setupEventListeners() {
@@ -560,13 +598,7 @@ function setupEventListeners() {
     });
 
     getEl('theme-toggle')?.addEventListener('change', (e) => {
-        if (e.target.checked) {
-            document.body.classList.add('theme-dark');
-            document.body.classList.remove('theme-light');
-        } else {
-            document.body.classList.add('theme-light');
-            document.body.classList.remove('theme-dark');
-        }
+        applyTheme(e.target.checked, true);
     });
 
     getEl('lang-select')?.addEventListener('change', (e) => {
@@ -1326,6 +1358,7 @@ window.resetAllFields = function(country) {
         appState.spToggles.pagas_prorrateadas = 0;
         appState.spToggles.contrato = 'indef';
         appState.spToggles['holiday-prorated'] = false;
+        appState.spToggles.multipayer = 'no';
     } else {
         // 1. Reset Internal State UK
         appState.ukToggles.dynamicBonus = [];
@@ -1334,6 +1367,9 @@ window.resetAllFields = function(country) {
         appState.ukToggles['holiday-prorated'] = false;
         appState.ukToggles['ir35-type'] = 'inside';
         appState.ukToggles['ir35-freq'] = 'daily';
+        appState.ukHourlyFreq = 'weekly';
+        appState.ukPeriods.annual = 12;
+        appState.ukPeriods.monthly = 12;
     }
 
     // 2. Reset All Inputs in the module (Text, Number, Checkbox)
@@ -1345,7 +1381,7 @@ window.resetAllFields = function(country) {
             } else if (input.tagName === 'SELECT') {
                 input.selectedIndex = 0;
             } else {
-                input.value = input.defaultValue || (input.type === 'number' ? 0 : '');
+                input.value = '';
             }
         });
     }
@@ -1359,10 +1395,63 @@ window.resetAllFields = function(country) {
     renderDynamicLists();
     updateUITranslations();
     updatePagasUI();
+    syncAllTogglesUI(country);
+
     setCountry(country === 'sp' ? 'spain' : 'uk');
+
+    // 5. Limpieza profunda de resultados
     getEl('results-section').classList.add('hidden');
+    getEl('results-content').classList.add('hidden');
+    const resultsList = getEl('results-list');
+    if (resultsList) resultsList.innerHTML = '';
+    getEl('net-result-value').textContent = '0.00';
+
     window.scrollTo({ top: 0, behavior: 'smooth' });
 };
+
+function syncAllTogglesUI(country) {
+    if (country === 'sp') {
+        // Reset Contrato
+        const contGroup = getEl('btn-cont-indef').parentNode;
+        contGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        getEl('btn-cont-indef').classList.add('active');
+
+        // Reset Discapacidad
+        const disGroup = getEl('btn-dis-none').parentNode;
+        disGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        getEl('btn-dis-none').classList.add('active');
+
+        // Reset Pagadores
+        const payGroup = getEl('sp-pagadores-label').nextElementSibling;
+        payGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        payGroup.querySelectorAll('button')[0].classList.add('active');
+    } else {
+        // Reset UK Toggles
+        const groups = [
+            'uk-hourly-monthly-config',
+            'uk-ir35-type-label',
+            'uk-assignment-label',
+            'uk-jobs-label',
+            'uk-pension-label'
+        ];
+
+        groups.forEach(id => {
+            const label = getEl(id);
+            if (label) {
+                const group = label.nextElementSibling || label.querySelector('.frequency-toggle');
+                if (group) {
+                    group.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                    group.querySelectorAll('button')[0].classList.add('active');
+                }
+            }
+        });
+
+        // Reset UK Weekly/Monthly toggle
+        const ukFreqGroup = getEl('btn-uk-weekly').parentNode;
+        ukFreqGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        getEl('btn-uk-weekly').classList.add('active');
+    }
+}
 
 function processCalculation() {
     getEl('results-loader')?.classList.add('hidden');
@@ -1422,9 +1511,10 @@ function calculateSpain() {
     renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + visibleMonthlyIRPF.toFixed(2) + "€");
 
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
+    if (res.exemptIncomeMonthly > 0) renderResult(lang.labels.cotiza + " (Exento)", res.exemptIncomeMonthly.toFixed(2) + "€");
 
     // Neto Visible final
-    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - res.extraTaxMonthly;
+    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - res.extraTaxMonthly + (res.exemptIncomeMonthly || 0);
     getEl('net-result-value').textContent = visibleNet.toFixed(2) + "€";
 }
 
@@ -1446,6 +1536,10 @@ function performSpainCalculations(annualGross, pagas) {
     const group = parseInt(getEl('sp-pro-grupo')?.value) || 7;
     const weeklyHours = parseFloat(getEl('sp-pro-jornada')?.value) || 40;
     const jornadaPerc = Math.min(1, weeklyHours / 40);
+
+    // Ingresos Exentos (Dietas/KM)
+    const exemptIncomeMonthly = parseFloat(getEl('sp-pro-exempt-income')?.value) || 0;
+    const exemptIncomeAnnual = exemptIncomeMonthly * 12;
 
     // Base Salarial (Salario + Antigüedad) - Multiplica por PAGAS
     const antiguedad = parseFloat(getEl('sp-pro-antiguedad')?.value) || 0;
@@ -1514,7 +1608,7 @@ function performSpainCalculations(annualGross, pagas) {
     // Seguridad Social con tipos configurables
     const rateCommon = (parseFloat(getEl('sp-rate-common')?.value) || 4.7) / 100;
     const rateUnemployment = (parseFloat(getEl('sp-rate-unemployment')?.value) || (isTemporal ? 1.60 : 1.55)) / 100;
-    const rateFpMei = (parseFloat(getEl('sp-rate-fp-mei')?.value) || 0.25) / 100;
+    const rateFpMei = (parseFloat(getEl('sp-rate-fp-mei')?.value) || 0.20) / 100; // MEI 2026: 0.20% trabajador
 
     // Bases Mínimas Proyectadas 2026 (Prorrateadas según Jornada)
     const basesMinimas = {
@@ -1560,9 +1654,10 @@ function performSpainCalculations(annualGross, pagas) {
 
     const totalIRPF = bucketIRPF * (irpfPerc / 100);
     // El neto final resta la Seguridad Social, el IRPF, las deducciones y la Retribución en Especie (porque ya se ha recibido)
-    const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (dynamicDeductionsTotal * 12) - especieAnnualSum;
+    // Se suman los ingresos exentos (Dietas) al final porque no tributan.
+    const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (dynamicDeductionsTotal * 12) - especieAnnualSum + exemptIncomeAnnual;
 
-    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: bonusMonthlySum, workingMonths };
+    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: bonusMonthlySum, workingMonths, exemptIncomeMonthly };
 }
 
 function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount, other75Count, region, disability, isJoint, multipayer, totalSSAnnual) {
@@ -1862,26 +1957,25 @@ function performUKCalculations(annual, periods = 12) {
         allowance = Math.max(0, allowance - (annual - 100000) / 2);
     }
 
-    // 4. Pension
-    const pensionAnnual = (annual + holidayPayAnnual + taxableBonusAnnual) * (pPerc / 100);
+    // 4. Pension (Qualifying Earnings Logic: between £6,240 and £50,270)
+    let pensionBase = Math.max(0, Math.min(annual + holidayPayAnnual + taxableBonusAnnual, 50270) - 6240);
+    const pensionAnnual = pensionBase * (pPerc / 100);
 
     // 5. NI Calculation
     const niBaseAnnual = annual + holidayPayAnnual + taxableBonusAnnual;
     let ni = 0;
-    if (!isNaN(manualNiAmtMonthly)) {
-        ni = manualNiAmtMonthly * 12;
-    } else {
-        let niRateMain = 0.08;
-        let niRateHigher = 0.02;
-        if (niLetter === "B") niRateMain = 0.0185;
-        else if (niLetter === "C") niRateMain = 0;
+    let niRateMain = 0.08;
+    let niRateHigher = 0.02;
 
-        if (niBaseAnnual > 12570) {
-            ni = (Math.min(niBaseAnnual, 50270) - 12570) * niRateMain;
-            if (niBaseAnnual > 50270) ni += (niBaseAnnual - 50270) * niRateHigher;
-        }
+    if (niLetter === "B") niRateMain = 0.0185;
+    else if (niLetter === "C") niRateMain = 0;
+    else if (niLetter === "J") { niRateMain = 0.02; niRateHigher = 0.02; }
+
+    if (niBaseAnnual > 12570) {
+        ni = (Math.min(niBaseAnnual, 50270) - 12570) * niRateMain;
+        if (niBaseAnnual > 50270) ni += (niBaseAnnual - 50270) * niRateHigher;
     }
-    let employerNi = Math.max(0, (niBaseAnnual - 5000) * 0.15);
+    let employerNi = Math.max(0, (niBaseAnnual - 5000) * 0.15); // Simple estimate with £5k allowance
 
     // 6. Income Tax
     let taxableAmount = Math.max(0, annual + holidayPayAnnual + taxableBonusAnnual + bik - allowance);
@@ -1894,6 +1988,10 @@ function performUKCalculations(annual, periods = 12) {
     else if (taxCode === "BR") tax = taxableAmount * 0.20;
     else if (taxCode === "NT") tax = 0;
     else {
+        // Recognize 'S' for Scotland and 'C' for Wales
+        let isScottish = (regionSelect === "SCO") || taxCode.startsWith('S');
+        let isWelsh = taxCode.startsWith('C');
+
         if (isScottish) {
             if (taxableAmount <= 2162) tax = taxableAmount * 0.19;
             else if (taxableAmount <= 13118) tax = 410.78 + (taxableAmount - 2162) * 0.20;
@@ -1901,6 +1999,11 @@ function performUKCalculations(annual, periods = 12) {
             else if (taxableAmount <= 62430) tax = 6376.52 + (taxableAmount - 31092) * 0.42;
             else if (taxableAmount <= 125140) tax = 19538.48 + (taxableAmount - 62430) * 0.45;
             else tax = 47757.98 + (taxableAmount - 125140) * 0.48;
+        } else if (isWelsh) {
+            // Welsh rates are currently aligned with England, but kept separate for future proofing
+            if (taxableAmount <= 37700) tax = taxableAmount * 0.20;
+            else if (taxableAmount <= 125140) tax = 7540 + (taxableAmount - 37700) * 0.40;
+            else tax = 42516 + (taxableAmount - 125140) * 0.45;
         } else {
             if (taxableAmount <= 37700) tax = taxableAmount * 0.20;
             else if (taxableAmount <= 125140) tax = 7540 + (taxableAmount - 37700) * 0.40;

@@ -2,8 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="theme-color" content="#0056b3">
-    <meta name="color-scheme" content="light dark">
+    <meta id="meta-theme-color" name="theme-color" content="#0056b3">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -491,6 +490,14 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <div class="pro-fields-wrapper pro-item">
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <label id="sp-exempt-list-label" style="font-weight: bold;">Dietas y Kilometraje (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-exento')">?</span></label>
+                        </div>
+                        <input type="number" step="any" id="sp-pro-exempt-income" class="input-field pro-input" placeholder="Importe exento total">
+                        <div id="h-exento" class="help-note"></div>
                     </div>
 
                     <div class="pro-fields-wrapper pro-item">
