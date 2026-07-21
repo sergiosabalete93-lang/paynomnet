@@ -236,10 +236,10 @@ const i18n = {
             antiguedad: "Escribe el dinero TOTAL que cobras al mes por trienios o por llevar años en la empresa. No pongas los años, pon el dinero (€).",
             ot_hours: "Pon cuántas horas extra has hecho este mes. Las horas extra normales tienen un descuento de Seguridad Social mucho más pequeño (solo el 4.7%).",
             ot_price: "Escribe cuánto te pagan por cada hora extra según tu convenio o contrato.",
-            h-grupo: "Es tu categoría legal según tu título. El Grupo 1 (Jefes/Ingenieros) tiene mínimos legales más altos. Si ganas poco pero tu grupo es alto, pagarás más Seguridad Social por ley.",
-            h-jornada: "Escribe cuántas horas trabajas a la semana. Lo normal son 40. Si trabajas a media jornada (20h), los mínimos legales se reducen a la mitad automáticamente.",
-            h-meses: "Solo para temporales. Si solo vas a trabajar 6 meses este año, la app ajustará tu IRPF a la baja. ¡Cobrarás más neto cada mes!",
-            h-especie: "Cosas que te da la empresa pero no en dinero (Seguro médico, coche, tickets). Pagan impuestos como si fuera dinero, pero la app los restará al final para ver tu dinero real en el banco.",
+            'h-grupo': "Es tu categoría legal según tu título. El Grupo 1 (Jefes/Ingenieros) tiene mínimos legales más altos. Si ganas poco pero tu grupo es alto, pagarás más Seguridad Social por ley.",
+            'h-jornada': "Escribe cuántas horas trabajas a la semana. Lo normal son 40. Si trabajas a media jornada (20h), los mínimos legales se reducen a la mitad automáticamente.",
+            'h-meses': "Solo para temporales. Si solo vas a trabajar 6 meses este año, la app ajustará tu IRPF a la baja. ¡Cobrarás más neto cada mes!",
+            'h-especie': "Cosas que te da la empresa pero no en dinero (Seguro médico, coche, tickets). Pagan impuestos como si fuera dinero, pero la app los restará al final para ver tu dinero real en el banco.",
             rates: "Configuración técnica de porcentajes. No los toques a menos que tu sector tenga convenios especiales de cotización.",
             uk_periods: "Usually 12 months, but some contracts use 4-week (13/yr) or weekly (52) cycles.",
             uk_bik: "Non-cash benefits like company car, medical insurance, etc. (P11D).",
@@ -474,7 +474,11 @@ const i18n = {
             uk_expenses: "Costs incurred to run your business (LTD) which are deducted before tax.",
             uk_marriage: "Transfer £1,260 of your personal allowance to your partner if they earn more than you and your income is under £12,570. This can save up to £252 in tax per year.",
             uk_blind: "Additional £3,070 tax-free allowance if you are registered as blind.",
-            uk_child_benefit: "If you or your partner earn over £60,000 a year and receive Child Benefit, you must pay this charge to repay part of the benefit. The app calculates it based on the number of children you specify."
+            uk_child_benefit: "If you or your partner earn over £60,000 a year and receive Child Benefit, you must pay this charge to repay part of the benefit. The app calculates it based on the number of children you specify.",
+            'h-grupo': "It's your legal category based on your title. Group 1 (Heads/Engineers) has higher legal minimums. If you earn little but your group is high, you will pay more Social Security by law.",
+            'h-jornada': "Enter how many hours you work per week. Normal is 40. If you work part-time (20h), the legal minimums are automatically reduced by half.",
+            'h-meses': "Only for temporary contracts. If you are only going to work 6 months this year, the app will adjust your tax downward. You will take home more net each month!",
+            'h-especie': "Non-cash benefits (Medical insurance, car, tickets). They are taxed as income, but the app will subtract them at the end to show your real cash in hand.",
         }
     }
 };
@@ -975,15 +979,15 @@ window.updateDeductionVal = function(id, val) {
     if (d) d.amount = parseFloat(val);
 };
 
-window.toggleHelp = function(id) {
+window.toggleHelp = function(event, id) {
     // Detener la propagación para evitar activar clics en contenedores padre
-    if (window.event) window.event.stopPropagation();
+    if (event) event.stopPropagation();
 
     const el = getEl(id);
     if (el) el.classList.toggle('visible');
 };
 
-window.setSpainToggle = function(key, val) {
+window.setSpainToggle = function(event, key, val) {
     appState.spToggles[key] = val;
     const parent = event.target.parentNode;
     parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
@@ -1002,7 +1006,7 @@ window.setSpainToggle = function(key, val) {
     }
 };
 
-window.setUKToggle = function(key, val) {
+window.setUKToggle = function(event, key, val) {
     appState.ukToggles[key] = val;
     const parent = event.target.parentNode;
     parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
@@ -1022,7 +1026,7 @@ window.syncUKHoliday = function(checked) {
     });
 };
 
-window.setUKPeriods = function(mode, val) {
+window.setUKPeriods = function(event, mode, val) {
     appState.ukPeriods[mode] = val;
     const parent = event.target.parentNode;
     parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));

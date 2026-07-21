@@ -19,11 +19,18 @@ const firebaseConfig = {
 
 // Inicializamos Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+
+let analytics = null;
+try {
+    analytics = getAnalytics(app);
+} catch (e) {
+    console.warn("Firebase Analytics no pudo inicializarse (posible bloqueo por AdBlock o Red):", e.message);
+}
 
 // Exportamos las herramientas para usarlas en app.js
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 
 console.log("Firebase: Conectado a paynomnet-d8db9 con éxito.");
+export { analytics };
 export default app;
