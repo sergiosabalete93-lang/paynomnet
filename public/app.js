@@ -5,17 +5,17 @@ import './firebase-config.js';
    ========================================================================== */
 const appState = {
     language: 'es', // 'es' o 'en'
-    country: 'spain', // 'spain' o 'uk'
-    mode: 'annual', // 'annual', 'monthly', 'hourly', 'inverse', 'dismissal'
+    country: null, // 'spain' o 'uk'
+    mode: null, // 'annual', 'monthly', 'hourly', 'inverse', 'dismissal'
     isPro: true, // <--- Activo por defecto para pruebas
     adClickCount: 0,
     interstitialId: 'ca-app-pub-3940256099942544/1033173712', // ID de Prueba (Test)
     spToggles: {
-        disability: 'none',
+        disability: null,
         multipayer: 'no',
-        pagas: 12,
+        pagas: 0,
         pagas_prorrateadas: 0,
-        contrato: 'indef',
+        contrato: null,
         'holiday-prorated': false,
         dynamicBonus: [],
         dynamicEspecie: [], // New
@@ -28,8 +28,8 @@ const appState = {
         dynamicBonus: [],
         'jobs': '1',
         'holiday-prorated': false,
-        'ir35-type': 'inside',
-        'ir35-freq': 'daily'
+        'ir35-type': null,
+        'ir35-freq': null
     },
     ukPeriods: {
         annual: 0,
@@ -791,6 +791,25 @@ function setupEventListeners() {
     });
 }
 
+function parseSafe(id) {
+    const el = getEl(id);
+    if (!el || !el.value) return 0;
+    let val = el.value.toString().trim();
+    // Sanitización básica: permitir pegado de formatos europeos o estándar
+    if (val.includes(',') && val.includes('.')) {
+        // Formato 1.234,56 -> 1234.56
+        if (val.lastIndexOf('.') < val.lastIndexOf(',')) {
+            val = val.replace(/\./g, '').replace(',', '.');
+        } else {
+            // Formato 1,234.56 -> 1234.56
+            val = val.replace(/,/g, '');
+        }
+    } else if (val.includes(',')) {
+        val = val.replace(',', '.');
+    }
+    return parseFloat(val) || 0;
+}
+
 function validateForm() {
     let isValid = true;
     const errors = [];
@@ -829,34 +848,42 @@ function validateForm() {
     const c = appState.country;
     const m = appState.mode;
 
+    // 0. Validar País y Modo (si no hay selección)
+    if (!c) {
+        markGroupError('btn-spain', "Selecciona un país");
+        return false;
+    }
+    if (!m) {
+        markGroupError('btn-mode-annual', "Selecciona un modo");
+        return false;
+    }
+
     // 1. Validar Inputs Numéricos Obligatorios
     if (c === 'spain') {
-        const val = (id) => parseFloat(getEl(id)?.value) || 0;
-        if (m === 'annual' && val('sp-annual-gross') <= 0) markError('sp-annual-gross', "Sueldo anual requerido");
-        if (m === 'monthly' && val('sp-monthly-gross') <= 0) markError('sp-monthly-gross', "Sueldo mensual requerido");
+        if (m === 'annual' && parseSafe('sp-annual-gross') <= 0) markError('sp-annual-gross', "Sueldo anual requerido");
+        if (m === 'monthly' && parseSafe('sp-monthly-gross') <= 0) markError('sp-monthly-gross', "Sueldo mensual requerido");
         if (m === 'hourly') {
-            if (val('sp-hourly-price') <= 0) markError('sp-hourly-price', "Precio hora requerido");
-            if (val('sp-hourly-hours') <= 0) markError('sp-hourly-hours', "Horas mensuales requeridas");
+            if (parseSafe('sp-hourly-price') <= 0) markError('sp-hourly-price', "Precio hora requerido");
+            if (parseSafe('sp-hourly-hours') <= 0) markError('sp-hourly-hours', "Horas mensuales requeridas");
         }
-        if (m === 'inverse' && val('sp-inverse-net') <= 0) markError('sp-inverse-net', "Neto objetivo requerido");
+        if (m === 'inverse' && parseSafe('sp-inverse-net') <= 0) markError('sp-inverse-net', "Neto objetivo requerido");
         if (m === 'dismissal') {
-            if (val('sp-dismissal-salary') <= 0) markError('sp-dismissal-salary', "Salario requerido");
-            if (val('sp-dismissal-years') <= 0) markError('sp-dismissal-years', "Años requeridos");
+            if (parseSafe('sp-dismissal-salary') <= 0) markError('sp-dismissal-salary', "Salario requerido");
+            if (parseSafe('sp-dismissal-years') <= 0) markError('sp-dismissal-years', "Años requeridos");
         }
 
         // 2. Validar Selecciones Obligatorias (Botones)
         if (appState.spToggles.pagas === 0) markGroupError('sp-pagas-tot-' + (m === 'dismissal' ? 'annual' : m), "Selecciona número de pagas");
         if (!appState.spToggles.contrato) markGroupError('btn-cont-indef', "Selecciona tipo contrato");
     } else {
-        const val = (id) => parseFloat(getEl(id)?.value) || 0;
-        if (m === 'annual' && val('uk-annual-gross') <= 0) markError('uk-annual-gross', "Annual salary required");
-        if (m === 'monthly' && val('uk-monthly-gross') <= 0) markError('uk-monthly-gross', "Monthly salary required");
+        if (m === 'annual' && parseSafe('uk-annual-gross') <= 0) markError('uk-annual-gross', "Annual salary required");
+        if (m === 'monthly' && parseSafe('uk-monthly-gross') <= 0) markError('uk-monthly-gross', "Monthly salary required");
         if (m === 'hourly') {
-            if (val('uk-hourly-rate') <= 0) markError('uk-hourly-rate', "Hourly rate required");
-            if (val('uk-hourly-hours') <= 0) markError('uk-hourly-hours', "Hours required");
+            if (parseSafe('uk-hourly-rate') <= 0) markError('uk-hourly-rate', "Hourly rate required");
+            if (parseSafe('uk-hourly-hours') <= 0) markError('uk-hourly-hours', "Hours required");
         }
-        if (m === 'inverse' && val('uk-inverse-net') <= 0) markError('uk-inverse-net', "Target net required");
-        if (m === 'ir35' && val('uk-ir35-rate') <= 0) markError('uk-ir35-rate', "Assignment rate required");
+        if (m === 'inverse' && parseSafe('uk-inverse-net') <= 0) markError('uk-inverse-net', "Target net required");
+        if (m === 'ir35' && parseSafe('uk-ir35-rate') <= 0) markError('uk-ir35-rate', "Assignment rate required");
 
         if (appState.ukPeriods[m] === 0 && m !== 'dismissal' && m !== 'ir35') markGroupError('uk-pay-periods-label', "Select pay periods");
     }
@@ -1156,9 +1183,19 @@ window.setSpainToggle = function(event, key, val) {
 
 window.setUKToggle = function(event, key, val) {
     appState.ukToggles[key] = val;
-    const parent = event.target.parentNode;
-    parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event) {
+        const parent = event.target.parentNode;
+        parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Limpiar error visual
+        const groupParent = event.target.closest('.group-error');
+        if (groupParent) {
+            groupParent.classList.remove('group-error');
+            const errorLabel = groupParent.nextElementSibling;
+            if (errorLabel?.classList.contains('error-label')) errorLabel.remove();
+        }
+    }
 
     if (key === 'ir35-type') {
         getEl('wrapper-uk-inside-only').classList.toggle('hidden', val !== 'inside');
@@ -1176,9 +1213,19 @@ window.syncUKHoliday = function(checked) {
 
 window.setUKPeriods = function(event, mode, val) {
     appState.ukPeriods[mode] = val;
-    const parent = event.target.parentNode;
-    parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-    event.target.classList.add('active');
+    if (event) {
+        const parent = event.target.parentNode;
+        parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        event.target.classList.add('active');
+
+        // Limpiar error visual
+        const groupParent = event.target.closest('.group-error');
+        if (groupParent) {
+            groupParent.classList.remove('group-error');
+            const errorLabel = groupParent.nextElementSibling;
+            if (errorLabel?.classList.contains('error-label')) errorLabel.remove();
+        }
+    }
 };
 
 window.setHourlyType = function(country, type) {
@@ -1599,13 +1646,13 @@ function calculateSpain() {
     const prorrated = appState.spToggles.pagas_prorrateadas;
 
     if (appState.mode === 'annual') {
-        annualContractBase = parseFloat(getEl('sp-annual-gross').value) || 0;
+        annualContractBase = parseSafe('sp-annual-gross');
     } else if (appState.mode === 'monthly') {
-        let mGross = parseFloat(getEl('sp-monthly-gross').value) || 0;
+        let mGross = parseSafe('sp-monthly-gross');
         annualContractBase = mGross * pagas;
     } else if (appState.mode === 'hourly') {
-        let price = parseFloat(getEl('sp-hourly-price').value) || 0;
-        let hoursMonth = parseFloat(getEl('sp-hourly-hours').value) || 0;
+        let price = parseSafe('sp-hourly-price');
+        let hoursMonth = parseSafe('sp-hourly-hours');
         annualContractBase = (price * hoursMonth) * 12;
     } else if (appState.mode === 'inverse') {
         calculateSpainInverse(); return;
@@ -1642,6 +1689,7 @@ function calculateSpain() {
 }
 
 function performSpainCalculations(annualGross, pagas) {
+    if (pagas <= 0) pagas = 12;
     const children = parseInt(getEl('sp-pro-children')?.value) || 0;
     const childDis = getEl('sp-pro-child-dis')?.checked;
     const childDisCount = childDis ? (parseInt(getEl('sp-pro-child-dis-count')?.value) || 0) : 0;
@@ -1657,15 +1705,15 @@ function performSpainCalculations(annualGross, pagas) {
     const isTemporal = appState.spToggles.contrato === 'temp';
     const workingMonths = isTemporal ? (parseInt(getEl('sp-pro-meses')?.value) || 12) : 12;
     const group = parseInt(getEl('sp-pro-grupo')?.value) || 7;
-    const weeklyHours = parseFloat(getEl('sp-pro-jornada')?.value) || 40;
+    const weeklyHours = parseSafe('sp-pro-jornada') || 40;
     const jornadaPerc = Math.min(1, weeklyHours / 40);
 
     // Ingresos Exentos (Dietas/KM)
-    const exemptIncomeMonthly = parseFloat(getEl('sp-pro-exempt-income')?.value) || 0;
+    const exemptIncomeMonthly = parseSafe('sp-pro-exempt-income');
     const exemptIncomeAnnual = exemptIncomeMonthly * 12;
 
     // Base Salarial (Salario + Antigüedad) - Multiplica por PAGAS
-    const antiguedad = parseFloat(getEl('sp-pro-antiguedad')?.value) || 0;
+    const antiguedad = parseSafe('sp-pro-antiguedad');
     const contractBaseAnnual = annualGross + (antiguedad * pagas);
 
     // Sistema de "Cucharas" (Buckets) para impuestos
@@ -1699,8 +1747,8 @@ function performSpainCalculations(annualGross, pagas) {
     // Procesar Horas Extras y Pluses de Horas
     const mode = appState.mode;
     const suffix = mode === 'annual' ? 'ann' : mode === 'monthly' ? 'mon' : mode === 'hourly' ? 'hou' : 'inv';
-    const otHours = parseFloat(getEl(`sp-pro-overtime-hours-${suffix}`)?.value) || 0;
-    const otPrice = parseFloat(getEl(`sp-pro-overtime-price-${suffix}`)?.value) || 0;
+    const otHours = parseSafe(`sp-pro-overtime-hours-${suffix}`);
+    const otPrice = parseSafe(`sp-pro-overtime-price-${suffix}`);
     let otAmountMonthly = otHours * otPrice;
 
     // Sumar pluses extra de OT
@@ -1729,9 +1777,9 @@ function performSpainCalculations(annualGross, pagas) {
     }
 
     // Seguridad Social con tipos configurables
-    const rateCommon = (parseFloat(getEl('sp-rate-common')?.value) || 4.7) / 100;
-    const rateUnemployment = (parseFloat(getEl('sp-rate-unemployment')?.value) || (isTemporal ? 1.60 : 1.55)) / 100;
-    const rateFpMei = (parseFloat(getEl('sp-rate-fp-mei')?.value) || 0.20) / 100; // MEI 2026: 0.20% trabajador
+    const rateCommon = (parseSafe('sp-rate-common') || 4.7) / 100;
+    const rateUnemployment = (parseSafe('sp-rate-unemployment') || (isTemporal ? 1.60 : 1.55)) / 100;
+    const rateFpMei = (parseSafe('sp-rate-fp-mei') || 0.20) / 100; // MEI 2026: 0.20% trabajador
 
     // Bases Mínimas Proyectadas 2026 (Prorrateadas según Jornada)
     const basesMinimas = {
@@ -1740,13 +1788,13 @@ function performSpainCalculations(annualGross, pagas) {
     const minLegalMonthly = (basesMinimas[group] || 1360) * jornadaPerc;
 
     const MAX_SS_BASE_MONTHLY = 4950.00;
-    const manualBaseCommon = parseFloat(getEl('sp-pro-base-common')?.value);
-    const manualBaseAtEp = parseFloat(getEl('sp-pro-base-at-ep')?.value);
+    const manualBaseCommon = parseSafe('sp-pro-base-common');
+    const manualBaseAtEp = parseSafe('sp-pro-base-at-ep');
 
     let baseSSAnnual, baseUnemploymentAnnual;
 
     // Base Contingencias Generales (Con suelo de Grupo y techo de Ley)
-    if (!isNaN(manualBaseCommon) && manualBaseCommon > 0) {
+    if (manualBaseCommon > 0) {
         baseSSAnnual = manualBaseCommon * 12;
     } else {
         const monthlyBase = Math.max(minLegalMonthly, Math.min(bucketSS / 12, MAX_SS_BASE_MONTHLY));
@@ -1754,7 +1802,7 @@ function performSpainCalculations(annualGross, pagas) {
     }
 
     // Base AT/EP (Desempleo/FP)
-    if (!isNaN(manualBaseAtEp) && manualBaseAtEp > 0) {
+    if (manualBaseAtEp > 0) {
         baseUnemploymentAnnual = manualBaseAtEp * 12;
     } else {
         const monthlyBase = Math.max(minLegalMonthly, Math.min(bucketUnemployment / 12, MAX_SS_BASE_MONTHLY));
@@ -1834,8 +1882,8 @@ function estimateSpainIRPF(gross, children, childDisCount, others, otherDisCount
 
 function calculateSpainDismissal() {
     const lang = i18n[appState.language];
-    const salary = parseFloat(getEl('sp-dismissal-salary').value) || 0;
-    const years = parseFloat(getEl('sp-dismissal-years').value) || 0;
+    const salary = parseSafe('sp-dismissal-salary');
+    const years = parseSafe('sp-dismissal-years');
     const type = getEl('sp-dismissal-type').value;
     const annual = salary < 5000 ? salary * 12 : salary;
     const daily = annual / 365;
@@ -1849,7 +1897,7 @@ function calculateSpainDismissal() {
 
 function calculateSpainInverse() {
     const lang = i18n[appState.language];
-    const target = parseFloat(getEl('sp-inverse-net').value) || 0;
+    const target = parseSafe('sp-inverse-net');
     const pagas = appState.spToggles.pagas;
     const prorrated = appState.spToggles.pagas_prorrateadas;
 
@@ -1882,15 +1930,15 @@ function calculateUK() {
     let periods = 12;
 
     if (appState.mode === 'annual') {
-        annualGross = parseFloat(getEl('uk-annual-gross').value) || 0;
+        annualGross = parseSafe('uk-annual-gross');
         periods = appState.ukPeriods.annual;
     } else if (appState.mode === 'monthly') {
-        let mGross = parseFloat(getEl('uk-monthly-gross').value) || 0;
+        let mGross = parseSafe('uk-monthly-gross');
         periods = appState.ukPeriods.monthly;
         annualGross = mGross * periods;
     } else if (appState.mode === 'hourly') {
-        const rate = parseFloat(getEl('uk-hourly-rate').value) || 0;
-        const hours = parseFloat(getEl('uk-hourly-hours').value) || 0;
+        const rate = parseSafe('uk-hourly-rate');
+        const hours = parseSafe('uk-hourly-hours');
 
         if (appState.ukHourlyFreq === 'weekly') {
             annualGross = (rate * hours) * 52;
@@ -1941,7 +1989,7 @@ function calculateUK() {
 function calculateUKIR35() {
     const lang = i18n[appState.language];
     const type = appState.ukToggles['ir35-type'] || 'inside';
-    const rate = parseFloat(getEl('uk-ir35-rate').value) || 0;
+    const rate = parseSafe('uk-ir35-rate');
     const freq = appState.ukToggles['ir35-freq'] || 'daily';
 
     // Assignment Rate projected to Annual
@@ -1953,7 +2001,7 @@ function calculateUKIR35() {
     }
 
     if (type === 'inside') {
-        const margin = parseFloat(getEl('uk-umbrella-margin').value) || 25;
+        const margin = parseSafe('uk-umbrella-margin') || 25;
         const annualMargin = margin * 52;
 
         // 1. Remove Umbrella Margin
@@ -1970,7 +2018,7 @@ function calculateUKIR35() {
         renderResult(lang.bruto_result_label, grossSalary.toFixed(2) + "£");
         getEl('net-result-value').textContent = (res.net / 12).toFixed(2) + "£";
     } else {
-        const expenses = parseFloat(getEl('uk-business-expenses').value) || 0;
+        const expenses = parseSafe('uk-business-expenses');
         const annualExpenses = expenses * 12;
         const profit = annualRevenue - annualExpenses;
 
@@ -1997,15 +2045,16 @@ function calculateUKIR35() {
 }
 
 function performUKCalculations(annual, periods = 12) {
-    const bik = (parseFloat(getEl('uk-pro-bik')?.value) || 0) * 12;
-    const pPerc = parseFloat(getEl('uk-pro-pension')?.value) || 0;
+    if (periods <= 0) periods = 12;
+    const bik = parseSafe('uk-pro-bik') * 12;
+    const pPerc = parseSafe('uk-pro-pension');
     const pType = appState.ukToggles['pension-type'] || 'before';
 
     // Overtime for UK
     const mode = appState.mode;
     const suffix = mode === 'annual' ? 'ann' : mode === 'monthly' ? 'mon' : mode === 'hourly' ? 'hou' : 'inv';
-    const otHours = parseFloat(getEl(`uk-pro-overtime-hours-${suffix}`)?.value) || 0;
-    const otPrice = parseFloat(getEl(`uk-pro-overtime-price-${suffix}`)?.value) || 0;
+    const otHours = parseSafe(`uk-pro-overtime-hours-${suffix}`);
+    const otPrice = parseSafe(`uk-pro-overtime-price-${suffix}`);
 
     let otAmountAnnual = 0;
     let otAmountMonthly = 0;
@@ -2158,9 +2207,9 @@ function performUKCalculations(annual, periods = 12) {
 }
 
 function calculateUKRedundancy() {
-    const a = parseInt(getEl('uk-redundancy-age').value) || 0;
-    const y = parseInt(getEl('uk-redundancy-years').value) || 0;
-    const w = Math.min(parseFloat(getEl('uk-redundancy-weekly').value) || 0, 725);
+    const a = parseSafe('uk-redundancy-age');
+    const y = parseSafe('uk-redundancy-years');
+    const w = Math.min(parseSafe('uk-redundancy-weekly'), 725);
     let total = 0;
     for (let i = 0; i < Math.min(y, 20); i++) {
         let age = a - i;
@@ -2171,7 +2220,7 @@ function calculateUKRedundancy() {
 
 function calculateUKInverse() {
     const lang = i18n[appState.language];
-    const target = parseFloat(getEl('uk-inverse-net').value) || 0;
+    const target = parseSafe('uk-inverse-net');
     const periods = appState.ukPeriods.annual; // Usar periodos configurados (12, 13, 14)
 
     let low = target * periods, high = target * periods * 4, gross = low;

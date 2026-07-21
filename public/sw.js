@@ -1,6 +1,6 @@
-const CACHE_NAME = 'payroll-pro-v1';
+const CACHE_NAME = 'payroll-pro-v2';
 const ASSETS_TO_CACHE = [
-    '/',
+    './',
     'index.html',
     'style.css',
     'app.js',
@@ -10,7 +10,8 @@ const ASSETS_TO_CACHE = [
     'ads/ads-engine.js',
     'manifest.json',
     'assets/icon-192.png',
-    'assets/icon-512.png'
+    'assets/icon-512.png',
+    'assets/under-construction.png'
 ];
 
 // Instalación: Guarda los archivos en la caché del móvil
