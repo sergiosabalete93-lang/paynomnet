@@ -439,7 +439,9 @@ const i18n = {
             children_desc: "receiving benefit",
             mobility: "Geographical Mobility",
             union: "Union / Professional Fees",
-            pension_basis: "Pension Basis"
+            pension_basis: "Pension Basis",
+            privacidad: "Privacy",
+            terminos: "Terms"
         },
         help: {
             mode_annual: "Calculate your take-home pay based on the total annual gross salary agreed with your employer.",
@@ -453,6 +455,8 @@ const i18n = {
             disability: "Your official disability degree. This increases your personal tax-free allowance.",
             multipayer: "Enable if you worked for more than one employer this year; tax agencies often increase withholding to avoid debt.",
             joint: "Joint tax return for married couples. Usually beneficial if one spouse has low or no income.",
+            mobility: "If you moved for a new job, you get an extra €2,000 deduction on your tax base for two years.",
+            union: "Union or professional fees required for your job can be deducted from your taxable income.",
             pagas: "12 if bonuses are spread monthly. 14 if you receive extra checks in Summer and Christmas.",
             contract: "Permanent vs. Temporary. Temporary contracts may have slightly different social security contributions.",
             manual_irpf: "Use this field only to force an exact tax percentage you already know from your payslip.",
@@ -460,16 +464,20 @@ const i18n = {
             extra_tax: "Subtract amounts taken directly from your bank net pay. E.g., union fees, company loans, or court orders. NOT for regular taxes.",
             bonus: "Extra cash payments (transport, performance). You can choose if they are gross (taxed) or net (clean).",
             antiguedad: "Total monthly amount for years at the company. Enter the money amount in euros, not the number of years.",
-            'h-exento': "Income not subject to tax or SS, like travel expenses or mileage (up to 0.26€/km). Adds directly to your net pay.",
+            'h-exento': "Income not subject to tax or SS, like travel expenses or mileage. Adds directly to your net pay.",
             ot_hours: "Number of hours worked beyond your standard contracted hours this month.",
             ot_price: "The gross hourly rate for overtime as per your contract or collective agreement.",
-            rates: "Technical contribution percentages. Do not change unless you have a very specific agreement.",
+            'h-grupo': "It's your legal category based on your title. Group 1 (Heads/Engineers) has higher legal minimums.",
+            'h-jornada': "Enter how many hours you work per week. Normal is 40.",
+            'h-meses': "Only for temporary contracts. If you are only going to work 6 months this year, the app will adjust your tax downward.",
+            'h-especie': "Non-cash benefits (Medical insurance, car, tickets). They are taxed as income.",
+            'h-seniority-2012': "Seniority before Feb 2012 has a higher indemnity rate (45 days/year).",
             uk_periods: "Payment frequency in UK: 12 months (standard), 13 (every 4 weeks), or 52 (weekly).",
             uk_bik: "Non-cash benefits (P11D) like company cars or private medical insurance. They are taxed as income.",
             uk_pension: "Retirement savings. By law (Auto-enrolment), it is calculated on earnings between £6,240 and £50,270 per year.",
-            uk_taxcode: "Your personal allowance code. '1257L' is standard (£12,570 free). Prefixes 'S' for Scotland and 'C' for Wales.",
+            uk_taxcode: "Your personal allowance code. '1257L' is standard (£12,570 free).",
             uk_ni_letter: "National Insurance category. 'A' is for most adults. 'J' is for deferred rate (2%).",
-            uk_bonus: "Additional bonuses. Indicate if the amount is gross (taxable) or net (already clean).",
+            uk_bonus: "Additional bonuses. Specify if the amount is gross (taxable) or net (already clean).",
             uk_jobs: "If you have multiple jobs, your personal allowance usually applies only to your main role.",
             uk_inverse: "Enter your target monthly net take-home to find the equivalent annual gross salary.",
             uk_redundancy: "Statutory redundancy pay based on age, years of service, and £725 weekly cap (2026).",
@@ -478,16 +486,10 @@ const i18n = {
             uk_ir35_type: "Inside: Taxed as an employee (via Umbrella). Outside: Independent business (LTD).",
             uk_assign: "The total 'day rate' or 'hourly rate' paid by the client before any deductions.",
             uk_margin: "Fixed weekly fee charged by the Umbrella company for their payroll service.",
-            uk_expenses: "Business costs you can deduct from profit before tax (only in LTD/Outside mode)." ,
+            uk_expenses: "Business costs you can deduct from profit before tax (only in LTD/Outside mode).",
             uk_marriage: "Allows transferring £1,260 of your personal allowance to your partner if they earn less.",
             uk_blind: "Additional tax-free allowance if you are registered as blind.",
-            uk_child_benefit: "If earning over £60,000, you must pay a charge to repay some of the child benefits received.",
-            'h-mobility': "If you moved for a new job, you get an extra €2,000 deduction on your tax base for two years.",
-            'h-union': "Union or professional fees required for your job can be deducted from your taxable income.",
-            'h-grupo': "It's your legal category based on your title. Group 1 (Heads/Engineers) has higher legal minimums. If you earn little but your group is high, you will pay more Social Security by law.",
-            'h-jornada': "Enter how many hours you work per week. Normal is 40. If you work part-time (20h), the legal minimums are automatically reduced by half.",
-            'h-meses': "Only for temporary contracts. If you are only going to work 6 months this year, the app will adjust your tax downward. You will take home more net each month!",
-            'h-especie': "Non-cash benefits (Medical insurance, car, tickets). They are taxed as income, but the app will subtract them at the end to show your real cash in hand.",
+            uk_child_benefit: "If earning over £60,000, you must pay a charge to repay some of the child benefits received."
         }
     }
 };
@@ -1174,7 +1176,15 @@ window.toggleHelp = function(event, id) {
     if (event) event.stopPropagation();
 
     const el = getEl(id);
-    if (el) el.classList.toggle('visible');
+    if (!el) return;
+
+    // Robustez: Si el texto está vacío o es undefined, no mostrar la caja
+    if (!el.textContent || el.textContent.trim() === "" || el.textContent.includes("undefined")) {
+        console.warn("Help content missing or invalid for ID:", id);
+        return;
+    }
+
+    el.classList.toggle('visible');
 };
 
 window.setSpainToggle = function(event, key, val) {
@@ -1278,17 +1288,17 @@ function updateUITranslations() {
     if (disc) disc.textContent = lang.disclaimer;
 
     // Labels del menú
-    getEl('menu-settings-label').textContent = lang.settings;
-    getEl('dark-mode-label').textContent = lang.dark_mode;
-    getEl('lang-label').textContent = lang.language;
-    getEl('btn-become-pro').textContent = lang.activate_pro;
-    getEl('pro-active-title').textContent = lang.pro_active;
-    getEl('btn-undo-pro').textContent = lang.logout_pro;
-    getEl('auth-title').textContent = lang.auth_title;
-    getEl('btn-login').textContent = lang.login;
-    getEl('link-privacy').textContent = lang.labels.privacidad;
-    getEl('link-terms').textContent = lang.labels.terminos;
-    getEl('auth-email').placeholder = lang.placeholders.email;
+    if (getEl('menu-settings-label')) getEl('menu-settings-label').textContent = lang.settings;
+    if (getEl('dark-mode-label')) getEl('dark-mode-label').textContent = lang.dark_mode;
+    if (getEl('lang-label')) getEl('lang-label').textContent = lang.language;
+    if (getEl('btn-become-pro')) getEl('btn-become-pro').textContent = lang.activate_pro;
+    if (getEl('pro-active-title')) getEl('pro-active-title').textContent = lang.pro_active;
+    if (getEl('btn-undo-pro')) getEl('btn-undo-pro').textContent = lang.logout_pro;
+    if (getEl('auth-title')) getEl('auth-title').textContent = lang.auth_title;
+    if (getEl('btn-login')) getEl('btn-login').textContent = lang.login;
+    if (getEl('link-privacy')) getEl('link-privacy').textContent = lang.labels.privacidad;
+    if (getEl('link-terms')) getEl('link-terms').textContent = lang.labels.terminos;
+    if (getEl('auth-email')) getEl('auth-email').placeholder = lang.placeholders.email;
 
     // Sección País / Modo
     getEl('country-label').textContent = lang.country_label;
@@ -1316,25 +1326,25 @@ function updateUITranslations() {
     if (getEl('opt-sp-comun')) getEl('opt-sp-comun').textContent = lang.options.common;
     if (getEl('sp-pagadores-label')) getEl('sp-pagadores-label').firstChild.textContent = lang.labels.pagadores + " ";
     if (getEl('sp-conjunta-label')) getEl('sp-conjunta-label').firstChild.textContent = lang.labels.conjunta + " ";
-    if (getEl('sp-anual-bruto-label')) getEl('sp-anual-bruto-label').textContent = lang.labels.bruto_anual;
+    if (getEl('sp-anual-bruto-label')) getEl('sp-anual-bruto-label').firstChild.textContent = lang.labels.bruto_anual + " ";
     if (getEl('sp-pagas-tot-label')) getEl('sp-pagas-tot-label').firstChild.textContent = lang.labels.pagas_totales + " ";
     if (getEl('sp-pagas-pro-label')) getEl('sp-pagas-pro-label').textContent = lang.labels.pagas_prorrateadas;
-    if (getEl('sp-pagas-tot-label-mon')) getEl('sp-pagas-tot-label-mon').textContent = lang.labels.pagas_totales;
+    if (getEl('sp-pagas-tot-label-mon')) getEl('sp-pagas-tot-label-mon').firstChild.textContent = lang.labels.pagas_totales + " ";
     if (getEl('sp-mobility-label')) getEl('sp-mobility-label').firstChild.textContent = lang.labels.mobility + " ";
     if (getEl('sp-union-label')) getEl('sp-union-label').firstChild.textContent = lang.labels.union + " ";
     if (getEl('sp-pre2012-label')) getEl('sp-pre2012-label').textContent = appState.language === 'es' ? "¿Contrato anterior a Feb 2012?" : "Seniority before Feb 2012?";
     if (getEl('sp-pagas-pro-label-mon')) getEl('sp-pagas-pro-label-mon').textContent = lang.labels.pagas_prorrateadas;
-    if (getEl('sp-pagas-tot-label-hou')) getEl('sp-pagas-tot-label-hou').textContent = lang.labels.pagas_totales;
+    if (getEl('sp-pagas-tot-label-hou')) getEl('sp-pagas-tot-label-hou').firstChild.textContent = lang.labels.pagas_totales + " ";
     if (getEl('sp-pagas-pro-label-hou')) getEl('sp-pagas-pro-label-hou').textContent = lang.labels.pagas_prorrateadas;
-    if (getEl('sp-pagas-tot-label-inv')) getEl('sp-pagas-tot-label-inv').textContent = lang.labels.pagas_totales;
+    if (getEl('sp-pagas-tot-label-inv')) getEl('sp-pagas-tot-label-inv').firstChild.textContent = lang.labels.pagas_totales + " ";
     if (getEl('sp-pagas-pro-label-inv')) getEl('sp-pagas-pro-label-inv').textContent = lang.labels.pagas_prorrateadas;
 
-    if (getEl('sp-mensual-bruto-label')) getEl('sp-mensual-bruto-label').textContent = lang.labels.bruto_mensual;
-    if (getEl('sp-hora-precio-label')) getEl('sp-hora-precio-label').textContent = lang.labels.precio_hora;
-    if (getEl('sp-hora-horas-label')) getEl('sp-hora-horas-label').textContent = lang.labels.horas_mes;
-    if (getEl('sp-inverso-neto-label')) getEl('sp-inverso-neto-label').textContent = lang.labels.neto_obj;
-    if (getEl('sp-despido-salario-label')) getEl('sp-despido-salario-label').textContent = lang.labels.despido_sal;
-    if (getEl('sp-despido-anos-label')) getEl('sp-despido-anos-label').textContent = lang.labels.despido_anos;
+    if (getEl('sp-mensual-bruto-label')) getEl('sp-mensual-bruto-label').firstChild.textContent = lang.labels.bruto_mensual + " ";
+    if (getEl('sp-hora-precio-label')) getEl('sp-hora-precio-label').firstChild.textContent = lang.labels.precio_hora + " ";
+    if (getEl('sp-hora-horas-label')) getEl('sp-hora-horas-label').firstChild.textContent = lang.labels.horas_mes;
+    if (getEl('sp-inverso-neto-label')) getEl('sp-inverso-neto-label').firstChild.textContent = lang.labels.neto_obj + " ";
+    if (getEl('sp-despido-salario-label')) getEl('sp-despido-salario-label').firstChild.textContent = lang.labels.despido_sal + " ";
+    if (getEl('sp-despido-anos-label')) getEl('sp-despido-anos-label').firstChild.textContent = lang.labels.despido_anos + " ";
     if (getEl('sp-despido-tipo-label')) getEl('sp-despido-tipo-label').textContent = lang.labels.despido_tipo;
     if (getEl('opt-unfair')) getEl('opt-unfair').textContent = lang.options.unfair;
     if (getEl('opt-objective')) getEl('opt-objective').textContent = lang.options.objective;
@@ -1344,44 +1354,28 @@ function updateUITranslations() {
     if (getEl('sp-advanced-label')) getEl('sp-advanced-label').textContent = lang.labels.adv_config;
     if (getEl('sp-irpf-manual-label')) getEl('sp-irpf-manual-label').firstChild.textContent = lang.labels.irpf_manual + " ";
     if (getEl('sp-base-manual-label')) getEl('sp-base-manual-label').firstChild.textContent = lang.labels.base_manual + " ";
-    if (getEl('sp-antiguedad-label')) getEl('sp-antiguedad-label').textContent = lang.labels.antiguedad;
+    if (getEl('sp-antiguedad-label')) getEl('sp-antiguedad-label').firstChild.textContent = lang.labels.antiguedad + " ";
     if (getEl('sp-otros-imp-label')) getEl('sp-otros-imp-label').firstChild.textContent = lang.labels.otros_imp + " ";
     if (getEl('sp-horas-extra-label')) getEl('sp-horas-extra-label').textContent = lang.labels.ot_hours;
     if (getEl('sp-precio-extra-label')) getEl('sp-precio-extra-label').textContent = lang.labels.ot_price;
-    if (getEl('sp-horas-extra-label-ann')) getEl('sp-horas-extra-label-ann').textContent = lang.labels.ot_hours;
-    if (getEl('sp-precio-extra-label-ann')) getEl('sp-precio-extra-label-ann').textContent = lang.labels.ot_price;
-    if (getEl('sp-horas-extra-label-mon')) getEl('sp-horas-extra-label-mon').textContent = lang.labels.ot_hours;
-    if (getEl('sp-precio-extra-label-mon')) getEl('sp-precio-extra-label-mon').textContent = lang.labels.ot_price;
-    if (getEl('sp-horas-extra-label-hou')) getEl('sp-horas-extra-label-hou').textContent = lang.labels.ot_hours;
-    if (getEl('sp-precio-extra-label-hou')) getEl('sp-precio-extra-label-hou').textContent = lang.labels.ot_price;
-    if (getEl('sp-horas-extra-label-inv')) getEl('sp-horas-extra-label-inv').textContent = lang.labels.ot_hours;
-    if (getEl('sp-precio-extra-label-inv')) getEl('sp-precio-extra-label-inv').textContent = lang.labels.ot_price;
-    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-ann')) getEl('uk-precio-extra-label-ann').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-mon')) getEl('uk-precio-extra-label-mon').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-hou')) getEl('uk-precio-extra-label-hou').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-inv')) getEl('uk-precio-extra-label-inv').textContent = lang.labels.ot_rate;
-    if (getEl('sp-hijo-dis-count-label')) getEl('sp-hijo-dis-count-label').textContent = lang.labels.hijo_dis_count;
-    if (getEl('sp-cotiza-a-label')) getEl('sp-cotiza-a-label').textContent = lang.labels.cotiza;
-    if (getEl('sp-cotiza-b-label')) getEl('sp-cotiza-b-label').textContent = lang.labels.cotiza;
-    if (getEl('sp-holiday-label')) getEl('sp-holiday-label').textContent = lang.holiday_label;
-
-    // España placeholders
-    if (getEl('sp-annual-gross')) getEl('sp-annual-gross').placeholder = lang.placeholders.sp_annual;
-    if (getEl('sp-monthly-gross')) getEl('sp-monthly-gross').placeholder = lang.placeholders.sp_monthly;
-    if (getEl('sp-hourly-price')) getEl('sp-hourly-price').placeholder = lang.placeholders.sp_hourly_price;
-    if (getEl('sp-hourly-hours')) getEl('sp-hourly-hours').placeholder = lang.placeholders.sp_hourly_hours;
-    if (getEl('sp-inverse-net')) getEl('sp-inverse-net').placeholder = lang.placeholders.sp_inverse;
-    if (getEl('sp-dismissal-salary')) getEl('sp-dismissal-salary').placeholder = lang.placeholders.sp_dismissal_sal;
-    if (getEl('sp-dismissal-years')) getEl('sp-dismissal-years').placeholder = lang.placeholders.sp_dismissal_years;
-    if (getEl('sp-irpf-manual')) getEl('sp-irpf-manual').placeholder = lang.placeholders.manual_irpf;
-    if (getEl('sp-pro-custom-base')) getEl('sp-pro-custom-base').placeholder = lang.placeholders.optional;
+    if (getEl('sp-horas-extra-label-ann')) getEl('sp-horas-extra-label-ann').firstChild.textContent = lang.labels.ot_hours + " ";
+    if (getEl('sp-precio-extra-label-ann')) getEl('sp-precio-extra-label-ann').firstChild.textContent = lang.labels.ot_price + " ";
+    if (getEl('sp-horas-extra-label-mon')) getEl('sp-horas-extra-label-mon').firstChild.textContent = lang.labels.ot_hours + " ";
+    if (getEl('sp-precio-extra-label-mon')) getEl('sp-precio-extra-label-mon').firstChild.textContent = lang.labels.ot_price + " ";
+    if (getEl('sp-horas-extra-label-hou')) getEl('sp-horas-extra-label-hou').firstChild.textContent = lang.labels.ot_hours + " ";
+    if (getEl('sp-precio-extra-label-hou')) getEl('sp-precio-extra-label-hou').firstChild.textContent = lang.labels.ot_price + " ";
+    if (getEl('sp-horas-extra-label-inv')) getEl('sp-horas-extra-label-inv').firstChild.textContent = lang.labels.ot_hours + " ";
+    if (getEl('sp-precio-extra-label-inv')) getEl('sp-precio-extra-label-inv').firstChild.textContent = lang.labels.ot_price + " ";
 
     // UK labels
-    if (getEl('uk-holiday-label')) getEl('uk-holiday-label').textContent = lang.holiday_label;
+    if (getEl('uk-anual-bruto-label')) getEl('uk-anual-bruto-label').firstChild.textContent = lang.labels.gross_annual + " ";
+    if (getEl('uk-pay-periods-label')) getEl('uk-pay-periods-label').firstChild.textContent = lang.labels.pay_periods + " ";
+    if (getEl('uk-mensual-bruto-label')) getEl('uk-mensual-bruto-label').firstChild.textContent = lang.labels.gross_monthly + " ";
+    if (getEl('uk-pay-periods-mon-label')) getEl('uk-pay-periods-mon-label').firstChild.textContent = lang.labels.pay_periods + " ";
+    if (getEl('uk-pay-periods-hou-label')) getEl('uk-pay-periods-hou-label').firstChild.textContent = lang.labels.pay_periods + " ";
+    if (getEl('uk-pay-periods-inv-label')) getEl('uk-pay-periods-inv-label').firstChild.textContent = lang.labels.pay_periods + " ";
+    if (getEl('uk-pay-periods-ir35-label')) getEl('uk-pay-periods-ir35-label').firstChild.textContent = lang.labels.pay_periods + " ";
+
     ['ann', 'mon', 'hou', 'inv', 'ir35'].forEach(s => {
         if (getEl(`uk-holiday-label-${s}`)) getEl(`uk-holiday-label-${s}`).firstChild.textContent = lang.holiday_label + " ";
     });
@@ -1403,6 +1397,7 @@ function updateUITranslations() {
     if (getEl('uk-region-label')) getEl('uk-region-label').textContent = lang.labels.tax_region;
     if (getEl('opt-uk-ewni')) getEl('opt-uk-ewni').textContent = lang.options.ewni;
     if (getEl('opt-uk-sco')) getEl('opt-uk-sco').textContent = lang.options.scotland;
+
     if (getEl('opt-ni-a')) getEl('opt-ni-a').textContent = lang.options.standard + " (A)";
     if (getEl('opt-ni-b')) getEl('opt-ni-b').textContent = lang.options.reduced + " (B)";
     if (getEl('opt-ni-c')) getEl('opt-ni-c').textContent = lang.options.over_pension + " (C)";
@@ -1415,25 +1410,15 @@ function updateUITranslations() {
     if (getEl('uk-ni-cat-label')) getEl('uk-ni-cat-label').firstChild.textContent = lang.labels.ni_cat + " ";
     if (getEl('btn-uk-pension-qual')) getEl('btn-uk-pension-qual').textContent = appState.language === 'es' ? "Ganancias Calificables" : "Qualifying Earnings";
     if (getEl('btn-uk-pension-sal')) getEl('btn-uk-pension-sal').textContent = appState.language === 'es' ? "Salario Total" : "Total Salary";
-    if (getEl('uk-anual-bruto-label')) getEl('uk-anual-bruto-label').textContent = lang.labels.gross_annual;
-    if (getEl('uk-pay-periods-label')) getEl('uk-pay-periods-label').firstChild.textContent = lang.labels.pay_periods + " ";
-    if (getEl('uk-mensual-bruto-label')) getEl('uk-mensual-bruto-label').textContent = lang.labels.gross_monthly;
-    if (getEl('uk-pay-periods-mon-label')) getEl('uk-pay-periods-mon-label').firstChild.textContent = lang.labels.pay_periods + " ";
+
     if (getEl('btn-uk-weekly')) getEl('btn-uk-weekly').textContent = lang.semanal;
     if (getEl('btn-uk-monthly')) getEl('btn-uk-monthly').textContent = lang.mensual;
-    if (getEl('uk-hora-precio-label')) getEl('uk-hora-precio-label').textContent = lang.labels.hourly_rate;
-    if (getEl('lbl-uk-hourly-hours')) getEl('lbl-uk-hourly-hours').textContent = appState.ukHourlyFreq === 'weekly' ? lang.labels.hours_week : lang.labels.hours_month;
+    if (getEl('uk-hora-precio-label')) getEl('uk-hora-precio-label').firstChild.textContent = lang.labels.hourly_rate + " ";
+    if (getEl('lbl-uk-hourly-hours')) getEl('lbl-uk-hourly-hours').firstChild.textContent = (appState.ukHourlyFreq === 'weekly' ? lang.labels.hours_week : lang.labels.hours_month) + " ";
     if (getEl('uk-mon-calc-label')) getEl('uk-mon-calc-label').firstChild.textContent = lang.labels.mon_calc + " ";
     if (getEl('btn-uk-cal-month')) getEl('btn-uk-cal-month').textContent = lang.options.cal_month;
     if (getEl('btn-uk-4weeks')) getEl('btn-uk-4weeks').textContent = lang.options.four_weeks;
-    if (getEl('uk-horas-extra-label-ann')) getEl('uk-horas-extra-label-ann').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-ann')) getEl('uk-precio-extra-label-ann').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-mon')) getEl('uk-horas-extra-label-mon').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-mon')) getEl('uk-precio-extra-label-mon').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-hou')) getEl('uk-horas-extra-label-hou').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-hou')) getEl('uk-precio-extra-label-hou').textContent = lang.labels.ot_rate;
-    if (getEl('uk-horas-extra-label-inv')) getEl('uk-horas-extra-label-inv').textContent = lang.labels.ot_hours;
-    if (getEl('uk-precio-extra-label-inv')) getEl('uk-precio-extra-label-inv').textContent = lang.labels.ot_rate;
+
     if (getEl('uk-inverso-neto-label')) getEl('uk-inverso-neto-label').firstChild.textContent = lang.labels.target_net + " ";
     if (getEl('uk-despido-edad-label')) getEl('uk-despido-edad-label').firstChild.textContent = lang.labels.current_age + " ";
     if (getEl('uk-despido-anos-label')) getEl('uk-despido-anos-label').textContent = lang.labels.years_service;
@@ -1452,7 +1437,6 @@ function updateUITranslations() {
     if (getEl('uk-stud-loan-label')) getEl('uk-stud-loan-label').textContent = lang.labels.student_loan;
     if (getEl('opt-uk-sl-none')) getEl('opt-uk-sl-none').textContent = lang.options.none;
     if (getEl('uk-postgrad-label')) getEl('uk-postgrad-label').textContent = lang.labels.postgrad_loan;
-    if (getEl('uk-holiday-label')) getEl('uk-holiday-label').textContent = lang.holiday_label;
 
     // Consent Banner
     if (getEl('consent-text-content')) getEl('consent-text-content').innerHTML = lang.consent_text;
@@ -1505,6 +1489,10 @@ function updateUITranslations() {
         'h-jornada': lang.help['h-jornada'],
         'h-meses': lang.help['h-meses'],
         'h-especie': lang.help['h-especie'],
+        'h-exento': lang.help['h-exento'] || "",
+        'h-mobility': lang.help.mobility || "",
+        'h-union': lang.help.union || "",
+        'h-seniority-2012': lang.help['h-seniority-2012'] || "",
         'h-uk-periods': lang.help.uk_periods,
         'h-uk-periods-monthly': lang.help.uk_periods,
         'h-uk-bik': lang.help.uk_bik,
@@ -1523,55 +1511,18 @@ function updateUITranslations() {
         'h-uk-marriage': lang.help.uk_marriage,
         'h-uk-blind': lang.help.uk_blind,
         'h-uk-child-benefit': lang.help.uk_child_benefit,
-        'h-joint': "Calcula el IRPF como si presentaras la declaración con tu cónyuge. Suele convenir si uno de los dos no tiene ingresos.",
-        'h-mobility': "Si te has mudado de ciudad por un nuevo trabajo, tienes derecho a una deducción adicional de 2.000€ durante 2 años.",
-        'h-union': "Las cuotas a sindicatos y colegios profesionales obligatorios restan directamente de tu base para pagar menos IRPF.",
-        'h-pagas': "12 si las extras están prorrateadas cada mes. 14 si cobras una extra en junio y otra en diciembre.",
-        'h-seniority-2012': "Los contratos anteriores a 2012 tienen una indemnización mayor (45 días/año) por el tramo trabajado antes de esa fecha.",
-        'h-contract': "El tipo de contrato afecta a la Seguridad Social (Desempleo) y a cómo se calcula tu retención de IRPF.",
-        'h-manual-irpf': "Úsalo solo si quieres forzar el porcentaje exacto que ya ves en tu nómina real para cuadrar resultados.",
-        'h-custom-base': "La base de cotización suele ser igual al bruto, pero con límites legales. No lo toques si no eres experto.",
-        'h-extra-tax': "Cualquier otro descuento neto mensual: cuota sindical, embargos o préstamos de empresa.",
-        'h-bonus': "Conceptos extra en dinero (plus transporte, incentivos). Puedes marcar si tributan o si son netos.",
-        'h-antiguedad': "Importe total que cobras al mes por años en la empresa (trienios, sexenios, etc.). No pongas los años, pon el dinero.",
-        'h-ot-hours': "Número de horas trabajadas fuera de tu jornada normal este mes.",
-        'h-ot-price': "El precio bruto por cada hora extra según tu contrato.",
-        'h-grupo': "Tu categoría profesional según contrato. Determina las bases mínimas y máximas de cotización.",
-        'h-jornada': "Horas semanales de tu contrato. El estándar es 40h. Si es menos, los mínimos legales se ajustan.",
-        'h-meses': "Si tu contrato es temporal y solo vas a trabajar unos meses, la app ajustará tu IRPF a la baja.",
-        'h-especie': "Pagos no monetarios (seguro médico, coche). Tributan como sueldo pero se restan al final al cobrarse 'en cosas'.",
-        'h-exento': "Conceptos que no pagan impuestos ni SS, como dietas de viaje o kilometraje. Suman directo a tu neto.",
-        'h-rates': "Porcentajes técnicos de cotización. No los cambies a menos que tengas un convenio muy especial.",
-        'h-uk-periods': "Frecuencia de cobro en UK: 12 meses, 13 (cada 4 semanas) o 52 (semanal).",
-        'h-uk-bik': "Beneficios no monetarios (P11D) como coche de empresa. Tributan como ingresos pero no los recibes en efectivo.",
-        'h-uk-pension': "Ahorro jubilación. Por ley (Auto-enrolment), se calcula sobre lo que ganes entre £6,240 y £50,270 al año.",
-        'h-uk-taxcode': "Indica tu mínimo exento. '1257L' is standard. Prefix 'S' for Scotland and 'C' for Wales.",
-        'h-uk-ni-letter': "Categoría del National Insurance. 'A' es para la mayoría de empleados adultos.",
-        'h-uk-bonus': "Bonificaciones extra. Indica si la cantidad es bruta (tributable) o neta (ya limpia).",
-        'h-uk-jobs': "Si tienes más de un empleo, tu mínimo exento suele aplicarse solo al trabajo principal.",
-        'h-uk-inverse': "Introduce el neto mensual que deseas y calcularemos el sueldo bruto anual equivalente.",
-        'h-uk-redundancy': "Indemnización por despido en UK según edad, años trabajados y tope semanal de £725 (2026).",
-        'h-uk-hourly-base': "Cómo convertir tus horas semanales a mensuales (Promedio anual o bloques de 4 semanas).",
-        'h-uk-holiday': "Incluye un 12.07% extra simulando el pago de vacaciones no disfrutadas, común en agencias.",
-        'h-uk-ir35-type': "Inside: Eres empleado fiscal (vía Umbrella). Outside: Eres una empresa independiente (LTD).",
-        'h-uk-assign': "La tarifa total que paga el cliente por tus servicios antes de cualquier descuento.",
-        'h-uk-margin': "Tarifa semanal fija que cobra la empresa Umbrella por hacerte la nómina.",
-        'h-uk-expenses': "Gastos de negocio que puedes deducir del beneficio antes de impuestos.",
-        'h-uk-marriage': "Permite transferir £1,260 de tu mínimo exento a tu pareja si gana menos que tú.",
-        'h-uk-blind': "Aumento del mínimo exento de £3,070 extra si estás registrado como invidente.",
-        'h-uk-child-benefit': "Si ganas más de £60,000, debes devolver parte de las ayudas por hijos recibidas vía impuestos.",
-        'h-mode-annual': "Calcula tu sueldo neto a partir del bruto total anual pactado con tu empresa.",
-        'h-mode-monthly': "Calcula tu neto mensual limpio a partir de tu sueldo bruto mensual actual.",
-        'h-mode-hourly': "Ideal si cobras por horas. Indica tu precio/hora y las horas que haces al mes para proyectar tu sueldo.",
-        'h-mode-ir35': "Cálculo especializado para contratistas en Reino Unido bajo normativa IR35.",
-        'h-mode-inverse': "Dinos cuánto quieres cobrar 'limpio' al mes y calcularemos el sueldo bruto que debes negociar.",
-        'h-mode-dismissal': "Calcula la indemnización legal aproximada en caso de despido según tu antigüedad y salario.",
-        'h-uk-hourly-base': "Cómo convertir tus horas semanales a mensuales."
+        'h-mode-annual': lang.help.mode_annual,
+        'h-mode-monthly': lang.help.mode_monthly,
+        'h-mode-hourly': lang.help.mode_hourly,
+        'h-mode-ir35': lang.help.mode_ir35,
+        'h-mode-inverse': lang.help.mode_inverse,
+        'h-mode-dismissal': lang.help.mode_dismissal,
+        'h-uk-hourly-base': lang.help.uk_hourly_base
     };
 
     for (let id in helpNotes) {
         const el = getEl(id);
-        if (el) el.textContent = helpNotes[id];
+        if (el) el.textContent = helpNotes[id] || "";
     }
 }
 

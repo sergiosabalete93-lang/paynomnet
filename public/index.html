@@ -226,12 +226,6 @@
                 <button class="btn-reset-small" onclick="resetAllFields('sp')" id="btn-reset-sp">LIMPIAR / RESET</button>
             </div>
 
-            <div class="input-group">
-                <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-antiguedad')">?</span></label>
-                <input type="number" step="any" id="sp-pro-antiguedad" class="input-field" min="0" placeholder="Pon cual es el dinero total de tus trieños">
-                <div id="h-antiguedad" class="help-note"></div>
-            </div>
-
             <div id="spain-annual" class="calc-form active">
                 <div class="input-group">
                     <label id="sp-anual-bruto-label">Bruto Anual (€) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-annual')">?</span></label>
@@ -571,6 +565,12 @@
                     <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
 
                     <div class="pro-fields-wrapper pro-item">
+                        <div class="input-group">
+                            <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-antiguedad')">?</span></label>
+                            <input type="number" step="any" id="sp-pro-antiguedad" class="input-field pro-input" min="0" placeholder="Importe total por trienios">
+                            <div id="h-antiguedad" class="help-note"></div>
+                        </div>
+
                         <div class="input-group">
                             <label id="sp-irpf-manual-label">IRPF Manual (%) <span class="help-icon" onclick="toggleHelp(event, 'h-manual-irpf')">?</span></label>
                             <input type="number" step="any" id="sp-irpf-manual" class="input-field pro-input" placeholder="Ej: 15">
