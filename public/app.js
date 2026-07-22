@@ -1679,8 +1679,8 @@ function processCalculation() {
 function calculateSpain() {
     const lang = i18n[appState.language];
     let annualContractBase = 0; // Sueldo base puro sin extras
-    const pagas = appState.spToggles.pagas;
-    const prorrated = appState.spToggles.pagas_prorrateadas;
+    let pagas = appState.spToggles.pagas || 12;
+    const prorrated = appState.spToggles.pagas_prorrateadas || 0;
 
     if (appState.mode === 'annual') {
         annualContractBase = parseSafe('sp-annual-gross');
@@ -1701,27 +1701,26 @@ function calculateSpain() {
 
     // --- Lógica de Visualización de Mes Normal (Precisión Contable) ---
     const basePagaBruta = annualContractBase / pagas;
-    const visibleMonthlyGross = basePagaBruta + (basePagaBruta * prorrated / 12) + res.otAmountMonthly + res.netMonthlyAdditions;
+    const visibleMonthlyGross = basePagaBruta + (basePagaBruta * prorrated / 12) + (res.otAmountMonthly || 0) + (res.netMonthlyAdditions || 0);
 
-    const monthlySS = res.totalSS / 12;
-    // El IRPF mensual es el total anual dividido entre 12, ya que la base mensual visible ya incluye el prorrateo de extras.
-    const visibleMonthlyIRPF = res.totalIRPF / 12;
+    const monthlySS = (res.totalSS || 0) / 12;
+    const visibleMonthlyIRPF = (res.totalIRPF || 0) / 12;
 
     renderResult(lang.bruto + " " + lang.mensual, visibleMonthlyGross.toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
     if (res.otAmountMonthly > 0) renderResult(lang.ot_res, res.otAmountMonthly.toFixed(2) + "€");
 
-    // Seguridad Social: Siempre se muestra el descuento de 1/12
+    // Seguridad Social
     renderResult(lang.ss, "-" + monthlySS.toFixed(2) + "€");
 
-    // IRPF: Refleja el descuento mensual real basado en el total anual
-    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc).toFixed(2)}%)`, "-" + visibleMonthlyIRPF.toFixed(2) + "€");
+    // IRPF
+    renderResult(lang.irpf + ` (${parseFloat(res.irpfPerc || 0).toFixed(2)}%)`, "-" + visibleMonthlyIRPF.toFixed(2) + "€");
 
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
     if (res.exemptIncomeMonthly > 0) renderResult(lang.labels.cotiza + " (Exento)", res.exemptIncomeMonthly.toFixed(2) + "€");
 
     // Neto Visible final
-    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - res.extraTaxMonthly + (res.exemptIncomeMonthly || 0);
+    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - (res.extraTaxMonthly || 0) + (res.exemptIncomeMonthly || 0);
     getEl('net-result-value').textContent = visibleNet.toFixed(2) + "€";
 }
 
@@ -1820,7 +1819,19 @@ function performSpainCalculations(annualGross, pagas) {
 
     const netAnnual = (totalTaxableAnnual + nonTaxableAnnualSum) - totalSS - totalIRPF - deductionsTotal - especieAnnualSum;
 
-    return { taxableAnnual: totalTaxableAnnual, totalSS, totalIRPF, irpfPerc, netAnnual, otAmountMonthly, workingMonths };
+    return {
+        taxableAnnual: totalTaxableAnnual,
+        totalSS,
+        totalIRPF,
+        irpfPerc,
+        netAnnual,
+        otAmountMonthly,
+        workingMonths,
+        netMonthlyAdditions: (totalTaxableAnnual - contractBaseAnnual - otAmountAnnual) / 12,
+        holidayPayMonthly: 0,
+        extraTaxMonthly: deductionsTotal / 12,
+        exemptIncomeMonthly: nonTaxableAnnualSum / 12
+    };
 }
 
 window.toggleSeniority2012 = function(val) {
@@ -1919,8 +1930,8 @@ function calculateSpainDismissal() {
 function calculateSpainInverse() {
     const lang = i18n[appState.language];
     const target = parseSafe('sp-inverse-net');
-    const pagas = appState.spToggles.pagas;
-    const prorrated = appState.spToggles.pagas_prorrateadas;
+    const pagas = appState.spToggles.pagas || 12;
+    const prorrated = appState.spToggles.pagas_prorrateadas || 0;
 
     // The user target is "Monthly Take Home"
     // If user wants 2000€ and has 14 pagas, 0 prorrated -> Annual Net is 2000 * 14
@@ -1929,7 +1940,7 @@ function calculateSpainInverse() {
     // Calculate required Annual Net based on target and prorrating
     // Target = (AnnualNet / pagas) * (1 + prorrated/12)
     // AnnualNet = Target / ( (1/pagas) * (1 + prorrated/12) )
-    const targetAnnualNet = target / ((1 / pagas) * (1 + prorrated / 12));
+    const targetAnnualNet = target / ((1 / pagas) * (1 + (prorrated / 12)));
 
     // Binary Search to find Gross
     let low = targetAnnualNet, high = targetAnnualNet * 4, gross = low;
@@ -1952,10 +1963,10 @@ function calculateUK() {
 
     if (appState.mode === 'annual') {
         annualGross = parseSafe('uk-annual-gross');
-        periods = appState.ukPeriods.annual;
+        periods = appState.ukPeriods.annual || 12;
     } else if (appState.mode === 'monthly') {
         let mGross = parseSafe('uk-monthly-gross');
-        periods = appState.ukPeriods.monthly;
+        periods = appState.ukPeriods.monthly || 12;
         annualGross = mGross * periods;
     } else if (appState.mode === 'hourly') {
         const rate = parseSafe('uk-hourly-rate');
@@ -1980,25 +1991,25 @@ function calculateUK() {
     const freqLabel = periods > 51 ? lang.semanal : lang.mensual;
 
     renderResult(lang.bruto + " " + freqLabel, (annualGross / periods).toFixed(2) + "£");
-    if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "£");
+    if ((res.holidayPayMonthly || 0) > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "£");
 
     // Dynamic Bonus Display for UK
-    if (res.bonusTotalMonthly > 0) {
+    if ((res.bonusTotalMonthly || 0) > 0) {
         renderResult(lang.extras, res.bonusTotalMonthly.toFixed(2) + "£");
     }
 
-    if (res.pension > 0) renderResult(lang.pension, "-" + (res.pension / periods).toFixed(2) + "£");
-    renderResult(lang.irpf, "-" + (res.tax / periods).toFixed(2) + "£");
-    renderResult(lang.ss + " (NI)", "-" + (res.ni / periods).toFixed(2) + "£");
-    if (res.cbCharge > 0) renderResult(lang.labels.child_benefit, "-" + (res.cbCharge / periods).toFixed(2) + "£");
+    if ((res.pension || 0) > 0) renderResult(lang.pension, "-" + (res.pension / periods).toFixed(2) + "£");
+    renderResult(lang.irpf, "-" + ((res.tax || 0) / periods).toFixed(2) + "£");
+    renderResult(lang.ss + " (NI)", "-" + ((res.ni || 0) / periods).toFixed(2) + "£");
+    if ((res.cbCharge || 0) > 0) renderResult(lang.labels.child_benefit, "-" + (res.cbCharge / periods).toFixed(2) + "£");
 
-    if (res.studentLoan > 0) renderResult(lang.student_loan_res, "-" + (res.studentLoan / periods).toFixed(2) + "£");
+    if ((res.studentLoan || 0) > 0) renderResult(lang.student_loan_res, "-" + (res.studentLoan / periods).toFixed(2) + "£");
 
-    if (res.employerNi > 0) {
+    if ((res.employerNi || 0) > 0) {
         renderResult(lang.emp_ni, (res.employerNi / periods).toFixed(2) + "£");
     }
 
-    getEl('net-result-value').textContent = (res.net / periods).toFixed(2) + "£";
+    getEl('net-result-value').textContent = ((res.net || 0) / periods).toFixed(2) + "£";
 }
 
 function calculateUKIR35() {
