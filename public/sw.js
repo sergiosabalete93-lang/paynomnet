@@ -1,4 +1,4 @@
-const CACHE_NAME = 'payroll-pro-v5';
+const CACHE_NAME = 'payroll-pro-v6';
 const ASSETS_TO_CACHE = [
     './',
     './index.html',
