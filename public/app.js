@@ -1702,11 +1702,12 @@ function calculateSpain() {
     // --- Lógica de Visualización de Mes Normal (Precisión Contable) ---
     const baseAntiguedad = parseSafe('sp-pro-antiguedad');
     const basePagaBruta = annualContractBase / pagas;
-    const visibleMonthlyGross = (basePagaBruta + baseAntiguedad) + ((basePagaBruta + baseAntiguedad) * prorrated / 12) + (res.otAmountMonthly || 0) + (res.netMonthlyAdditions || 0);
+    // El Bruto Mensual visible ahora excluye la Especie (Beneficios no monetarios)
+    const visibleMonthlyGross = (basePagaBruta + baseAntiguedad) + ((basePagaBruta + baseAntiguedad) * prorrated / 12) + (res.otAmountMonthly || 0) + (res.cashMonthlyAdditions || 0);
 
     const monthlySS = (res.totalSS || 0) / 12;
-    // Sincronización IRPF: Aplicar % sobre el bruto sujeto a retención del mes actual
-    const visibleMonthlyIRPF = visibleMonthlyGross * (res.irpfPerc / 100);
+    // Sincronización IRPF: Se aplica el % sobre la suma de efectivo y especie (base imponible real)
+    const visibleMonthlyIRPF = (visibleMonthlyGross + (res.especieMonthly || 0)) * (res.irpfPerc / 100);
 
     renderResult(lang.bruto + " " + lang.mensual, visibleMonthlyGross.toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
@@ -1766,14 +1767,17 @@ function performSpainCalculations(annualGross, pagas) {
 
     // Procesar Bonus y Especie
     let totalTaxableAnnual = contractBaseAnnual + otAmountAnnual;
-    let ssTaxableAnnual = contractBaseAnnual + otAmountAnnual;
+    let ssTaxableAnnual = contractBaseAnnual; // Solo base monetaria para contingencias
     let especieAnnualSum = 0;
+    let bonusCashAnnualSum = 0;
     let nonTaxableAnnualSum = 0;
 
     appState.spToggles.dynamicEspecie.forEach(e => {
         const annualAmt = e.amount * 12;
         especieAnnualSum += annualAmt;
         totalTaxableAnnual += annualAmt;
+        // La especie cotiza en SS, pero se suele separar en la base.
+        // Para simplificar y evitar errores de redondeo, la incluimos en la base general pero fuera del descuento doble.
         ssTaxableAnnual += annualAmt;
     });
 
@@ -1783,14 +1787,17 @@ function performSpainCalculations(annualGross, pagas) {
             nonTaxableAnnualSum += annualAmt;
         } else {
             if (b.irpf) totalTaxableAnnual += annualAmt;
-            if (b.ss) ssTaxableAnnual += annualAmt;
+            if (b.ss) {
+                ssTaxableAnnual += annualAmt;
+                bonusCashAnnualSum += annualAmt;
+            }
         }
     });
 
     // Seguridad Social
     const rateCommon = (parseSafe('sp-rate-common') || 4.7) / 100;
     const rateUnemployment = (parseSafe('sp-rate-unemployment') || (isTemporal ? 1.60 : 1.55)) / 100;
-    const rateFpMei = (parseSafe('sp-rate-fp-mei') || 0.20) / 100;
+    const rateFpMei = (parseSafe('sp-rate-fp-mei') || 0.25) / 100;
 
     const basesMinimas = { 1: 1950, 2: 1620, 3: 1410, 4: 1360, 5: 1360, 6: 1360, 7: 1360, 8: 1360, 9: 1360, 10: 1360, 11: 1360 };
     const minLegalMonthly = (basesMinimas[group] || 1360) * jornadaPerc;
@@ -1829,7 +1836,7 @@ function performSpainCalculations(annualGross, pagas) {
         netAnnual,
         otAmountMonthly,
         workingMonths,
-        netMonthlyAdditions: (totalTaxableAnnual - contractBaseAnnual - otAmountAnnual) / 12,
+        cashMonthlyAdditions: bonusCashAnnualSum / 12,
         holidayPayMonthly: 0,
         extraTaxMonthly: deductionsTotal / 12,
         exemptIncomeMonthly: nonTaxableAnnualSum / 12,
