@@ -1705,7 +1705,8 @@ function calculateSpain() {
     const visibleMonthlyGross = (basePagaBruta + baseAntiguedad) + ((basePagaBruta + baseAntiguedad) * prorrated / 12) + (res.otAmountMonthly || 0) + (res.netMonthlyAdditions || 0);
 
     const monthlySS = (res.totalSS || 0) / 12;
-    const visibleMonthlyIRPF = (res.totalIRPF || 0) / 12;
+    // Sincronización IRPF: Aplicar % sobre el bruto sujeto a retención del mes actual
+    const visibleMonthlyIRPF = visibleMonthlyGross * (res.irpfPerc / 100);
 
     renderResult(lang.bruto + " " + lang.mensual, visibleMonthlyGross.toFixed(2) + "€");
     if (res.holidayPayMonthly > 0) renderResult(lang.holiday_res, res.holidayPayMonthly.toFixed(2) + "€");
@@ -1720,8 +1721,8 @@ function calculateSpain() {
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
     if (res.exemptIncomeMonthly > 0) renderResult(lang.labels.cotiza + " (Exento)", res.exemptIncomeMonthly.toFixed(2) + "€");
 
-    // Neto Visible final
-    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - (res.extraTaxMonthly || 0) + (res.exemptIncomeMonthly || 0);
+    // Neto Visible final: Se resta el IRPF sincronizado, la SS y el valor en especie (ya que no es dinero líquido)
+    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - (res.extraTaxMonthly || 0) - (res.especieMonthly || 0) + (res.exemptIncomeMonthly || 0);
     getEl('net-result-value').textContent = visibleNet.toFixed(2) + "€";
 }
 
@@ -1831,7 +1832,8 @@ function performSpainCalculations(annualGross, pagas) {
         netMonthlyAdditions: (totalTaxableAnnual - contractBaseAnnual - otAmountAnnual) / 12,
         holidayPayMonthly: 0,
         extraTaxMonthly: deductionsTotal / 12,
-        exemptIncomeMonthly: nonTaxableAnnualSum / 12
+        exemptIncomeMonthly: nonTaxableAnnualSum / 12,
+        especieMonthly: especieAnnualSum / 12
     };
 }
 
