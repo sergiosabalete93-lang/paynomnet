@@ -1722,8 +1722,8 @@ function calculateSpain() {
     if (res.extraTaxMonthly > 0) renderResult(lang.other_deductions, "-" + res.extraTaxMonthly.toFixed(2) + "€");
     if (res.exemptIncomeMonthly > 0) renderResult(lang.labels.cotiza + " (Exento)", res.exemptIncomeMonthly.toFixed(2) + "€");
 
-    // Neto Visible final: Se resta el IRPF sincronizado, la SS y el valor en especie (ya que no es dinero líquido)
-    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - (res.extraTaxMonthly || 0) - (res.especieMonthly || 0) + (res.exemptIncomeMonthly || 0);
+    // Neto Visible final: Se resta el IRPF sincronizado y la SS (la especie ya no está sumada en visibleMonthlyGross)
+    const visibleNet = visibleMonthlyGross - monthlySS - visibleMonthlyIRPF - (res.extraTaxMonthly || 0) + (res.exemptIncomeMonthly || 0);
     getEl('net-result-value').textContent = visibleNet.toFixed(2) + "€";
 }
 
