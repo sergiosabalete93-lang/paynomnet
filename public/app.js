@@ -1700,8 +1700,9 @@ function calculateSpain() {
     const res = performSpainCalculations(annualContractBase, pagas);
 
     // --- Lógica de Visualización de Mes Normal (Precisión Contable) ---
+    const baseAntiguedad = parseSafe('sp-pro-antiguedad');
     const basePagaBruta = annualContractBase / pagas;
-    const visibleMonthlyGross = basePagaBruta + (basePagaBruta * prorrated / 12) + (res.otAmountMonthly || 0) + (res.netMonthlyAdditions || 0);
+    const visibleMonthlyGross = (basePagaBruta + baseAntiguedad) + ((basePagaBruta + baseAntiguedad) * prorrated / 12) + (res.otAmountMonthly || 0) + (res.netMonthlyAdditions || 0);
 
     const monthlySS = (res.totalSS || 0) / 12;
     const visibleMonthlyIRPF = (res.totalIRPF || 0) / 12;
