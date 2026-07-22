@@ -553,6 +553,14 @@ export function activatePro(msg) {
     if (msg) alert(msg);
 }
 
+// Registro global de funciones críticas para que el HTML y otros módulos las vean
+window.setCountry = setCountry;
+window.setMode = setMode;
+window.updateUITranslations = updateUITranslations;
+window.activatePro = activatePro;
+window.applyTheme = applyTheme;
+window.updatePagasUI = updatePagasUI;
+
 export function setupDraggable(el) {
     if (!el) return;
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;

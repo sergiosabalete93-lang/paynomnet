@@ -26,12 +26,8 @@ import { calculateUK } from './js/engines/uk/modes-uk.js';
 // Importación de configuración externa
 import './firebase-config.js';
 
-// --- Vinculación de Funciones al Ámbito Global (para clics y eventos de módulos) ---
+// --- Vinculación de Funciones al Ámbito Global ---
 window.validateForm = validateForm;
-window.updateUITranslations = updateUITranslations;
-window.setCountry = setCountry;
-window.setMode = setMode;
-window.updatePagasUI = updatePagasUI;
 
 window.processCalculation = function() {
     getEl('results-loader')?.classList.add('hidden');

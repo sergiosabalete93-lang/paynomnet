@@ -8,6 +8,7 @@ import { appState } from './state.js';
 export function getEl(id) {
     return document.getElementById(id);
 }
+window.getEl = getEl;
 
 export function parseSafe(id) {
     const el = getEl(id);
@@ -24,6 +25,7 @@ export function parseSafe(id) {
     }
     return parseFloat(val) || 0;
 }
+window.parseSafe = parseSafe;
 
 export function validateForm() {
     let isValid = true;
