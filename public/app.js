@@ -437,9 +437,9 @@ const i18n = {
             cb_toggle: "Child Benefit Charge",
             children_count: "Number of Children",
             children_desc: "receiving benefit",
-            mobility: "Movilidad Geográfica",
-            union: "Cuotas Sindicales / Colegios",
-            pension_basis: "Base de Pensión"
+            mobility: "Geographical Mobility",
+            union: "Union / Professional Fees",
+            pension_basis: "Pension Basis"
         },
         help: {
             mode_annual: "Calculate your take-home pay based on the total annual gross salary agreed with your employer.",
@@ -911,6 +911,9 @@ function validateForm() {
 }
 
 function setCountry(c) {
+    // Cerrar ayudas abiertas
+    document.querySelectorAll('.help-note').forEach(n => n.classList.remove('visible'));
+
     appState.country = c;
     document.querySelectorAll('.btn-country').forEach(b => b.classList.remove('active'));
     getEl(`btn-${c}`).classList.add('active');
@@ -929,6 +932,9 @@ function setCountry(c) {
 }
 
 function setMode(m) {
+    // Cerrar ayudas abiertas
+    document.querySelectorAll('.help-note').forEach(n => n.classList.remove('visible'));
+
     appState.mode = m;
     document.querySelectorAll('.btn-mode').forEach(b => b.classList.remove('active'));
     getEl(`btn-mode-${m}`).classList.add('active');
@@ -1077,9 +1083,9 @@ function renderDynamicLists() {
                     <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id}, 'sp')">×</button>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:5px; font-size:10px;">
-                    <label><input type="checkbox" ${b.irpf ? 'checked' : ''} onchange="updateBonusVal('sp', ${b.id}, 'irpf', this.checked)"> IRPF</label>
-                    <label><input type="checkbox" ${b.ss ? 'checked' : ''} onchange="updateBonusVal('sp', ${b.id}, 'ss', this.checked)"> SS</label>
-                    <label><input type="checkbox" ${b.unemployment ? 'checked' : ''} onchange="updateBonusVal('sp', ${b.id}, 'unemployment', this.checked)"> Paro</label>
+                    <label><input type="checkbox" ${b.exento ? 'checked' : ''} onchange="updateBonusVal('sp', ${b.id}, 'exento', this.checked)"> Exento (Dietas)</label>
+                    <label><input type="checkbox" ${b.irpf && !b.exento ? 'checked' : ''} ${b.exento ? 'disabled' : ''} onchange="updateBonusVal('sp', ${b.id}, 'irpf', this.checked)"> IRPF</label>
+                    <label><input type="checkbox" ${b.ss && !b.exento ? 'checked' : ''} ${b.exento ? 'disabled' : ''} onchange="updateBonusVal('sp', ${b.id}, 'ss', this.checked)"> SS</label>
                 </div>
             `;
             bonusListSp.appendChild(div);
@@ -1517,13 +1523,50 @@ function updateUITranslations() {
         'h-uk-marriage': lang.help.uk_marriage,
         'h-uk-blind': lang.help.uk_blind,
         'h-uk-child-benefit': lang.help.uk_child_benefit,
-        'h-mode-annual': lang.help.mode_annual,
-        'h-mode-monthly': lang.help.mode_monthly,
-        'h-mode-hourly': lang.help.mode_hourly,
-        'h-mode-ir35': lang.help.mode_ir35,
-        'h-mode-inverse': lang.help.mode_inverse,
-        'h-mode-dismissal': lang.help.mode_dismissal,
-        'h-uk-hourly-base': lang.help.uk_hourly_base
+        'h-joint': "Calcula el IRPF como si presentaras la declaración con tu cónyuge. Suele convenir si uno de los dos no tiene ingresos.",
+        'h-mobility': "Si te has mudado de ciudad por un nuevo trabajo, tienes derecho a una deducción adicional de 2.000€ durante 2 años.",
+        'h-union': "Las cuotas a sindicatos y colegios profesionales obligatorios restan directamente de tu base para pagar menos IRPF.",
+        'h-pagas': "12 si las extras están prorrateadas cada mes. 14 si cobras una extra en junio y otra en diciembre.",
+        'h-seniority-2012': "Los contratos anteriores a 2012 tienen una indemnización mayor (45 días/año) por el tramo trabajado antes de esa fecha.",
+        'h-contract': "El tipo de contrato afecta a la Seguridad Social (Desempleo) y a cómo se calcula tu retención de IRPF.",
+        'h-manual-irpf': "Úsalo solo si quieres forzar el porcentaje exacto que ya ves en tu nómina real para cuadrar resultados.",
+        'h-custom-base': "La base de cotización suele ser igual al bruto, pero con límites legales. No lo toques si no eres experto.",
+        'h-extra-tax': "Cualquier otro descuento neto mensual: cuota sindical, embargos o préstamos de empresa.",
+        'h-bonus': "Conceptos extra en dinero (plus transporte, incentivos). Puedes marcar si tributan o si son netos.",
+        'h-antiguedad': "Importe total que cobras al mes por años en la empresa (trienios, sexenios, etc.). No pongas los años, pon el dinero.",
+        'h-ot-hours': "Número de horas trabajadas fuera de tu jornada normal este mes.",
+        'h-ot-price': "El precio bruto por cada hora extra según tu contrato.",
+        'h-grupo': "Tu categoría profesional según contrato. Determina las bases mínimas y máximas de cotización.",
+        'h-jornada': "Horas semanales de tu contrato. El estándar es 40h. Si es menos, los mínimos legales se ajustan.",
+        'h-meses': "Si tu contrato es temporal y solo vas a trabajar unos meses, la app ajustará tu IRPF a la baja.",
+        'h-especie': "Pagos no monetarios (seguro médico, coche). Tributan como sueldo pero se restan al final al cobrarse 'en cosas'.",
+        'h-exento': "Conceptos que no pagan impuestos ni SS, como dietas de viaje o kilometraje. Suman directo a tu neto.",
+        'h-rates': "Porcentajes técnicos de cotización. No los cambies a menos que tengas un convenio muy especial.",
+        'h-uk-periods': "Frecuencia de cobro en UK: 12 meses, 13 (cada 4 semanas) o 52 (semanal).",
+        'h-uk-bik': "Beneficios no monetarios (P11D) como coche de empresa. Tributan como ingresos pero no los recibes en efectivo.",
+        'h-uk-pension': "Ahorro jubilación. Por ley (Auto-enrolment), se calcula sobre lo que ganes entre £6,240 y £50,270 al año.",
+        'h-uk-taxcode': "Indica tu mínimo exento. '1257L' is standard. Prefix 'S' for Scotland and 'C' for Wales.",
+        'h-uk-ni-letter': "Categoría del National Insurance. 'A' es para la mayoría de empleados adultos.",
+        'h-uk-bonus': "Bonificaciones extra. Indica si la cantidad es bruta (tributable) o neta (ya limpia).",
+        'h-uk-jobs': "Si tienes más de un empleo, tu mínimo exento suele aplicarse solo al trabajo principal.",
+        'h-uk-inverse': "Introduce el neto mensual que deseas y calcularemos el sueldo bruto anual equivalente.",
+        'h-uk-redundancy': "Indemnización por despido en UK según edad, años trabajados y tope semanal de £725 (2026).",
+        'h-uk-hourly-base': "Cómo convertir tus horas semanales a mensuales (Promedio anual o bloques de 4 semanas).",
+        'h-uk-holiday': "Incluye un 12.07% extra simulando el pago de vacaciones no disfrutadas, común en agencias.",
+        'h-uk-ir35-type': "Inside: Eres empleado fiscal (vía Umbrella). Outside: Eres una empresa independiente (LTD).",
+        'h-uk-assign': "La tarifa total que paga el cliente por tus servicios antes de cualquier descuento.",
+        'h-uk-margin': "Tarifa semanal fija que cobra la empresa Umbrella por hacerte la nómina.",
+        'h-uk-expenses': "Gastos de negocio que puedes deducir del beneficio antes de impuestos.",
+        'h-uk-marriage': "Permite transferir £1,260 de tu mínimo exento a tu pareja si gana menos que tú.",
+        'h-uk-blind': "Aumento del mínimo exento de £3,070 extra si estás registrado como invidente.",
+        'h-uk-child-benefit': "Si ganas más de £60,000, debes devolver parte de las ayudas por hijos recibidas vía impuestos.",
+        'h-mode-annual': "Calcula tu sueldo neto a partir del bruto total anual pactado con tu empresa.",
+        'h-mode-monthly': "Calcula tu neto mensual limpio a partir de tu sueldo bruto mensual actual.",
+        'h-mode-hourly': "Ideal si cobras por horas. Indica tu precio/hora y las horas que haces al mes para proyectar tu sueldo.",
+        'h-mode-ir35': "Cálculo especializado para contratistas en Reino Unido bajo normativa IR35.",
+        'h-mode-inverse': "Dinos cuánto quieres cobrar 'limpio' al mes y calcularemos el sueldo bruto que debes negociar.",
+        'h-mode-dismissal': "Calcula la indemnización legal aproximada en caso de despido según tu antigüedad y salario.",
+        'h-uk-hourly-base': "Cómo convertir tus horas semanales a mensuales."
     };
 
     for (let id in helpNotes) {
@@ -1538,33 +1581,36 @@ function resetToDefaultMode() {
 }
 
 window.resetAllFields = function(country) {
-    if (!confirm(appState.language === 'es' ? '¿Limpiar todos los datos?' : 'Clear all data?')) return;
+    const isES = appState.language === 'es';
+    if (!confirm(isES ? '¿Limpiar todos los datos?' : 'Clear all data?')) return;
 
     const modulePrefix = country === 'sp' ? 'module-spain' : 'module-uk';
     const moduleEl = getEl(modulePrefix);
 
     if (country === 'sp') {
-        // 1. Reset Internal State Spain
         appState.spToggles.dynamicBonus = [];
         appState.spToggles.dynamicOT = [];
         appState.spToggles.dynamicDeductions = [];
-        appState.spToggles.disability = 'none';
-        appState.spToggles.pagas = 12;
+        appState.spToggles.dynamicEspecie = [];
+        appState.spToggles.disability = null;
+        appState.spToggles.pagas = 0;
         appState.spToggles.pagas_prorrateadas = 0;
-        appState.spToggles.contrato = 'indef';
+        appState.spToggles.contrato = null;
         appState.spToggles['holiday-prorated'] = false;
         appState.spToggles.multipayer = 'no';
     } else {
-        // 1. Reset Internal State UK
         appState.ukToggles.dynamicBonus = [];
         appState.ukToggles['pension-type'] = 'before';
         appState.ukToggles.jobs = '1';
         appState.ukToggles['holiday-prorated'] = false;
-        appState.ukToggles['ir35-type'] = 'inside';
-        appState.ukToggles['ir35-freq'] = 'daily';
-        appState.ukHourlyFreq = 'weekly';
-        appState.ukPeriods.annual = 12;
-        appState.ukPeriods.monthly = 12;
+        appState.ukToggles['ir35-type'] = null;
+        appState.ukToggles['ir35-freq'] = null;
+        appState.ukHourlyFreq = null;
+        appState.ukPeriods.annual = 0;
+        appState.ukPeriods.monthly = 0;
+        appState.ukPeriods.hourly = 0;
+        appState.ukPeriods.inverse = 0;
+        appState.ukPeriods.ir35 = 0;
     }
 
     // 2. Reset All Inputs in the module (Text, Number, Checkbox)
@@ -1579,26 +1625,28 @@ window.resetAllFields = function(country) {
                 input.value = '';
             }
         });
+
+        // Limpiar estilos de error
+        moduleEl.querySelectorAll('.input-error, .group-error').forEach(el => el.classList.remove('input-error', 'group-error'));
+        moduleEl.querySelectorAll('.error-label').forEach(el => el.remove());
+
+        // Quitar todos los 'active' de los botones del módulo
+        moduleEl.querySelectorAll('button').forEach(b => b.classList.remove('active'));
     }
 
     // 3. Hide all progressive revelation wrappers
     if (moduleEl) {
-        moduleEl.querySelectorAll('[id*="wrapper-"]').forEach(w => w.classList.add('hidden'));
+        moduleEl.querySelectorAll('.hidden-initially, [id*="wrapper-"]').forEach(w => w.classList.add('hidden'));
     }
 
     // 4. Global UI Refresh
     renderDynamicLists();
     updateUITranslations();
     updatePagasUI();
-    syncAllTogglesUI(country);
-
-    setCountry(country === 'sp' ? 'spain' : 'uk');
 
     // 5. Limpieza profunda de resultados
-    getEl('results-section').classList.add('hidden');
-    getEl('results-content').classList.add('hidden');
-    const resultsList = getEl('results-list');
-    if (resultsList) resultsList.innerHTML = '';
+    const resSection = getEl('results-section');
+    if (resSection) resSection.classList.add('hidden');
     getEl('net-result-value').textContent = '0.00';
 
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -1607,27 +1655,41 @@ window.resetAllFields = function(country) {
 function syncAllTogglesUI(country) {
     if (country === 'sp') {
         // Reset Contrato
-        const contGroup = getEl('btn-cont-indef').parentNode;
-        contGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        getEl('btn-cont-indef').classList.add('active');
+        const contGroup = getEl('btn-cont-indef')?.parentNode;
+        if (contGroup) {
+            contGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            getEl('btn-cont-indef').classList.add('active');
+        }
 
         // Reset Discapacidad
-        const disGroup = getEl('btn-dis-none').parentNode;
-        disGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        getEl('btn-dis-none').classList.add('active');
+        const disBtn = getEl('btn-dis-none');
+        if (disBtn) {
+            const disGroup = disBtn.parentNode;
+            disGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            disBtn.classList.add('active');
+        }
 
         // Reset Pagadores
-        const payGroup = getEl('sp-pagadores-label').nextElementSibling;
-        payGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        payGroup.querySelectorAll('button')[0].classList.add('active');
+        const payLabel = getEl('sp-pagadores-label');
+        if (payLabel) {
+            const payGroup = payLabel.nextElementSibling;
+            if (payGroup) {
+                payGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                payGroup.querySelectorAll('button')[0].classList.add('active');
+            }
+        }
     } else {
         // Reset UK Toggles
         const groups = [
-            'uk-hourly-monthly-config',
             'uk-ir35-type-label',
             'uk-assignment-label',
             'uk-jobs-label',
-            'uk-pension-label'
+            'uk-pension-label',
+            'uk-pay-periods-label',
+            'uk-pay-periods-mon-label',
+            'uk-pay-periods-hou-label',
+            'uk-pay-periods-inv-label',
+            'uk-pay-periods-ir35-label'
         ];
 
         groups.forEach(id => {
@@ -1636,15 +1698,17 @@ function syncAllTogglesUI(country) {
                 const group = label.nextElementSibling || label.querySelector('.frequency-toggle');
                 if (group) {
                     group.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-                    group.querySelectorAll('button')[0].classList.add('active');
+                    // Note: No activamos el primero por defecto para UK para forzar selección
                 }
             }
         });
 
         // Reset UK Weekly/Monthly toggle
-        const ukFreqGroup = getEl('btn-uk-weekly').parentNode;
-        ukFreqGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        getEl('btn-uk-weekly').classList.add('active');
+        const ukFreqBtn = getEl('btn-uk-weekly');
+        if (ukFreqBtn) {
+            const ukFreqGroup = ukFreqBtn.parentNode;
+            ukFreqGroup.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+        }
     }
 }
 
@@ -1736,47 +1800,11 @@ function performSpainCalculations(annualGross, pagas) {
     const mobility = getEl('sp-pro-mobility')?.checked;
     const unionFees = parseSafe('sp-pro-union');
 
-    // Ingresos Exentos (Dietas/KM)
-    const exemptIncomeMonthly = parseSafe('sp-pro-exempt-income');
-    const exemptIncomeAnnual = exemptIncomeMonthly * 12;
-
-    // Base Salarial (Salario + Antigüedad) - Multiplica por PAGAS
     const antiguedad = parseSafe('sp-pro-antiguedad');
     const contractBaseAnnual = annualGross + (antiguedad * pagas);
-
-    // Ajuste por meses trabajados para proyección IRPF
     const realAnnualFactor = workingMonths / 12;
-    const realProjectedGross = contractBaseAnnual * realAnnualFactor;
 
-    // Sistema de "Cucharas" (Buckets) para impuestos
-    let bucketIRPF = realProjectedGross;
-    let bucketSS = contractBaseAnnual;
-    let bucketUnemployment = contractBaseAnnual;
-    let totalGrossAnnual = contractBaseAnnual;
-
-    // Procesar Retribución en Especie
-    let especieAnnualSum = 0;
-    appState.spToggles.dynamicEspecie.forEach(e => {
-        const annualAmt = e.amount * 12;
-        especieAnnualSum += annualAmt;
-        bucketIRPF += (annualAmt * realAnnualFactor);
-        bucketSS += annualAmt;
-        bucketUnemployment += annualAmt;
-        totalGrossAnnual += annualAmt;
-    });
-
-    // Procesar Bonus Dinámicos
-    let bonusMonthlySum = 0;
-    appState.spToggles.dynamicBonus.forEach(b => {
-        const annualAmt = b.amount * 12;
-        bonusMonthlySum += b.amount;
-        totalGrossAnnual += annualAmt;
-        if (b.irpf) bucketIRPF += (annualAmt * realAnnualFactor);
-        if (b.ss) bucketSS += annualAmt;
-        if (b.unemployment) bucketUnemployment += annualAmt;
-    });
-
-    // Procesar Horas Extras
+    // Procesar Horas Extras - Tasa legal 4.7%
     const mode = appState.mode;
     const suffix = mode === 'annual' ? 'ann' : mode === 'monthly' ? 'mon' : mode === 'hourly' ? 'hou' : 'inv';
     const otHours = parseSafe(`sp-pro-overtime-hours-${suffix}`);
@@ -1785,26 +1813,30 @@ function performSpainCalculations(annualGross, pagas) {
     appState.spToggles.dynamicOT.filter(o => o.suffix === suffix).forEach(o => {
         otAmountMonthly += o.amount;
     });
-
     const otAmountAnnual = otAmountMonthly * 12;
-    totalGrossAnnual += otAmountAnnual;
-    bucketIRPF += (otAmountAnnual * realAnnualFactor);
 
-    // Procesar Deducciones Dinámicas
-    let dynamicDeductionsTotal = 0;
-    appState.spToggles.dynamicDeductions.forEach(d => {
-        dynamicDeductionsTotal += d.amount;
+    // Procesar Bonus y Especie
+    let totalTaxableAnnual = contractBaseAnnual + otAmountAnnual;
+    let ssTaxableAnnual = contractBaseAnnual + otAmountAnnual;
+    let especieAnnualSum = 0;
+    let nonTaxableAnnualSum = 0;
+
+    appState.spToggles.dynamicEspecie.forEach(e => {
+        const annualAmt = e.amount * 12;
+        especieAnnualSum += annualAmt;
+        totalTaxableAnnual += annualAmt;
+        ssTaxableAnnual += annualAmt;
     });
 
-    const holidayProrated = getEl('sp-holiday-prorated')?.checked;
-    let holidayPayAnnual = 0;
-    if (holidayProrated) {
-        holidayPayAnnual = contractBaseAnnual * 0.0833;
-        totalGrossAnnual += holidayPayAnnual;
-        bucketIRPF += (holidayPayAnnual * realAnnualFactor);
-        bucketSS += holidayPayAnnual;
-        bucketUnemployment += holidayPayAnnual;
-    }
+    appState.spToggles.dynamicBonus.forEach(b => {
+        const annualAmt = b.amount * 12;
+        if (b.exento) {
+            nonTaxableAnnualSum += annualAmt;
+        } else {
+            if (b.irpf) totalTaxableAnnual += annualAmt;
+            if (b.ss) ssTaxableAnnual += annualAmt;
+        }
+    });
 
     // Seguridad Social
     const rateCommon = (parseSafe('sp-rate-common') || 4.7) / 100;
@@ -1814,32 +1846,33 @@ function performSpainCalculations(annualGross, pagas) {
     const basesMinimas = { 1: 1950, 2: 1620, 3: 1410, 4: 1360, 5: 1360, 6: 1360, 7: 1360, 8: 1360, 9: 1360, 10: 1360, 11: 1360 };
     const minLegalMonthly = (basesMinimas[group] || 1360) * jornadaPerc;
     const MAX_SS_BASE_MONTHLY = 4950.00;
-    const manualBaseCommon = parseSafe('sp-pro-base-common');
-    const manualBaseAtEp = parseSafe('sp-pro-base-at-ep');
 
-    let baseSSAnnual, baseUnemploymentAnnual;
-    if (manualBaseCommon > 0) baseSSAnnual = manualBaseCommon * 12;
-    else baseSSAnnual = Math.max(minLegalMonthly, Math.min(bucketSS / 12, MAX_SS_BASE_MONTHLY)) * 12;
+    const monthlyBase = Math.max(minLegalMonthly, Math.min(ssTaxableAnnual / 12, MAX_SS_BASE_MONTHLY));
+    const baseSSAnnual = monthlyBase * 12;
 
-    if (manualBaseAtEp > 0) baseUnemploymentAnnual = manualBaseAtEp * 12;
-    else baseUnemploymentAnnual = Math.max(minLegalMonthly, Math.min(bucketUnemployment / 12, MAX_SS_BASE_MONTHLY)) * 12;
+    const ssNormal = (baseSSAnnual * rateCommon) + (baseSSAnnual * rateUnemployment) + (baseSSAnnual * rateFpMei);
+    const ssOT = (otAmountAnnual * 0.047);
+    const totalSS = ssNormal + ssOT;
 
-    const totalSS = (baseSSAnnual * rateCommon) + (baseUnemploymentAnnual * rateUnemployment) + (baseSSAnnual * rateFpMei) + (otAmountAnnual * 0.047);
-
-    // IRPF Calculation on Projected Annual Real
+    // IRPF sobre Proyección Real
     const manualVal = getEl('sp-irpf-manual')?.value.trim();
     let irpfPerc;
+    const realProjectedGross = totalTaxableAnnual * realAnnualFactor;
+    const ssDeducibleIRPF = totalSS * realAnnualFactor;
+
     if (appState.isPro && manualVal !== "") {
         irpfPerc = parseFloat(manualVal);
-        if (isNaN(irpfPerc)) irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDisCount, other75Count, region, disability, isJoint, multipayer, totalSS * realAnnualFactor, unionFees, mobility);
     } else {
-        irpfPerc = estimateSpainIRPF(bucketIRPF, children, childDisCount, others, otherDisCount, other75Count, region, disability, isJoint, multipayer, totalSS * realAnnualFactor, unionFees, mobility);
+        irpfPerc = estimateSpainIRPF(realProjectedGross, children, childDisCount, others, otherDisCount, other75Count, region, disability, isJoint, multipayer, ssDeducibleIRPF, unionFees, mobility);
     }
 
-    const totalIRPF = (totalGrossAnnual - especieAnnualSum) * (irpfPerc / 100);
-    const netAnnual = totalGrossAnnual - totalSS - totalIRPF - (dynamicDeductionsTotal * 12) - especieAnnualSum + exemptIncomeAnnual;
+    const totalIRPF = totalTaxableAnnual * (irpfPerc / 100);
+    let deductionsTotal = 0;
+    appState.spToggles.dynamicDeductions.forEach(d => deductionsTotal += d.amount * 12);
 
-    return { taxableAnnual: totalGrossAnnual, totalSS, totalIRPF, irpfPerc, extraTaxMonthly: dynamicDeductionsTotal, netAnnual, holidayPayMonthly: holidayPayAnnual / pagas, otAmountMonthly, netMonthlyAdditions: bonusMonthlySum, workingMonths, exemptIncomeMonthly };
+    const netAnnual = (totalTaxableAnnual + nonTaxableAnnualSum) - totalSS - totalIRPF - deductionsTotal - especieAnnualSum;
+
+    return { taxableAnnual: totalTaxableAnnual, totalSS, totalIRPF, irpfPerc, netAnnual, otAmountMonthly, workingMonths };
 }
 
 window.toggleSeniority2012 = function(val) {
@@ -1984,14 +2017,8 @@ function calculateUK() {
             annualGross = (rate * hours) * 52;
             periods = 52;
         } else {
-            const base = appState.ukToggles['hourly-monthly-base'] || 'full';
-            if (base === '4weeks') {
-                annualGross = (rate * hours) * 13;
-                periods = 13;
-            } else {
-                annualGross = (rate * hours) * 12;
-                periods = 12;
-            }
+            periods = appState.ukPeriods.hourly || 12;
+            annualGross = (rate * hours) * periods;
         }
     } else if (appState.mode === 'ir35') {
         calculateUKIR35(); return;
@@ -2031,6 +2058,7 @@ function calculateUKIR35() {
     const type = appState.ukToggles['ir35-type'] || 'inside';
     const rate = parseSafe('uk-ir35-rate');
     const freq = appState.ukToggles['ir35-freq'] || 'daily';
+    const periods = appState.ukPeriods.ir35 || 12;
 
     let annualRevenue = freq === 'daily' ? rate * 260 : rate * 37.5 * 52;
 
@@ -2039,18 +2067,13 @@ function calculateUKIR35() {
         const annualMargin = margin * 52;
         let available = annualRevenue - annualMargin;
 
-        // Deemed Salary Reverse Calculation (2025/26 Rates)
-        // Assignment = Gross + ErNI(15% > £5000) + AL(0.5%) + ErPension(3% > £6240)
-        // Simplified: available = G + (G-5000)*0.15 + G*0.005 + (G-6240)*0.03
-        // available = G + 0.15G - 750 + 0.005G + 0.03G - 187.2
-        // available + 937.2 = 1.185G  => G = (available + 937.2) / 1.185
         const grossSalary = Math.max(0, (available + 937.2) / 1.185);
 
-        const res = performUKCalculations(grossSalary, 12);
+        const res = performUKCalculations(grossSalary, periods);
         renderResult("Assignment Revenue", annualRevenue.toFixed(2) + "£");
         renderResult(lang.labels.umbrella_margin, annualMargin.toFixed(2) + "£");
         renderResult(lang.bruto_result_label, grossSalary.toFixed(2) + "£");
-        getEl('net-result-value').textContent = (res.net / 12).toFixed(2) + "£";
+        getEl('net-result-value').textContent = (res.net / periods).toFixed(2) + "£";
     } else {
         const expenses = parseSafe('uk-business-expenses');
         const annualExpenses = expenses * 12;
@@ -2075,7 +2098,6 @@ function performUKCalculations(annual, periods = 12) {
     const bik = parseSafe('uk-pro-bik') * 12;
     const pPerc = parseSafe('uk-pro-pension');
     const pType = appState.ukToggles['pension-type'] || 'before';
-    const pBasis = appState.ukToggles['pension-basis'] || 'qualifying';
 
     // Overtime for UK
     const mode = appState.mode;
@@ -2101,8 +2123,8 @@ function performUKCalculations(annual, periods = 12) {
 
     const totalIncome = annual + holidayPayAnnual + taxableBonusAnnual;
 
-    // 4. Pension Logic
-    let pensionBase = pBasis === 'salary' ? totalIncome : Math.max(0, Math.min(totalIncome, 50270) - 6240);
+    // 4. Pension Logic (Standard Auto-enrolment basis: £6,240 - £50,270)
+    let pensionBase = Math.max(0, Math.min(totalIncome, 50270) - 6240);
     const pensionAnnual = pensionBase * (pPerc / 100);
 
     // 5. NI Calculation (2025/26 Rates)
@@ -2128,6 +2150,7 @@ function performUKCalculations(annual, periods = 12) {
     let allowance = 12570;
     if (getEl('uk-pro-marriage')?.checked) allowance += 1260;
     if (getEl('uk-pro-blind')?.checked) allowance += 3070;
+
     if (taxCode.startsWith('K')) {
         allowance = -parseInt(taxCode.replace(/\D/g, '') || 0) * 10;
     } else {
@@ -2191,7 +2214,7 @@ function calculateUKRedundancy() {
 function calculateUKInverse() {
     const lang = i18n[appState.language];
     const target = parseSafe('uk-inverse-net');
-    const periods = appState.ukPeriods.annual; // Usar periodos configurados (12, 13, 14)
+    const periods = appState.ukPeriods.inverse || 12;
 
     let low = target * periods, high = target * periods * 4, gross = low;
     for(let i=0; i<40; i++) {

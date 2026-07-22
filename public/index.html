@@ -222,18 +222,20 @@
 
         <!-- ESPAÑA -->
         <section id="module-spain" class="country-module active">
+            <div class="reset-container" style="margin-bottom: 15px;">
+                <button class="btn-reset-small" onclick="resetAllFields('sp')" id="btn-reset-sp">LIMPIAR / RESET</button>
+            </div>
+
+            <div class="input-group">
+                <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-antiguedad')">?</span></label>
+                <input type="number" step="any" id="sp-pro-antiguedad" class="input-field" min="0" placeholder="Pon cual es el dinero total de tus trieños">
+                <div id="h-antiguedad" class="help-note"></div>
+            </div>
+
             <div id="spain-annual" class="calc-form active">
-                <div class="reset-container">
-                    <button class="btn-reset-small" onclick="resetAllFields('sp')">LIMPIAR / RESET</button>
-                </div>
                 <div class="input-group">
                     <label id="sp-anual-bruto-label">Bruto Anual (€) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-annual')">?</span></label>
                     <input type="number" step="any" id="sp-annual-gross" class="input-field" placeholder="Ej: 24000" max="10000000000">
-                </div>
-                <div class="input-group">
-                    <label id="sp-antiguedad-label">Antigüedad / Trienios (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-antiguedad')">?</span></label>
-                    <input type="number" step="any" id="sp-pro-antiguedad" class="input-field" min="0" placeholder="Pon cual es el dinero total de tus trieños">
-                    <div id="h-antiguedad" class="help-note"></div>
                 </div>
                 <div class="input-group">
                     <span class="sub-label" id="sp-pagas-tot-label">Pagas Totales (Contrato) <span class="help-icon" onclick="toggleHelp(event, 'h-pagas')">?</span></span>
@@ -311,7 +313,7 @@
                     <input type="number" step="any" id="sp-hourly-hours" class="input-field" placeholder="Ej: 160">
                 </div>
                 <div class="input-group">
-                    <span class="sub-label" id="sp-pagas-tot-label-hou">Pagas Totales (Contrato)</span>
+                    <span class="sub-label" id="sp-pagas-tot-label-hou">Pagas Totales (Contrato) <span class="help-icon" onclick="toggleHelp(event, 'h-pagas')">?</span></span>
                     <div class="frequency-toggle" id="sp-pagas-tot-hourly">
                         <button class="btn-toggle-sp" onclick="setSpainPagas(event, 12)">12</button>
                         <button class="btn-toggle-sp" onclick="setSpainPagas(event, 14)">14</button>
@@ -465,7 +467,7 @@
                                 </div>
                                 <div id="wrapper-sp-child-dis-count" class="input-group hidden" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-hijo-dis-count-label">¿Cuántos hijos?</label>
-                                    <input type="number" step="any" id="sp-pro-child-dis-count" class="input-field" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                    <input type="number" step="any" id="sp-pro-child-dis-count" class="input-field" min="0" placeholder="¿Cuántos?" style="padding: 8px 12px; font-size: 13px;">
                                 </div>
                             </div>
                         </div>
@@ -482,7 +484,7 @@
                                 </div>
                                 <div id="wrapper-sp-other-dis-count" class="input-group hidden" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-otro-dis-count-label">¿Cuántos con discapacidad?</label>
-                                    <input type="number" step="any" id="sp-pro-other-dis-count" class="input-field" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                    <input type="number" step="any" id="sp-pro-other-dis-count" class="input-field" min="0" placeholder="¿Cuántos?" style="padding: 8px 12px; font-size: 13px;">
                                 </div>
                                 <div class="input-group toggle-group" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-otro-75-label">Mayor de 75 años</label>
@@ -490,18 +492,10 @@
                                 </div>
                                 <div id="wrapper-sp-other-75-count" class="input-group hidden" style="margin-top:5px">
                                     <label style="font-size:10px" id="sp-otro-75-count-label">¿Cuántos con +75 años?</label>
-                                    <input type="number" step="any" id="sp-pro-other-75-count" class="input-field" min="0" style="padding: 8px 12px; font-size: 13px;">
+                                    <input type="number" step="any" id="sp-pro-other-75-count" class="input-field" min="0" placeholder="¿Cuántos?" style="padding: 8px 12px; font-size: 13px;">
                                 </div>
                             </div>
                         </div>
-                    </div>
-
-                    <div class="pro-fields-wrapper pro-item">
-                        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <label id="sp-exempt-list-label" style="font-weight: bold;">Dietas y Kilometraje (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-exento')">?</span></label>
-                        </div>
-                        <input type="number" step="any" id="sp-pro-exempt-income" class="input-field pro-input" placeholder="Importe exento total">
-                        <div id="h-exento" class="help-note"></div>
                     </div>
 
                     <div class="pro-fields-wrapper pro-item">
@@ -628,8 +622,8 @@
         <section id="module-uk" class="country-module hidden">
             <!-- ANNUAL -->
             <div id="uk-annual" class="calc-form active">
-                <div class="reset-container">
-                    <button class="btn-reset-small" onclick="resetAllFields('uk')">CLEAR ALL</button>
+                <div class="reset-container" style="margin-bottom: 15px;">
+                    <button class="btn-reset-small" onclick="resetAllFields('uk')" id="btn-reset-uk">CLEAR ALL</button>
                 </div>
                 <div class="input-group">
                     <label id="uk-anual-bruto-label">Annual Base Salary (£) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-annual')">?</span></label>
@@ -699,6 +693,14 @@
                     <button class="btn-freq" onclick="setHourlyType(event, 'uk', 'monthly')" id="btn-uk-monthly">Monthly</button>
                 </div>
                 <div class="input-group">
+                    <label id="uk-pay-periods-hou-label">Pay Periods <span class="help-icon" onclick="toggleHelp(event, 'h-uk-periods')">?</span></label>
+                    <div class="frequency-toggle">
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'hourly', 12)">12</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'hourly', 13)">13</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'hourly', 52)">52</button>
+                    </div>
+                </div>
+                <div class="input-group">
                     <label id="uk-hora-precio-label">Hourly Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-mode-hourly')">?</span></label>
                     <input type="number" step="any" id="uk-hourly-rate" class="input-field" placeholder="Hourly rate (e.g. 15.50)">
                 </div>
@@ -734,6 +736,14 @@
             <!-- INVERSE -->
             <div id="uk-inverse" class="calc-form hidden pro-feature">
                 <div class="input-group">
+                    <label id="uk-pay-periods-inv-label">Pay Periods <span class="help-icon" onclick="toggleHelp(event, 'h-uk-periods')">?</span></label>
+                    <div class="frequency-toggle">
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'inverse', 12)">12</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'inverse', 13)">13</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'inverse', 14)">14</button>
+                    </div>
+                </div>
+                <div class="input-group">
                     <label id="uk-inverso-neto-label">Target Monthly Net (£) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-inverse')">?</span></label>
                     <input type="number" step="any" id="uk-inverse-net" class="input-field" placeholder="Desired net monthly">
                     <div id="h-uk-inverse" class="help-note"></div>
@@ -756,6 +766,14 @@
 
             <!-- IR35 (PRO) -->
             <div id="uk-ir35" class="calc-form hidden pro-feature">
+                <div class="input-group">
+                    <label id="uk-pay-periods-ir35-label">Pay Periods <span class="help-icon" onclick="toggleHelp(event, 'h-uk-periods')">?</span></label>
+                    <div class="frequency-toggle">
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'ir35', 12)">12</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'ir35', 13)">13</button>
+                        <button class="btn-periods-uk" onclick="setUKPeriods(event, 'ir35', 52)">52</button>
+                    </div>
+                </div>
                 <div class="input-group">
                     <span class="sub-label" id="uk-ir35-type-label">Contrato IR35 <span class="help-icon" onclick="toggleHelp(event, 'h-uk-ir35-type')">?</span></span>
                     <div class="frequency-toggle">
@@ -894,19 +912,15 @@
                     </div>
 
                     <div class="pro-fields-wrapper pro-item">
-                <div class="input-group">
-                    <label id="uk-pension-label">Pension (%) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-pension')">?</span></label>
-                    <div class="frequency-toggle" style="margin-bottom:5px">
-                        <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'pension-basis', 'qualifying')" style="font-size:10px" id="btn-uk-pension-qual">Qualifying Earnings</button>
-                        <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-basis', 'salary')" style="font-size:10px" id="btn-uk-pension-sal">Total Salary</button>
-                    </div>
-                    <input type="number" step="any" id="uk-pro-pension" class="input-field pro-input" placeholder="e.g. 5">
-                    <div class="frequency-toggle" style="margin-top:5px">
-                        <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Net Pay (Before Tax)</button>
-                        <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'source')" style="font-size:10px" id="btn-uk-pension-source">Relief at Source</button>
-                    </div>
-                    <div id="h-uk-pension" class="help-note"></div>
-                </div>
+                        <div class="input-group">
+                            <label id="uk-pension-label">Pension (%) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-pension')">?</span></label>
+                            <input type="number" step="any" id="uk-pro-pension" class="input-field pro-input" placeholder="e.g. 5">
+                            <div class="frequency-toggle" style="margin-top:5px">
+                                <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Net Pay (Before Tax)</button>
+                                <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'source')" style="font-size:10px" id="btn-uk-pension-source">Relief at Source</button>
+                            </div>
+                            <div id="h-uk-pension" class="help-note"></div>
+                        </div>
                         <div class="input-group">
                             <label id="uk-bik-label">Benefits (BIK) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-bik')">?</span></label>
                             <input type="number" step="any" id="uk-pro-bik" class="input-field pro-input" placeholder="P11D value">
