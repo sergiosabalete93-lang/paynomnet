@@ -384,10 +384,14 @@
                 </div>
                 <div class="input-group">
                     <label id="sp-despido-tipo-label">Tipo de Despido</label>
-                    <select id="sp-dismissal-type" class="dropdown-select">
+                    <select id="sp-dismissal-type" class="dropdown-select" onchange="toggleSeniority2012(this.value)">
                         <option value="unfair" id="opt-unfair">Improcedente (33 días)</option>
                         <option value="objective" id="opt-objective">Procedente/Objetivo (20 días)</option>
                     </select>
+                </div>
+                <div id="wrapper-seniority-2012" class="input-group toggle-group hidden" style="margin-top:10px; border-top:1px dashed #eee; padding-top:10px;">
+                    <label id="sp-pre2012-label">¿Contrato anterior a Feb 2012?</label>
+                    <input type="checkbox" id="sp-pro-pre2012" class="toggle-switch">
                 </div>
             </div>
 
@@ -579,7 +583,19 @@
                             <div id="h-manual-irpf" class="help-note"></div>
                         </div>
 
-                        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 10px; margin-bottom: 10px;">
+                        <div class="input-group toggle-group" style="margin-top:10px;">
+                            <label id="sp-mobility-label">Movilidad Geográfica <span class="help-icon" onclick="toggleHelp(event, 'h-mobility')">?</span></label>
+                            <input type="checkbox" id="sp-pro-mobility" class="toggle-switch">
+                            <div id="h-mobility" class="help-note"></div>
+                        </div>
+
+                        <div class="input-group" style="margin-top:10px;">
+                            <label id="sp-union-label">Cuotas Sindicales / Colegios (€/año) <span class="help-icon" onclick="toggleHelp(event, 'h-union')">?</span></label>
+                            <input type="number" step="any" id="sp-pro-union" class="input-field pro-input" placeholder="Importe deducible">
+                            <div id="h-union" class="help-note"></div>
+                        </div>
+
+                        <div style="display:flex; justify-content: space-between; align-items: center; margin-top: 15px; margin-bottom: 10px;">
                             <label style="font-weight: bold; font-size: 13px;">Bases de Cotización Manuales (€/mes) <span class="help-icon" onclick="toggleHelp(event, 'h-custom-base')">?</span></label>
                             <button class="btn-dis" style="width:30px; height:30px; font-weight:bold;" onclick="toggleBasesConfig()">+</button>
                         </div>
@@ -878,15 +894,19 @@
                     </div>
 
                     <div class="pro-fields-wrapper pro-item">
-                        <div class="input-group">
-                            <label id="uk-pension-label">Pension (%) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-pension')">?</span></label>
-                            <input type="number" step="any" id="uk-pro-pension" class="input-field pro-input" placeholder="e.g. 5">
-                            <div class="frequency-toggle" style="margin-top:5px">
-                                <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Net Pay (Before Tax)</button>
-                                <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'source')" style="font-size:10px" id="btn-uk-pension-source">Relief at Source</button>
-                            </div>
-                            <div id="h-uk-pension" class="help-note"></div>
-                        </div>
+                <div class="input-group">
+                    <label id="uk-pension-label">Pension (%) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-pension')">?</span></label>
+                    <div class="frequency-toggle" style="margin-bottom:5px">
+                        <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'pension-basis', 'qualifying')" style="font-size:10px" id="btn-uk-pension-qual">Qualifying Earnings</button>
+                        <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-basis', 'salary')" style="font-size:10px" id="btn-uk-pension-sal">Total Salary</button>
+                    </div>
+                    <input type="number" step="any" id="uk-pro-pension" class="input-field pro-input" placeholder="e.g. 5">
+                    <div class="frequency-toggle" style="margin-top:5px">
+                        <button class="btn-toggle-uk active" onclick="setUKToggle(event, 'pension-type', 'before')" style="font-size:10px" id="btn-uk-pension-before">Net Pay (Before Tax)</button>
+                        <button class="btn-toggle-uk" onclick="setUKToggle(event, 'pension-type', 'source')" style="font-size:10px" id="btn-uk-pension-source">Relief at Source</button>
+                    </div>
+                    <div id="h-uk-pension" class="help-note"></div>
+                </div>
                         <div class="input-group">
                             <label id="uk-bik-label">Benefits (BIK) <span class="help-icon" onclick="toggleHelp(event, 'h-uk-bik')">?</span></label>
                             <input type="number" step="any" id="uk-pro-bik" class="input-field pro-input" placeholder="P11D value">
