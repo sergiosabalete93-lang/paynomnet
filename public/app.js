@@ -1799,14 +1799,22 @@ function performSpainCalculations(annualGross, pagas) {
     const rateUnemployment = (parseSafe('sp-rate-unemployment') || (isTemporal ? 1.60 : 1.55)) / 100;
     const rateFpMei = (parseSafe('sp-rate-fp-mei') || 0.25) / 100;
 
+    const manualBaseCommon = parseSafe('sp-pro-base-common');
+    const manualBaseAtEp = parseSafe('sp-pro-base-at-ep');
+
     const basesMinimas = { 1: 1950, 2: 1620, 3: 1410, 4: 1360, 5: 1360, 6: 1360, 7: 1360, 8: 1360, 9: 1360, 10: 1360, 11: 1360 };
     const minLegalMonthly = (basesMinimas[group] || 1360) * jornadaPerc;
     const MAX_SS_BASE_MONTHLY = 4950.00;
 
-    const monthlyBase = Math.max(minLegalMonthly, Math.min(ssTaxableAnnual / 12, MAX_SS_BASE_MONTHLY));
-    const baseSSAnnual = monthlyBase * 12;
+    // Cálculo de Bases (Prioridad Manual > Auto)
+    const baseAuto = Math.max(minLegalMonthly, Math.min(ssTaxableAnnual / 12, MAX_SS_BASE_MONTHLY));
+    const baseComunMensual = manualBaseCommon > 0 ? manualBaseCommon : baseAuto;
+    const baseAtEpMensual = manualBaseAtEp > 0 ? manualBaseAtEp : baseAuto;
 
-    const ssNormal = (baseSSAnnual * rateCommon) + (baseSSAnnual * rateUnemployment) + (baseSSAnnual * rateFpMei);
+    const baseSSComunAnual = baseComunMensual * 12;
+    const baseSSAtEpAnual = baseAtEpMensual * 12;
+
+    const ssNormal = (baseSSComunAnual * rateCommon) + (baseSSAtEpAnual * rateUnemployment) + (baseSSAtEpAnual * rateFpMei);
     const ssOT = (otAmountAnnual * 0.047);
     const totalSS = ssNormal + ssOT;
 
