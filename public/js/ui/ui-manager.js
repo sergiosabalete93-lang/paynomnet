@@ -4,14 +4,16 @@ import { appState } from '../utils/state.js';
 
 export function applyTheme(isDark, save = true) {
     const getEl = (id) => document.getElementById(id);
+    if (!getEl('meta-theme-color')) return;
+
     if (isDark) {
         document.body.classList.add('theme-dark');
         document.body.classList.remove('theme-light');
-        getEl('meta-theme-color')?.setAttribute('content', '#121212');
+        getEl('meta-theme-color').setAttribute('content', '#121212');
     } else {
         document.body.classList.add('theme-light');
         document.body.classList.remove('theme-dark');
-        getEl('meta-theme-color')?.setAttribute('content', '#0056b3');
+        getEl('meta-theme-color').setAttribute('content', '#0056b3');
     }
 
     const toggle = getEl('theme-toggle');
@@ -25,6 +27,8 @@ export function applyTheme(isDark, save = true) {
 export function updateUITranslations() {
     const getEl = (id) => document.getElementById(id);
     const lang = i18n[appState.language];
+    if (!lang) return;
+
     document.title = lang.page_title;
     getEl('title-en')?.classList.toggle('hidden', appState.language !== 'en');
     getEl('title-es')?.classList.toggle('hidden', appState.language !== 'es');
@@ -35,8 +39,7 @@ export function updateUITranslations() {
     if (getEl('btn-accept-tc')) getEl('btn-accept-tc').textContent = lang.btn_accept;
 
     // Disclaimer
-    const disc = document.querySelector('.legal-disclaimer');
-    if (disc) disc.textContent = lang.disclaimer;
+    document.querySelectorAll('.legal-disclaimer').forEach(el => el.textContent = lang.disclaimer);
 
     // Labels del menú
     if (getEl('menu-settings-label')) getEl('menu-settings-label').textContent = lang.settings;
@@ -52,10 +55,10 @@ export function updateUITranslations() {
     if (getEl('auth-email')) getEl('auth-email').placeholder = lang.placeholders.email;
 
     // Sección País / Modo
-    getEl('country-label').textContent = lang.country_label;
-    getEl('mode-label').textContent = lang.mode_label;
-    getEl('btn-spain').textContent = lang.spain;
-    getEl('btn-uk').textContent = lang.uk;
+    if (getEl('country-label')) getEl('country-label').textContent = lang.country_label;
+    if (getEl('mode-label')) getEl('mode-label').textContent = lang.mode_label;
+    if (getEl('btn-spain')) getEl('btn-spain').textContent = lang.spain;
+    if (getEl('btn-uk')) getEl('btn-uk').textContent = lang.uk;
     if (getEl('mode-ann-text')) getEl('mode-ann-text').textContent = lang.anual;
     if (getEl('mode-mon-text')) getEl('mode-mon-text').textContent = lang.mensual;
     if (getEl('mode-hou-text')) getEl('mode-hou-text').textContent = lang.horas;
@@ -66,7 +69,7 @@ export function updateUITranslations() {
     // España labels
     if (getEl('sp-hijos-label')) getEl('sp-hijos-label').firstChild.textContent = lang.labels.hijos + " ";
     if (getEl('sp-hijo-dis-label')) getEl('sp-hijo-dis-label').textContent = lang.labels.hijo_dis;
-    if (getEl('sp-others-label')) getEl('sp-otros-label').firstChild.textContent = lang.labels.others + " ";
+    if (getEl('sp-otros-label')) getEl('sp-otros-label').firstChild.textContent = lang.labels.others + " ";
     if (getEl('sp-otro-dis-label')) getEl('sp-otro-dis-label').textContent = lang.labels.otro_dis;
     if (getEl('sp-otro-75-label')) getEl('sp-otro-75-label').textContent = lang.labels.otro_75;
     if (getEl('sp-otro-dis-count-label')) getEl('sp-otro-dis-count-label').textContent = lang.labels.otro_dis_count;
@@ -214,29 +217,120 @@ export function updateUITranslations() {
     if (getEl('uk-inverse-net')) getEl('uk-inverse-net').placeholder = lang.placeholders.uk_inverse;
     if (getEl('uk-pro-taxcode-manual')) getEl('uk-pro-taxcode-manual').placeholder = lang.placeholders.uk_taxcode_manual;
     if (getEl('uk-ir35-rate')) getEl('uk-ir35-rate').placeholder = lang.placeholders.uk_ir35_rate;
+
+    // Calcular botón
+    getEl('btn-calculate').textContent = lang.calc;
+    getEl('results-title-label').textContent = lang.results_label;
+    if (getEl('label-net-total')) getEl('label-net-total').textContent = lang.net_result_label;
+
+    const helpNotes = {
+        'h-children': lang.help.children,
+        'h-others': lang.help.others,
+        'h-disability': lang.help.disability,
+        'h-multipayer': lang.help.multipayer,
+        'h-joint': lang.help.joint,
+        'h-pagas': lang.help.pagas,
+        'h-contract': lang.help.contract,
+        'h-manual-irpf': lang.help.manual_irpf,
+        'h-custom-base': lang.help.custom_base,
+        'h-extra-tax': lang.help.extra_tax,
+        'h-bonus': lang.help.bonus,
+        'h-antiguedad': lang.help.antiguedad,
+        'h-ot-hours': lang.help.ot_hours,
+        'h-ot-price': lang.help.ot_price,
+        'h-grupo': lang.help['h-grupo'],
+        'h-jornada': lang.help['h-jornada'],
+        'h-meses': lang.help['h-meses'],
+        'h-especie': lang.help['h-especie'],
+        'h-exento': lang.help['h-exento'] || "",
+        'h-mobility': lang.help.mobility || "",
+        'h-union': lang.help.union || "",
+        'h-seniority-2012': lang.help['h-seniority-2012'] || "",
+        'h-uk-periods': lang.help.uk_periods,
+        'h-uk-periods-monthly': lang.help.uk_periods,
+        'h-uk-bik': lang.help.uk_bik,
+        'h-uk-pension': lang.help.uk_pension,
+        'h-uk-taxcode': lang.help.uk_taxcode,
+        'h-uk-ni-letter': lang.help.uk_ni_letter,
+        'h-uk-bonus': lang.help.uk_bonus,
+        'h-uk-jobs': lang.help.uk_jobs,
+        'h-uk-inverse': lang.help.uk_inverse,
+        'h-uk-redundancy': lang.help.uk_redundancy,
+        'h-uk-holiday': lang.help.uk_holiday,
+        'h-uk-ir35-type': lang.help.uk_ir35_type,
+        'h-uk-assign': lang.help.uk_assign,
+        'h-uk-margin': lang.help.uk_margin,
+        'h-uk-expenses': lang.help.uk_expenses,
+        'h-uk-marriage': lang.help.uk_marriage,
+        'h-uk-blind': lang.help.uk_blind,
+        'h-uk-child-benefit': lang.help.uk_child_benefit,
+        'h-mode-annual': lang.help.mode_annual,
+        'h-mode-monthly': lang.help.mode_monthly,
+        'h-mode-hourly': lang.help.mode_hourly,
+        'h-mode-ir35': lang.help.mode_ir35,
+        'h-mode-inverse': lang.help.mode_inverse,
+        'h-mode-dismissal': lang.help.mode_dismissal,
+        'h-uk-hourly-base': lang.help.uk_hourly_base
+    };
+
+    for (let id in helpNotes) {
+        const el = getEl(id);
+        if (el) el.textContent = helpNotes[id] || "";
+    }
 }
 
 export function setCountry(c) {
     const getEl = (id) => document.getElementById(id);
-    // Cerrar ayudas abiertas
     document.querySelectorAll('.help-note').forEach(n => n.classList.remove('visible'));
 
     appState.country = c;
     document.querySelectorAll('.btn-country').forEach(b => b.classList.remove('active'));
-    getEl(`btn-${c}`).classList.add('active');
+    const btn = getEl(`btn-${c}`);
+    if (btn) btn.classList.add('active');
 
     document.querySelectorAll('.country-module').forEach(m => m.classList.add('hidden'));
-    getEl(`module-${c}`).classList.remove('hidden');
+    const mod = getEl(`module-${c}`);
+    if (mod) mod.classList.remove('hidden');
 
-    // IR35 mode is UK only
     const ir35Btn = getEl('btn-mode-ir35');
-    if (ir35Btn) {
-        ir35Btn.classList.toggle('hidden', c === 'spain');
-    }
+    if (ir35Btn) ir35Btn.classList.toggle('hidden', c === 'spain');
 
-    // Nota: resetToDefaultMode se moverá a utils
-    if (window.resetToDefaultMode) window.resetToDefaultMode();
+    syncAllTogglesUI(c === 'spain' ? 'sp' : 'uk');
+    resetToDefaultMode();
     updateUITranslations();
+}
+
+export function syncAllTogglesUI(country) {
+    const getEl = (id) => document.getElementById(id);
+    if (country === 'sp') {
+        const btnIndef = getEl('btn-cont-indef');
+        if (btnIndef) {
+            btnIndef.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btnIndef.classList.add('active');
+        }
+        const btnDisNone = getEl('btn-dis-none');
+        if (btnDisNone) {
+            btnDisNone.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btnDisNone.classList.add('active');
+        }
+        const payLabel = getEl('sp-pagadores-label');
+        if (payLabel && payLabel.nextElementSibling) {
+            payLabel.nextElementSibling.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            payLabel.nextElementSibling.querySelectorAll('button')[0].classList.add('active');
+        }
+    } else {
+        const groups = [
+            'uk-ir35-type-label', 'uk-assignment-label', 'uk-jobs-label',
+            'uk-pension-label', 'uk-pay-periods-label', 'uk-pay-periods-mon-label',
+            'uk-pay-periods-hou-label', 'uk-pay-periods-inv-label', 'uk-pay-periods-ir35-label'
+        ];
+        groups.forEach(id => {
+            const label = getEl(id);
+            if (label && label.nextElementSibling) {
+                label.nextElementSibling.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            }
+        });
+    }
 }
 
 export function setMode(m) {
@@ -473,17 +567,19 @@ export function setupEventListeners() {
 }
 
 export function checkTC() {
+    const getEl = (id) => document.getElementById(id);
     const accepted = localStorage.getItem('payroll_tc_accepted');
     if (!accepted) {
-        document.getElementById('welcome-modal').classList.remove('hidden');
+        getEl('welcome-modal').classList.remove('hidden');
     }
 }
 
 export function checkConsent() {
+    const getEl = (id) => document.getElementById(id);
     const consented = localStorage.getItem('user_consent_accepted');
     if (!consented) {
         setTimeout(() => {
-            document.getElementById('consent-banner').classList.add('visible');
+            getEl('consent-banner').classList.add('visible');
         }, 1000);
     }
 }
@@ -560,6 +656,7 @@ window.updateUITranslations = updateUITranslations;
 window.activatePro = activatePro;
 window.applyTheme = applyTheme;
 window.updatePagasUI = updatePagasUI;
+window.syncAllTogglesUI = syncAllTogglesUI;
 
 export function setupDraggable(el) {
     if (!el) return;
@@ -665,5 +762,3 @@ function doCalc(a, b, op) {
     if (op === '/') return b !== 0 ? a / b : 0;
     return b;
 }
-
-

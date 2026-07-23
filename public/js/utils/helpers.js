@@ -2,13 +2,13 @@ import { i18n } from '../i18n/i18n.js';
 import { appState } from './state.js';
 
 /**
- * Utilidades generales y validaciones.
+ * Módulo de Utilidades Técnicas y Validaciones.
+ * Estas funciones son internas y se exportan para ser usadas por otros módulos.
  */
 
 export function getEl(id) {
     return document.getElementById(id);
 }
-window.getEl = getEl;
 
 export function parseSafe(id) {
     const el = getEl(id);
@@ -25,7 +25,6 @@ export function parseSafe(id) {
     }
     return parseFloat(val) || 0;
 }
-window.parseSafe = parseSafe;
 
 export function validateForm() {
     let isValid = true;
@@ -104,29 +103,25 @@ export function resetToDefaultMode() {
     if (btn) btn.click();
 }
 
-// Registro global para clics HTML
-window.toggleHelp = function(event, id) {
+export function toggleHelp(event, id) {
     if (event) event.stopPropagation();
     const el = getEl(id);
     if (!el || !el.textContent || el.textContent.trim() === "") return;
     el.classList.toggle('visible');
-};
+}
 
-window.updateEspecieVal = (id, val) => {
+export function updateEspecieVal(id, val) {
     const e = appState.spToggles.dynamicEspecie.find(x => x.id === id);
     if (e) e.amount = parseFloat(val) || 0;
-};
+}
 
-window.setSpainPagas = (event, val) => {
+export function setSpainPagas(event, val) {
     if (event) {
-        const parent = event.target.parentNode;
-        parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
-        event.target.classList.add('active');
-        const parentGroup = event.target.closest('.group-error');
-        if (parentGroup) {
-            parentGroup.classList.remove('group-error');
-            const errorLabel = parentGroup.nextElementSibling;
-            if (errorLabel?.classList.contains('error-label')) errorLabel.remove();
+        const btn = event.target.closest('button');
+        if (btn) {
+            const parent = btn.parentNode;
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
         }
     }
     appState.spToggles.pagas = parseInt(val);
@@ -135,22 +130,24 @@ window.setSpainPagas = (event, val) => {
         appState.spToggles.pagas_prorrateadas = 0;
     }
     if (window.updatePagasUI) window.updatePagasUI();
-};
+}
 
-window.setSpainProrrateadas = (val) => {
+export function setSpainProrrateadas(val) {
     appState.spToggles.pagas_prorrateadas = parseInt(val);
     if (window.updatePagasUI) window.updatePagasUI();
-};
+}
 
-window.toggleRatesConfig = () => {
-    getEl('sp-rates-config').classList.toggle('hidden');
-};
+export function toggleRatesConfig() {
+    const el = getEl('sp-rates-config');
+    if (el) el.classList.toggle('hidden');
+}
 
-window.toggleBasesConfig = () => {
-    getEl('sp-bases-config').classList.toggle('hidden');
-};
+export function toggleBasesConfig() {
+    const el = getEl('sp-bases-config');
+    if (el) el.classList.toggle('hidden');
+}
 
-window.addExtraItem = (country, type, suffix) => {
+export function addExtraItem(country, type, suffix) {
     const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
     if (type === 'bonus') {
         const id = Date.now();
@@ -167,10 +164,10 @@ window.addExtraItem = (country, type, suffix) => {
         const id = Date.now();
         if (country === 'sp') appState.spToggles.dynamicDeductions.push({ id, amount: 0 });
     }
-    window.renderDynamicLists();
-};
+    renderDynamicLists();
+}
 
-window.removeExtraItem = (type, id, country = 'sp') => {
+export function removeExtraItem(type, id, country = 'sp') {
     const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
     if (type === 'bonus') {
         target.dynamicBonus = target.dynamicBonus.filter(b => b.id !== id);
@@ -181,10 +178,10 @@ window.removeExtraItem = (type, id, country = 'sp') => {
     } else if (type === 'ot' && country === 'sp') {
         appState.spToggles.dynamicOT = appState.spToggles.dynamicOT.filter(o => o.id !== id);
     }
-    window.renderDynamicLists();
-};
+    renderDynamicLists();
+}
 
-window.renderDynamicLists = () => {
+export function renderDynamicLists() {
     const especieListSp = getEl('sp-especie-dynamic-list');
     if (especieListSp) {
         especieListSp.innerHTML = '';
@@ -233,7 +230,7 @@ window.renderDynamicLists = () => {
                     <button class="btn-danger" style="width:30px; padding:0;" onclick="removeExtraItem('bonus', ${b.id}, 'uk')">×</button>
                 </div>
                 <div style="display:flex; flex-wrap:wrap; gap:5px; font-size:10px;">
-                    <label><input type="checkbox" ${b.irpf ? 'checked' : ''} onchange="updateBonusVal('uk', ${b.id}, 'irpf', this.checked)"> ${lang.irpf}</label>
+                    <label><input type="checkbox" ${b.irpf ? 'checked' : ''} onchange="updateBonusVal('uk', ${b.id}, 'irpf', this.checked)"> Retención</label>
                     <label><input type="checkbox" ${b.ss ? 'checked' : ''} onchange="updateBonusVal('uk', ${b.id}, 'ss', this.checked)"> NI</label>
                 </div>
             `;
@@ -271,26 +268,102 @@ window.renderDynamicLists = () => {
             deductionsList.appendChild(div);
         });
     }
-};
+}
 
-window.resetAllFields = (country) => {
+export function updateBonusVal(country, id, key, val) {
+    const target = country === 'sp' ? appState.spToggles : appState.ukToggles;
+    const b = target.dynamicBonus.find(x => x.id === id);
+    if (b) b[key] = (key === 'amount') ? (parseFloat(val) || 0) : val;
+}
+
+export function updateOTVal(id, val) {
+    const o = appState.spToggles.dynamicOT.find(x => x.id === id);
+    if (o) o.amount = parseFloat(val) || 0;
+}
+
+export function updateDeductionVal(id, val) {
+    const d = appState.spToggles.dynamicDeductions.find(x => x.id === id);
+    if (d) d.amount = parseFloat(val) || 0;
+}
+
+export function setSpainToggle(event, key, val) {
+    appState.spToggles[key] = val;
+    if (event) {
+        const btn = event.target.closest('button');
+        if (btn) {
+            const parent = btn.parentNode;
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+    }
+    if (key === 'contrato') {
+        const rateInput = getEl('sp-rate-unemployment');
+        if (rateInput) rateInput.value = (val === 'temp') ? '1.60' : '1.55';
+        getEl('wrapper-sp-meses-trabajo')?.classList.toggle('hidden', val !== 'temp');
+    }
+}
+
+export function setUKToggle(event, key, val) {
+    appState.ukToggles[key] = val;
+    if (event) {
+        const btn = event.target.closest('button');
+        if (btn) {
+            const parent = btn.parentNode;
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+    }
+    if (key === 'ir35-type') {
+        const inside = getEl('wrapper-uk-inside-only');
+        const outside = getEl('wrapper-uk-outside-only');
+        if (inside) inside.classList.toggle('hidden', val !== 'inside');
+        if (outside) outside.classList.toggle('hidden', val !== 'outside');
+    }
+}
+
+export function setUKPeriods(event, mode, val) {
+    appState.ukPeriods[mode] = val;
+    if (event) {
+        const btn = event.target.closest('button');
+        if (btn) {
+            const parent = btn.parentNode;
+            parent.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+    }
+}
+
+export function setHourlyType(event, country, type) {
+    if (country === 'uk') {
+        appState.ukHourlyFreq = type;
+        if (event) {
+            const btn = event.target.closest('button');
+            if (btn) {
+                btn.parentNode.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            }
+        }
+        const config = getEl('uk-hourly-monthly-config');
+        if (config) config.style.display = type === 'monthly' ? 'block' : 'none';
+        if (window.updateUITranslations) window.updateUITranslations();
+    }
+}
+
+export function syncUKHoliday(checked) {
+    appState.ukToggles['holiday-prorated'] = checked;
+    ['ann', 'mon', 'hou', 'inv', 'ir35'].forEach(s => {
+        const el = getEl(`uk-holiday-prorated-${s}`);
+        if (el) el.checked = checked;
+    });
+}
+
+export function resetAllFields(country) {
     const isES = appState.language === 'es';
     if (!confirm(isES ? '¿Limpiar todos los datos?' : 'Clear all data?')) return;
-    if (country === 'sp') {
-        appState.spToggles.dynamicBonus = []; appState.spToggles.dynamicOT = [];
-        appState.spToggles.dynamicDeductions = []; appState.spToggles.dynamicEspecie = [];
-        appState.spToggles.disability = null; appState.spToggles.pagas = 0;
-        appState.spToggles.pagas_prorrateadas = 0; appState.spToggles.contrato = null;
-        appState.spToggles['holiday-prorated'] = false; appState.spToggles.multipayer = 'no';
-    } else {
-        appState.ukToggles.dynamicBonus = []; appState.ukToggles['holiday-prorated'] = false;
-        appState.ukPeriods.annual = 0; appState.ukPeriods.monthly = 0; appState.ukHourlyFreq = null;
-    }
     location.reload();
-};
+}
 
-window.toggleSeniority2012 = (val) => {
+export function toggleSeniority2012(val) {
     const wrapper = getEl('wrapper-seniority-2012');
     if (wrapper) wrapper.classList.toggle('hidden', val !== 'unfair');
-};
-
+}
