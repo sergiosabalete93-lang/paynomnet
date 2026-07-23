@@ -1,6 +1,6 @@
 /**
  * DIRECTOR DE ORQUESTA (Centralizador de Módulos)
- * V3 - ARRANQUE SINCRONIZADO Y ROBUSTO
+ * V5 - RECONEXIÓN DE TEXTOS Y DISEÑO UK
  */
 
 import { appState } from './js/utils/state.js';
@@ -50,7 +50,7 @@ import { calculateUK } from './js/engines/uk/modes-uk.js';
 
 import './firebase-config.js';
 
-// --- VINCULACIÓN GLOBAL DEFINITIVA ---
+// --- CONEXIÓN GLOBAL (Para compatibilidad con index.html) ---
 window.appState = appState;
 window.getEl = getEl;
 window.validateForm = validateForm;
@@ -82,10 +82,11 @@ window.activatePro = activatePro;
 window.syncAllTogglesUI = syncAllTogglesUI;
 
 window.processCalculation = function() {
-    getEl('results-loader')?.classList.add('hidden');
-    getEl('results-content')?.classList.remove('hidden');
     const list = getEl('results-list');
     if (list) list.innerHTML = '';
+
+    getEl('results-loader')?.classList.add('hidden');
+    getEl('results-content')?.classList.remove('hidden');
 
     const lang = i18n[appState.language];
     const label = getEl('label-net-total');
@@ -95,11 +96,8 @@ window.processCalculation = function() {
     else if (appState.country === 'uk') calculateUK();
 };
 
-// --- ARRANQUE SECUENCIAL SEGURO ---
-async function startApp() {
-    console.log("Iniciando secuencia de arranque...");
-
-    // 1. Inicializar UI y Eventos
+// --- ARRANQUE SEGURO ---
+function startApp() {
     initApp();
     setupEventListeners();
     setupHelperCalc();
@@ -107,21 +105,21 @@ async function startApp() {
     const floatingCalc = getEl('floating-calc');
     if (floatingCalc) setupDraggable(floatingCalc);
 
-    // 2. Cargar textos e idioma (Esto llena los helpNotes)
+    // Carga de textos (Asegura que los banners tengan contenido)
     updateUITranslations();
 
-    // 3. Establecer estado inicial
+    // Estado inicial
     setCountry('spain');
     updatePagasUI();
+    // activatePro(); // <--- Comentado para fase de pruebas de anuncios
 
-    // 4. Banners de bienvenida (Solo si es necesario)
+    // Banners (Tras asegurar que hay texto)
     checkTC();
     checkConsent();
-
-    // 5. Modo PRO para pruebas
-    activatePro();
-
-    console.log("¡Arranque completado con éxito!");
 }
 
-document.addEventListener('DOMContentLoaded', startApp);
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startApp);
+} else {
+    startApp();
+}

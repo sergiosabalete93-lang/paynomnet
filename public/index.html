@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-<    <meta id="meta-theme-color" name="theme-color" content="#0056b3">
+    <meta id="meta-theme-color" name="theme-color" content="#0056b3">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -120,7 +120,7 @@
         .theme-dark .btn-reject-extra { background: #334155; color: #f1f5f9; }
     </style>
 </head>
-<body class="theme-light is-pro">
+<body class="theme-light">
 
     <!-- Banner de Cookies y Consentimiento Mejorado -->
     <div id="consent-banner" class="consent-banner">
@@ -644,15 +644,13 @@
                     </div>
                     <div id="h-uk-periods" class="help-note"></div>
                 </div>
-                <div class="pro-fields-wrapper">
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-hours-ann" id="uk-horas-extra-label-ann">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                        <input type="number" id="uk-pro-overtime-hours-ann" class="input-field pro-input" placeholder="Hours worked">
-                    </div>
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-price-ann" id="uk-precio-extra-label-ann">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
-                        <input type="number" id="uk-pro-overtime-price-ann" class="input-field pro-input" placeholder="Rate per hour">
-                    </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-hours-ann" id="uk-horas-extra-label-ann">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                    <input type="number" id="uk-pro-overtime-hours-ann" class="input-field pro-input" placeholder="Hours worked">
+                </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-price-ann" id="uk-precio-extra-label-ann">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                    <input type="number" id="uk-pro-overtime-price-ann" class="input-field pro-input" placeholder="Rate per hour">
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
                     <label for="uk-holiday-prorated-ann" id="uk-holiday-label-ann" style="font-weight: bold; color: var(--primary-color);">Prorated Holiday Pay <span class="help-icon" onclick="toggleHelp(event, 'h-uk-holiday')">?</span></label>
@@ -676,15 +674,13 @@
                     </div>
                     <div id="h-uk-periods-monthly" class="help-note"></div>
                 </div>
-                <div class="pro-fields-wrapper">
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-hours-mon" id="uk-horas-extra-label-mon">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                        <input type="number" step="any" id="uk-pro-overtime-hours-mon" class="input-field pro-input" placeholder="Hours worked">
-                    </div>
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-price-mon" id="uk-precio-extra-label-mon">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
-                        <input type="number" step="any" id="uk-pro-overtime-price-mon" class="input-field pro-input" placeholder="Rate per hour">
-                    </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-hours-mon" id="uk-horas-extra-label-mon">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                    <input type="number" step="any" id="uk-pro-overtime-hours-mon" class="input-field pro-input" placeholder="Hours worked">
+                </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-price-mon" id="uk-precio-extra-label-mon">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                    <input type="number" step="any" id="uk-pro-overtime-price-mon" class="input-field pro-input" placeholder="Rate per hour">
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
                     <label for="uk-holiday-prorated-mon" id="uk-holiday-label-mon" style="font-weight: bold; color: var(--primary-color);">Prorated Holiday Pay</label>
@@ -723,15 +719,13 @@
                     </div>
                     <div id="h-uk-hourly-base" class="help-note"></div>
                 </div>
-                <div class="pro-fields-wrapper">
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-hours-hou" id="uk-horas-extra-label-hou">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                        <input type="number" step="any" id="uk-pro-overtime-hours-hou" class="input-field pro-input" placeholder="Hours worked">
-                    </div>
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-price-hou" id="uk-precio-extra-label-hou">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
-                        <input type="number" step="any" id="uk-pro-overtime-price-hou" class="input-field pro-input" placeholder="Rate per hour">
-                    </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-hours-hou" id="uk-horas-extra-label-hou">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                    <input type="number" step="any" id="uk-pro-overtime-hours-hou" class="input-field pro-input" placeholder="Hours worked">
+                </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-price-hou" id="uk-precio-extra-label-hou">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                    <input type="number" step="any" id="uk-pro-overtime-price-hou" class="input-field pro-input" placeholder="Rate per hour">
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
                     <label for="uk-holiday-prorated-hou" id="uk-holiday-label-hou" style="font-weight: bold; color: var(--primary-color);">Prorated Holiday Pay</label>
@@ -754,15 +748,13 @@
                     <input type="number" step="any" id="uk-inverse-net" class="input-field" placeholder="Desired net monthly">
                     <div id="h-uk-inverse" class="help-note"></div>
                 </div>
-                <div class="pro-fields-wrapper">
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-hours-inv" id="uk-horas-extra-label-inv">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
-                        <input type="number" step="any" id="uk-pro-overtime-hours-inv" class="input-field pro-input" placeholder="Hours worked">
-                    </div>
-                    <div class="input-group">
-                        <label for="uk-pro-overtime-price-inv" id="uk-precio-extra-label-inv">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
-                        <input type="number" step="any" id="uk-pro-overtime-price-inv" class="input-field pro-input" placeholder="Rate per hour">
-                    </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-hours-inv" id="uk-horas-extra-label-inv">Overtime Hours <span class="help-icon" onclick="toggleHelp(event, 'h-ot-hours')">?</span></label>
+                    <input type="number" step="any" id="uk-pro-overtime-hours-inv" class="input-field pro-input" placeholder="Hours worked">
+                </div>
+                <div class="input-group">
+                    <label for="uk-pro-overtime-price-inv" id="uk-precio-extra-label-inv">Overtime Rate (£) <span class="help-icon" onclick="toggleHelp(event, 'h-ot-price')">?</span></label>
+                    <input type="number" step="any" id="uk-pro-overtime-price-inv" class="input-field pro-input" placeholder="Rate per hour">
                 </div>
                 <div class="input-group toggle-group" style="margin-top:15px; border-top: 1px dashed #ddd; padding-top:10px;">
                     <label for="uk-holiday-prorated-inv" id="uk-holiday-label-inv" style="font-weight: bold; color: var(--primary-color);">Prorated Holiday Pay</label>

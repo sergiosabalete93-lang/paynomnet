@@ -5,7 +5,7 @@ export const appState = {
     language: 'es',
     country: null,
     mode: null,
-    isPro: true,
+    isPro: false,
     adClickCount: 0,
     interstitialId: 'ca-app-pub-3940256099942544/1033173712',
     spToggles: {
